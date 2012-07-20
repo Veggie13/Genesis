@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchedulerTest", "Scheduler\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenesisComms", "..\Common\API\Comms\GenesisComms.csproj", "{599A7649-E582-4D8A-BE13-898C12336ED0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "Controls\Controls.csproj", "{8952F2F9-6C10-42E1-B146-A5DE4127617E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "Controls\AmbienceControls.csproj", "{8952F2F9-6C10-42E1-B146-A5DE4127617E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlsTest", "Controls\ControlsTest\ControlsTest.csproj", "{B0D73499-F060-4F01-B25C-22390E6A25CA}"
 EndProject

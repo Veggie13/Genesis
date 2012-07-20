@@ -22,7 +22,7 @@ namespace ControlsTest
             InitializeComponent();
 
             _sched = new EventSchedule(32);
-            _sched.TicksPerSec = 1;
+            _sched.TicksPerSec = 4;
 
             //BasicEvent.Provider prov = new BasicEvent.Provider();
             SoundEvent.Provider prov1 = new SoundEvent.Provider("Chord", @"C:\Windows\Media\chord.wav");
@@ -64,6 +64,16 @@ namespace ControlsTest
         public Color this[IScheduleEvent evt]
         {
             get { return _colors[evt.Source]; }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            _sched.Start(false);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            _sched.Stop();
         }
     }
 }

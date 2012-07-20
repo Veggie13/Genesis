@@ -13,6 +13,7 @@ namespace Genesis.Ambience.Controls
     public partial class ScheduleView : UserControl
     {
         private Dictionary<int, EventToken[,]> _history = new Dictionary<int, EventToken[,]>();
+        private int _curIndex = -1;
 
         public ScheduleView()
         {
@@ -50,7 +51,7 @@ namespace Genesis.Ambience.Controls
 
         void ScheduleView_Invalidated(object sender, InvalidateEventArgs e)
         {
-            _view.Invalidate();
+            invalidateView();
         }
 
         public delegate void TokenMouseEvent(EventToken token, Control sender, Point loc);
@@ -113,7 +114,7 @@ namespace Genesis.Ambience.Controls
             if (!_updatingScroll)
             {
                 _topRow = _vScroll.Value;
-                _view.Invalidate();
+                invalidateView();
             }
         }
 
@@ -122,7 +123,7 @@ namespace Genesis.Ambience.Controls
             if (!_updatingScroll)
             {
                 _leftCol = _hScroll.Value;
-                _view.Invalidate();
+                invalidateView();
             }
         }
 
@@ -136,6 +137,7 @@ namespace Genesis.Ambience.Controls
                 if (_sched != null)
                 {
                     _sched.ScheduleExtended -= _sched_ScheduleExtended;
+                    _sched.Tick -= _sched_Tick;
                 }
 
                 _sched = value;
@@ -144,12 +146,53 @@ namespace Genesis.Ambience.Controls
                 if (_sched != null)
                 {
                     _sched.ScheduleExtended += new EventSchedule.ScheduleExtend(_sched_ScheduleExtended);
+                    _sched.Tick += new EventSchedule.TickEvent(_sched_Tick);
+                    _sched.Started += new EventSchedule.Trigger(_sched_Started);
+                    _sched.Finished += new EventSchedule.Trigger(_sched_Finished);
                     _rowCount = 0;
                     _colCount = 0;
                     _leftCol = 0;
                     _topRow = 0;
                     updateHistory();
                 }
+            }
+        }
+
+        void _sched_Finished(EventSchedule sched)
+        {
+            _curIndex = -1;
+            invalidateView();
+        }
+
+        void _sched_Started(EventSchedule sched)
+        {
+            _curIndex = 0;
+            invalidateView();
+        }
+
+        void _sched_Tick(EventSchedule sched, ulong newTimeCode)
+        {
+            EventToken[] curTokens = GetInstantTokens((int)newTimeCode);
+            for (int col = _curIndex; col < (int)newTimeCode; col++)
+            {
+                EventToken[] tokens = GetInstantTokens(col);
+                for (int row = 0; row < tokens.Length; row++)
+                {
+                    EventToken token = tokens[row];
+                    if (token != null && token.Event != null && curTokens[row] != token)
+                        token.Finish();
+                }
+            }
+
+            bool wasVisible = indexIsVisible(_curIndex);
+            _curIndex = (int)newTimeCode;
+            if (wasVisible && !indexIsVisible(_curIndex))
+            {
+                LeftColumn = Math.Min(_curIndex, ColumnCount - DisplayedColumnCount + 1);
+            }
+            else
+            {
+                invalidateView();
             }
         }
 
@@ -161,7 +204,7 @@ namespace Genesis.Ambience.Controls
             set
             {
                 _colorer = value;
-                _view.Invalidate();
+                invalidateView();
             }
         }
 
@@ -279,7 +322,7 @@ namespace Genesis.Ambience.Controls
             set
             {
                 _scaleBg.Color = value;
-                _view.Invalidate();
+                invalidateView();
             }
         }
 
@@ -291,7 +334,7 @@ namespace Genesis.Ambience.Controls
             set
             {
                 _bg.Color = value;
-                _view.Invalidate();
+                invalidateView();
             }
         }
 
@@ -303,7 +346,7 @@ namespace Genesis.Ambience.Controls
             set
             {
                 _borders.Color = value;
-                _view.Invalidate();
+                invalidateView();
             }
         }
         private bool ShouldSerializeBorderColor()
@@ -317,7 +360,7 @@ namespace Genesis.Ambience.Controls
             set
             {
                 _borders.Width = value;
-                _view.Invalidate();
+                invalidateView();
             }
         }
         private bool ShouldSerializeBorderThickness()
@@ -338,7 +381,7 @@ namespace Genesis.Ambience.Controls
                 _font = new Font(font, FontStyle.Regular);
                 _bold = new Font(font, FontStyle.Bold);
                 _italic = new Font(font, FontStyle.Italic);
-                _view.Invalidate();
+                invalidateView();
             }
         }
         private bool ShouldSerializeTokenFont()
@@ -354,7 +397,7 @@ namespace Genesis.Ambience.Controls
             set
             {
                 _fontColor.Color = value;
-                _view.Invalidate();
+                invalidateView();
             }
         }
 
@@ -366,7 +409,43 @@ namespace Genesis.Ambience.Controls
             set
             {
                 _fontHighlight.Color = value;
-                _view.Invalidate();
+                invalidateView();
+            }
+        }
+
+        private Pen _trail = new Pen(Color.BlueViolet, 2f);
+        [DefaultValue(typeof(Color), "BlueViolet")]
+        public Color TrailingIndicatorColor
+        {
+            get { return _trail.Color; }
+            set
+            {
+                _trail.Color = value;
+                invalidateView();
+            }
+        }
+
+        private Pen _lead = new Pen(Color.MediumVioletRed, 2f);
+        [DefaultValue(typeof(Color), "MediumVioletRed")]
+        public Color LeadingIndicatorColor
+        {
+            get { return _lead.Color; }
+            set
+            {
+                _lead.Color = value;
+                invalidateView();
+            }
+        }
+
+        private bool _showIndicators = true;
+        [DefaultValue(true)]
+        public bool ShowIndicators
+        {
+            get { return _showIndicators; }
+            set
+            {
+                _showIndicators = value;
+                invalidateView();
             }
         }
 
@@ -378,24 +457,38 @@ namespace Genesis.Ambience.Controls
             {
                 drawTable(e.Graphics);
                 drawTokens(e.Graphics);
+                if (ShowIndicators)
+                    drawIndicators(e.Graphics);
             }
+        }
+
+        private Rectangle ViewRectangle
+        {
+            get { return _view.DisplayRectangle; }
         }
 
         private void drawTable(Graphics gc)
         {
-            gc.FillRectangle(_bg, DisplayRectangle);
+            gc.FillRectangle(_bg, ViewRectangle);
             int scaleBottom = TrueScaleHeight;
             if (ShowScale)
             {
-                gc.FillRectangle(_scaleBg, 0, 0, DisplayRectangle.Width, ScaleHeight);
+                gc.FillRectangle(_scaleBg, 0, 0, ViewRectangle.Width, ScaleHeight);
             }
-            for (int x = 0; x < DisplayRectangle.Width; x += _colWidth)
+            for (int x = 0; x < ViewRectangle.Width; x += _colWidth)
             {
-                gc.DrawLine(_borders, x, 0, x, DisplayRectangle.Height);
+                try
+                {
+                    gc.DrawLine(_borders, x, 0, x, ViewRectangle.Height);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
             }
-            for (int y = scaleBottom; y < DisplayRectangle.Height; y += _rowHeight)
+            for (int y = scaleBottom; y < ViewRectangle.Height; y += _rowHeight)
             {
-                gc.DrawLine(_borders, 0, y, DisplayRectangle.Width, y);
+                gc.DrawLine(_borders, 0, y, ViewRectangle.Width, y);
             }
         }
 
@@ -426,6 +519,18 @@ namespace Genesis.Ambience.Controls
                 }
                 prevBlock = block;
                 block = nextBlock;
+            }
+        }
+
+        private void drawIndicators(Graphics gc)
+        {
+            if (_sched.IsRunning && indexIsVisible(_curIndex))
+            {
+                int x1 = (_curIndex - LeftColumn) * ColumnWidth;
+                int x2 = x1 + ColumnWidth;
+
+                gc.DrawLine(_trail, x1, 0, x1, ViewRectangle.Height);
+                gc.DrawLine(_lead, x2, 0, x2, ViewRectangle.Height);
             }
         }
 
@@ -529,7 +634,7 @@ namespace Genesis.Ambience.Controls
             }
             _updatingScroll = false;
 
-            _view.Invalidate();
+            invalidateView();
         }
 
         private void ScheduleView_Load(object sender, EventArgs e)
@@ -607,6 +712,19 @@ namespace Genesis.Ambience.Controls
             _colCount += result.GetLength(1);
 
             updateScrollBars();
+        }
+
+        private bool indexIsVisible(int index)
+        {
+            return (index >= LeftColumn && index - LeftColumn < DisplayedColumnCount);
+        }
+
+        private void invalidateView()
+        {
+            if (InvokeRequired)
+                Invoke(new MethodInvoker(() => { invalidateView(); }));
+            else
+                _view.Invalidate();
         }
     }
 }

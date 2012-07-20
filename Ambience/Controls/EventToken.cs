@@ -20,6 +20,16 @@ namespace Genesis.Ambience.Controls
             _colorer = colorer;
         }
 
+        public void Finish()
+        {
+            _event = null;
+        }
+        
+        public IScheduleEvent Event
+        {
+            get { return _event; }
+        }
+        
         public string Name
         {
             get { return _event.Source.Name; }
@@ -29,7 +39,7 @@ namespace Genesis.Ambience.Controls
         {
             get
             {
-                if (_colorer == null)
+                if (_colorer == null || _event == null)
                     return Color.Gray;
                 return _colorer[_event];
             }
