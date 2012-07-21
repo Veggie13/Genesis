@@ -28,7 +28,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -85,9 +85,9 @@
       <Project>{051A577E-B5B7-4C4C-92D9-B01CCB26BCED}</Project>
       <Name>Scheduler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Controls.csproj">
+    <ProjectReference Include="..\AmbienceControls.csproj">
       <Project>{8952F2F9-6C10-42E1-B146-A5DE4127617E}</Project>
-      <Name>Controls</Name>
+      <Name>AmbienceControls</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
