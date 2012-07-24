@@ -64,6 +64,7 @@ namespace Genesis.Ambience.Scheduler
         private object _locker = new object();
         private Timer _timer = null;
         private AutoResetEvent _reset = new AutoResetEvent(false);
+        private bool _initialized = false;
         #endregion
 
         public EventSchedule(int bufLen)
@@ -98,6 +99,11 @@ namespace Genesis.Ambience.Scheduler
         public IEnumerable<IScheduleEvent> CurrentEvents
         {
             get { return _schedule[CurrentIndex]; }
+        }
+
+        public ulong CurrentTimeCode
+        {
+            get { return _currTimeCode; }
         }
         #endregion
 
@@ -189,6 +195,7 @@ namespace Genesis.Ambience.Scheduler
 
             FinishSchedule();
             _running = false;
+            _initialized = false;
 
             if (Finished != null)
                 Finished(this);
@@ -199,12 +206,14 @@ namespace Genesis.Ambience.Scheduler
             InitializeSchedule();
         }
 
-        public IEnumerable<IScheduleEvent>[] GetCurrentBlock(out int idx)
+        public IEnumerable<IScheduleEvent>[] GetActualFuture(out ulong currTime)
         {
             List<IScheduleEvent>[] copy;
+            int idx;
             lock (_locker)
             {
                 copy = Array.ConvertAll(_schedule, (li) => (new List<IScheduleEvent>(li)));
+                currTime = _currTimeCode;
                 idx = CurrentIndex;
             }
 
@@ -301,11 +310,16 @@ namespace Genesis.Ambience.Scheduler
             // Find events to schedule from our model.
             ulong max = _nextBaseTime + (ulong)_nextSpan;
             int span = _nextSpan;
+            if (overwrite)
+            {
+                for (ulong timeCode = _nextBaseTime; timeCode < max; timeCode++, span--)
+                {
+                    _schedule[Index(timeCode)].Clear();
+                }
+            }
+
             for (ulong timeCode = _nextBaseTime; timeCode < max; timeCode++, span--)
             {
-                if (overwrite)
-                    _schedule[Index(timeCode)].Clear();
-
                 if (!_providers.ContainsKey(timeCode))
                     continue;
                 List<IEventProviderInstance> providers = _providers[timeCode];
@@ -346,11 +360,16 @@ namespace Genesis.Ambience.Scheduler
 
         private void InitializeSchedule()
         {
+            if (_initialized)
+                return;
+
             ClearSchedule();
             PopulateFromModel();
             InitializeScheduleParameters();
             ExtendSchedule();
             UpdateSchedule();
+
+            _initialized = true;
         }
 
         private void FinishSchedule()
@@ -395,7 +414,13 @@ namespace Genesis.Ambience.Scheduler
 
             if (WithinBounds(timeCode))
             {
-                prov.Next(_scheduler, timeCode, (ulong)_timeSpan);
+                ulong span = (ulong)_timeSpan - (timeCode - _baseTimeCode);
+                prov.Next(_scheduler, timeCode, span);
+            }
+            else if (WithinExtension(timeCode))
+            {
+                ulong span = (ulong)_nextSpan - (timeCode - _nextBaseTime);
+                prov.Next(_scheduler, timeCode, span);
             }
             else
             {
@@ -412,6 +437,11 @@ namespace Genesis.Ambience.Scheduler
         private bool WithinBounds(ulong timeCode)
         {
             return (timeCode >= _baseTimeCode) && (timeCode < _baseTimeCode + (ulong)_timeSpan);
+        }
+
+        private bool WithinExtension(ulong timeCode)
+        {
+            return (timeCode >= _nextBaseTime) && (timeCode < _nextBaseTime + (ulong)_nextSpan);
         }
         #endregion
 

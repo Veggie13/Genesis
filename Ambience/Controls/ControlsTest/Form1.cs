@@ -22,7 +22,7 @@ namespace ControlsTest
             InitializeComponent();
 
             _sched = new EventSchedule(32);
-            _sched.TicksPerSec = 1;
+            _sched.TicksPerSec = 2;
 
             BasicEvent.Provider prov1 = new BasicEvent.Provider("Chord");
             BasicEvent.Provider prov2 = new BasicEvent.Provider("Ding");
@@ -52,14 +52,30 @@ namespace ControlsTest
 
         void scheduleView1_TopRowChanged(ScheduleView sender, int oldValue, int newValue)
         {
-            label2.Text = newValue.ToString();
+            updateLabel2(newValue.ToString());
         }
 
         void scheduleView1_LeftColumnChanged(ScheduleView sender, int oldValue, int newValue)
         {
-            label1.Text = newValue.ToString();
+            updateLabel1(newValue.ToString());
         }
 
+        private void updateLabel1(string text)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<string>(updateLabel1), text);
+            else
+                label1.Text = text;
+        }
+
+        private void updateLabel2(string text)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<string>(updateLabel2), text);
+            else
+                label2.Text = text;
+        }
+        
         void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             _sched.Dispose();

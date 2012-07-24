@@ -207,7 +207,7 @@ namespace Genesis.Ambience.Controls
             _curIndex = (int)newTimeCode;
             if (wasVisible && !indexIsVisible(_curIndex))
             {
-                LeftColumn = Math.Min(_curIndex, ColumnCount - DisplayedColumnCount + 1);
+                LeftColumn = Math.Min(_curIndex, ColumnCount - FullDisplayedColumnCount + 1);
             }
             else
             {
@@ -267,11 +267,26 @@ namespace Genesis.Ambience.Controls
                 {
                     int old = _leftCol;
                     _leftCol = value;
-                    _hScroll.Value = _leftCol;
+                    hScrollUpdate(_leftCol);
                     if (LeftColumnChanged != null)
                         LeftColumnChanged(this, old, _leftCol);
                 }
             }
+        }
+        private delegate void ScrollUpdate(int val);
+        private void hScrollUpdate(int val)
+        {
+            if (InvokeRequired)
+                Invoke(new ScrollUpdate(hScrollUpdate), val);
+            else
+                _hScroll.Value = val;
+        }
+        private void vScrollUpdate(int val)
+        {
+            if (InvokeRequired)
+                Invoke(new ScrollUpdate(vScrollUpdate), val);
+            else
+                _vScroll.Value = val;
         }
 
         private int _topRow = 0;
@@ -285,7 +300,7 @@ namespace Genesis.Ambience.Controls
                 {
                     int old = _topRow;
                     _topRow = value;
-                    _vScroll.Value = _topRow;
+                    vScrollUpdate(_topRow);
                     if (TopRowChanged != null)
                         TopRowChanged(this, old, _topRow);
                 }
@@ -697,6 +712,12 @@ namespace Genesis.Ambience.Controls
         private bool _updatingScroll = false;
         private void updateScrollBars()
         {
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(updateScrollBars));
+                return;
+            }
+
             _updatingScroll = true;
             if (_sched == null)
             {
@@ -749,65 +770,72 @@ namespace Genesis.Ambience.Controls
 
         private void updateHistory()
         {
-            int curCol;
-            var block = _sched.GetCurrentBlock(out curCol);
-            int start = _colCount - curCol;
+            ulong curTime;
+            var block = _sched.GetActualFuture(out curTime);
+            int skip = _colCount - (int)curTime;
 
-            var result = new EventToken[_rowCount, block.Length - start];
-            
-            var lastTokens = GetInstantTokens(_colCount - 1);
-            for (int r = 0; r < lastTokens.Length; r++)
+            try
             {
-                if (lastTokens[r] != null && lastTokens[r].Last >= _colCount)
-                {
-                    for (int c = 0; c < result.GetLength(1) && _colCount + c <= lastTokens[r].Last; c++)
-                        result[r, c] = lastTokens[r];
-                }
-            }
+                var result = new EventToken[_rowCount, block.Length - skip];
 
-            for (int c = 0; c < block.Length; c++)
-            {
-                foreach (IScheduleEvent evt in block[c])
+                var lastTokens = GetInstantTokens(_colCount - 1);
+                for (int r = 0; r < lastTokens.Length; r++)
                 {
-                    EventToken token = new EventToken(_colCount + c, evt, _colorer);
-                    bool invalid = true;
-                    int r;
-                    for (r = 0; invalid && r < result.GetLength(0); r++)
+                    if (lastTokens[r] != null && lastTokens[r].Last >= _colCount)
                     {
-                        invalid = false;
-                        for (int cc = c; cc < block.Length && _colCount + cc <= token.Last; cc++)
+                        for (int c = 0; c < result.GetLength(1) && _colCount + c <= lastTokens[r].Last; c++)
+                            result[r, c] = lastTokens[r];
+                    }
+                }
+
+                for (int c = skip; c < block.Length; c++)
+                {
+                    foreach (IScheduleEvent evt in block[c])
+                    {
+                        EventToken token = new EventToken(_colCount + c, evt, _colorer);
+                        bool invalid = true;
+                        int r;
+                        for (r = 0; invalid && r < result.GetLength(0); r++)
                         {
-                            if (result[r, cc] != null)
+                            invalid = false;
+                            for (int cc = c; cc < block.Length && _colCount + cc <= token.Last; cc++)
                             {
-                                invalid = true;
-                                break;
+                                if (result[r, cc - skip] != null)
+                                {
+                                    invalid = true;
+                                    break;
+                                }
                             }
+                            if (!invalid)
+                                break;
                         }
-                        if (!invalid)
-                            break;
-                    }
-                    if (invalid)
-                    {
-                        r = (++_rowCount) - 1;
-                        var newResult = new EventToken[_rowCount, result.GetLength(1)];
-                        Array.Copy(result, newResult, result.Length);
-                        result = newResult;
-                    }
+                        if (invalid)
+                        {
+                            r = (++_rowCount) - 1;
+                            var newResult = new EventToken[_rowCount, result.GetLength(1)];
+                            Array.Copy(result, newResult, result.Length);
+                            result = newResult;
+                        }
 
-                    for (int cc = c; cc < block.Length && _colCount + cc <= token.Last; cc++)
-                        result[r, cc] = token;
+                        for (int cc = c; cc < block.Length && _colCount + cc <= token.Last; cc++)
+                            result[r, cc - skip] = token;
+                    }
                 }
+
+                _history[_colCount] = result;
+                _colCount += result.GetLength(1);
+
+                updateScrollBars();
             }
-
-            _history[_colCount] = result;
-            _colCount += result.GetLength(1);
-
-            updateScrollBars();
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
 
         private bool indexIsVisible(int index)
         {
-            return (index >= LeftColumn && index - LeftColumn < DisplayedColumnCount);
+            return (index >= LeftColumn && index - LeftColumn < FullDisplayedColumnCount);
         }
 
         private void invalidateView()
