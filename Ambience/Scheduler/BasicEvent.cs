@@ -13,9 +13,14 @@ namespace Genesis.Ambience.Scheduler
                 {
                 }
 
+                public Instance(Provider parent, IEventProvider src)
+                    : base(parent, src)
+                {
+                }
+
                 public override bool Next(IEventScheduler sched, ulong currTimeCode, ulong span)
                 {
-                    sched.ScheduleEvent(new BasicEvent(this._parent), currTimeCode);
+                    sched.ScheduleEvent(new BasicEvent(this.Source, this.Model.Name), currTimeCode);
                     return false;
                 }
             }
@@ -34,19 +39,26 @@ namespace Genesis.Ambience.Scheduler
                 return new Instance(this);
             }
 
+            public override IEventProviderInstance CreateInstance(IEventProvider src)
+            {
+                return new Instance(this, src);
+            }
+
             #endregion
         }
 
         private static int NEXTID = 1;
         private int _id = NEXTID++;
 
-        public BasicEvent(Provider src)
+        public BasicEvent(IEventProvider src, string name)
         {
             _source = src;
+            _name = name;
         }
-        public BasicEvent(Provider src, ulong len)
+        public BasicEvent(IEventProvider src, string name, ulong len)
         {
             _source = src;
+            _name = name;
             _length = len;
         }
 
@@ -64,7 +76,13 @@ namespace Genesis.Ambience.Scheduler
             get { return _active; }
         }
 
-        private Provider _source;
+        private string _name;
+        public string Name
+        {
+            get { return _name; }
+        }
+
+        private IEventProvider _source;
         public IEventProvider Source
         {
             get { return _source; }

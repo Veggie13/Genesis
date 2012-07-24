@@ -18,6 +18,7 @@ namespace Genesis.Ambience.Controls
             _start = start;
             _event = evt;
             _colorer = colorer;
+            _name = _event.Name;
         }
 
         public void Finish()
@@ -29,10 +30,11 @@ namespace Genesis.Ambience.Controls
         {
             get { return _event; }
         }
-        
+
+        private string _name;
         public string Name
         {
-            get { return _event.Source.Name; }
+            get { return _name; }
         }
 
         public Color Color

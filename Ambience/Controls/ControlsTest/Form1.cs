@@ -22,25 +22,42 @@ namespace ControlsTest
             InitializeComponent();
 
             _sched = new EventSchedule(32);
-            _sched.TicksPerSec = 4;
+            _sched.TicksPerSec = 1;
 
-            //BasicEvent.Provider prov = new BasicEvent.Provider();
-            SoundEvent.Provider prov1 = new SoundEvent.Provider("Chord", @"C:\Windows\Media\chord.wav");
-            SoundEvent.Provider prov2 = new SoundEvent.Provider("Ding", @"C:\Windows\Media\ding.wav");
+            BasicEvent.Provider prov1 = new BasicEvent.Provider("Chord");
+            BasicEvent.Provider prov2 = new BasicEvent.Provider("Ding");
+            //SoundEvent.Provider prov1 = new SoundEvent.Provider("Chord", @"C:\Windows\Media\chord.wav");
+            //SoundEvent.Provider prov2 = new SoundEvent.Provider("Ding", @"C:\Windows\Media\ding.wav");
+            PeriodicEventProvider per1 = new PeriodicEventProvider("Period");
 
-            _colors[prov1] = Color.Red;
+            per1.Subordinate = prov1;
+            per1.Period = 4;
+
+            _colors[per1] = Color.Red;
             _colors[prov2] = Color.Orange;
 
             _sched.Initialize();
-            _sched.AddProvider(prov1);
+            _sched.AddProvider(per1);
             _sched.AddProvider(prov2);
 
             scheduleView1.ColorProvider = this;
             scheduleView1.Schedule = _sched;
             scheduleView1.TokenMouseEnter += new ScheduleView.TokenMouseEvent(scheduleView1_TokenMouseEnter);
             scheduleView1.TokenMouseLeave += new ScheduleView.TokenMouseEvent(scheduleView1_TokenMouseLeave);
+            scheduleView1.LeftColumnChanged += new ScheduleView.ViewValueChangeEvent(scheduleView1_LeftColumnChanged);
+            scheduleView1.TopRowChanged += new ScheduleView.ViewValueChangeEvent(scheduleView1_TopRowChanged);
 
             this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
+        }
+
+        void scheduleView1_TopRowChanged(ScheduleView sender, int oldValue, int newValue)
+        {
+            label2.Text = newValue.ToString();
+        }
+
+        void scheduleView1_LeftColumnChanged(ScheduleView sender, int oldValue, int newValue)
+        {
+            label1.Text = newValue.ToString();
         }
 
         void Form1_FormClosed(object sender, FormClosedEventArgs e)

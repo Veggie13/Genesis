@@ -18,6 +18,12 @@ namespace Genesis.Ambience.Scheduler
                 ChooseNextPoint();
             }
 
+            public Instance(PeriodicEventProvider parent, IEventProvider src)
+                : base(parent, src)
+            {
+                ChooseNextPoint();
+            }
+
             private void ChooseNextPoint()
             {
                 _nextPoint = _currBase
@@ -31,9 +37,9 @@ namespace Genesis.Ambience.Scheduler
             {
                 if (_parent.Subordinate == null)
                     return false;
-                sched.AddProvider(_parent.Subordinate.CreateInstance(), _nextPoint);
-                sched.AddProvider(this, _nextPoint);
+                sched.AddProvider(_parent.Subordinate.CreateInstance(this.Source), _nextPoint);
                 ChooseNextPoint();
+                sched.AddProvider(this, _nextPoint);
                 return true;
             }
         }
@@ -71,6 +77,11 @@ namespace Genesis.Ambience.Scheduler
         public override IEventProviderInstance CreateInstance()
         {
             return new Instance(this);
+        }
+
+        public override IEventProviderInstance CreateInstance(IEventProvider src)
+        {
+            return new Instance(this, src);
         }
 
         #endregion

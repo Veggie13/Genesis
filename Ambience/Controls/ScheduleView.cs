@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Genesis.Ambience.Scheduler;
+using System.Drawing.Drawing2D;
 
 namespace Genesis.Ambience.Controls
 {
@@ -60,11 +61,22 @@ namespace Genesis.Ambience.Controls
         public event TokenMouseEvent TokenMouseHover;
         public event TokenMouseEvent TokenMouseClick;
 
+        public delegate void ViewValueChangeEvent(ScheduleView sender, int oldValue, int newValue);
+        public event ViewValueChangeEvent LeftColumnChanged;
+        public event ViewValueChangeEvent TopRowChanged;
+
         private Point _lastMousePos = new Point();
         void _view_MouseMove(object sender, MouseEventArgs e)
         {
-            int col = LeftColumn + _lastMousePos.X / ColumnWidth;
-            int row = TopRow + (_lastMousePos.Y - TrueScaleHeight) / RowHeight;
+            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
+            bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
+            int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
+            int yTop = rowHangOver ? (ViewRectangle.Height - TrueScaleHeight - DisplayedRowCount * _rowHeight) : 0;
+            int colOffset = colHangOver ? -1 : 0;
+            int rowOffset = rowHangOver ? -1 : 0;
+
+            int col = LeftColumn + colOffset + (_lastMousePos.X - xLeft) / ColumnWidth;
+            int row = TopRow + rowOffset + (_lastMousePos.Y - TrueScaleHeight - yTop) / RowHeight;
             if (_lastMousePos.Y < TrueScaleHeight)
                 row = -1;
             EventToken[] origCol = GetInstantTokens(col);
@@ -73,8 +85,8 @@ namespace Genesis.Ambience.Controls
             _lastMousePos.X = e.Location.X;
             _lastMousePos.Y = e.Location.Y;
 
-            col = LeftColumn + _lastMousePos.X / ColumnWidth;
-            row = TopRow + (_lastMousePos.Y - TrueScaleHeight) / RowHeight;
+            col = LeftColumn + colOffset + (_lastMousePos.X - xLeft) / ColumnWidth;
+            row = TopRow + rowOffset + (_lastMousePos.Y - TrueScaleHeight - yTop) / RowHeight;
             if (_lastMousePos.Y < TrueScaleHeight)
                 row = -1;
             EventToken[] nextCol = GetInstantTokens(col);
@@ -94,13 +106,20 @@ namespace Genesis.Ambience.Controls
                 }
             }
         }
-
+        
         void _view_MouseHover(object sender, EventArgs e)
         {
-            int col = LeftColumn + _lastMousePos.X / ColumnWidth;
-            int row = TopRow + (_lastMousePos.Y - TrueScaleHeight) / RowHeight;
+            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
+            bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
+            int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
+            int yTop = rowHangOver ? (ViewRectangle.Height - TrueScaleHeight - DisplayedRowCount * _rowHeight) : 0;
+            int colOffset = colHangOver ? -1 : 0;
+            int rowOffset = rowHangOver ? -1 : 0;
+
+            int col = LeftColumn + colOffset + (_lastMousePos.X - xLeft) / ColumnWidth;
+            int row = TopRow + rowOffset + (_lastMousePos.Y - TrueScaleHeight - yTop) / RowHeight;
             EventToken[] origCol = GetInstantTokens(col);
-            EventToken orig = (row < origCol.Length) ? origCol[row - TopRow] : null;
+            EventToken orig = (row < origCol.Length) ? origCol[row] : null;
 
             if (orig != null && TokenMouseHover != null)
             {
@@ -113,7 +132,7 @@ namespace Genesis.Ambience.Controls
         {
             if (!_updatingScroll)
             {
-                _topRow = _vScroll.Value;
+                TopRow = _vScroll.Value;
                 invalidateView();
             }
         }
@@ -122,7 +141,7 @@ namespace Genesis.Ambience.Controls
         {
             if (!_updatingScroll)
             {
-                _leftCol = _hScroll.Value;
+                LeftColumn = _hScroll.Value;
                 invalidateView();
             }
         }
@@ -244,8 +263,14 @@ namespace Genesis.Ambience.Controls
             get { return _leftCol; }
             set
             {
-                _leftCol = value;
-                _hScroll.Value = _leftCol;
+                if (_leftCol != value)
+                {
+                    int old = _leftCol;
+                    _leftCol = value;
+                    _hScroll.Value = _leftCol;
+                    if (LeftColumnChanged != null)
+                        LeftColumnChanged(this, old, _leftCol);
+                }
             }
         }
 
@@ -256,8 +281,14 @@ namespace Genesis.Ambience.Controls
             get { return _topRow; }
             set
             {
-                _topRow = value;
-                _vScroll.Value = _topRow;
+                if (_topRow != value)
+                {
+                    int old = _topRow;
+                    _topRow = value;
+                    _vScroll.Value = _topRow;
+                    if (TopRowChanged != null)
+                        TopRowChanged(this, old, _topRow);
+                }
             }
         }
 
@@ -275,14 +306,34 @@ namespace Genesis.Ambience.Controls
             get { return _rowCount; }
         }
 
+        public double ActualDisplayedRowCount
+        {
+            get { return (double)(_view.DisplayRectangle.Height - TrueScaleHeight) / RowHeight; }
+        }
+
+        public double ActualDisplayedColumnCount
+        {
+            get { return (double)_view.DisplayRectangle.Width / ColumnWidth; }
+        }
+
         public int DisplayedRowCount
         {
-            get { return (DisplayRectangle.Height - TrueScaleHeight) / RowHeight; }
+            get { return (int)Math.Ceiling(ActualDisplayedRowCount); }
         }
 
         public int DisplayedColumnCount
         {
-            get { return DisplayRectangle.Width / ColumnWidth; }
+            get { return (int)Math.Ceiling(ActualDisplayedColumnCount); }
+        }
+
+        public int FullDisplayedRowCount
+        {
+            get { return (int)Math.Floor(ActualDisplayedRowCount); }
+        }
+
+        public int FullDisplayedColumnCount
+        {
+            get { return (int)Math.Floor(ActualDisplayedColumnCount); }
         }
 
         private bool _showScale = false;
@@ -475,18 +526,15 @@ namespace Genesis.Ambience.Controls
             {
                 gc.FillRectangle(_scaleBg, 0, 0, ViewRectangle.Width, ScaleHeight);
             }
-            for (int x = 0; x < ViewRectangle.Width; x += _colWidth)
+            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
+            int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
+            for (int x = xLeft; x < ViewRectangle.Width; x += _colWidth)
             {
-                try
-                {
-                    gc.DrawLine(_borders, x, 0, x, ViewRectangle.Height);
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
-                }
+                gc.DrawLine(_borders, x, 0, x, ViewRectangle.Height);
             }
-            for (int y = scaleBottom; y < ViewRectangle.Height; y += _rowHeight)
+            bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
+            int yTop = rowHangOver ? (ViewRectangle.Height - scaleBottom - DisplayedRowCount * _rowHeight) : 0;
+            for (int y = scaleBottom + yTop; y < ViewRectangle.Height; y += _rowHeight)
             {
                 gc.DrawLine(_borders, 0, y, ViewRectangle.Width, y);
             }
@@ -494,15 +542,22 @@ namespace Genesis.Ambience.Controls
 
         private void drawTokens(Graphics gc)
         {
+            gc.Clip = new Region(new Rectangle(0, TrueScaleHeight, ViewRectangle.Width, ViewRectangle.Height - TrueScaleHeight));
+
+            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
+            bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
+            int colOffset = colHangOver ? -1 : 0;
+            int rowOffset = rowHangOver ? -1 : 0;
+
             EventToken[] prevBlock = GetInstantTokens(LeftColumn - 1);
             EventToken[] block = GetInstantTokens(LeftColumn);
             for (int c = 0; c < DisplayedColumnCount; c++)
             {
-                int trueCol = LeftColumn + c;
+                int trueCol = LeftColumn + c + colOffset;
                 EventToken[] nextBlock = GetInstantTokens(trueCol + 1);
                 for (int r = 0; r < DisplayedRowCount; r++)
                 {
-                    int trueRow = TopRow + r;
+                    int trueRow = TopRow + r + rowOffset;
                     EventToken token = (block.Length > trueRow) ? block[trueRow] : null;
                     if (token != null)
                     {
@@ -536,10 +591,15 @@ namespace Genesis.Ambience.Controls
 
         private void drawLeftToken(Graphics gc, int dispRow, int dispCol, EventToken token, bool edge)
         {
-            int x1 = _colWidth * dispCol;
+            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
+            bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
+            int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
+            int yTop = rowHangOver ? (ViewRectangle.Height - TrueScaleHeight - DisplayedRowCount * _rowHeight) : 0;
+
+            int x1 = _colWidth * dispCol + xLeft;
             int x2 = x1 + _colWidth / 2 + 1;
-            int y1 = TrueScaleHeight + _rowHeight * dispRow;
-            int y2 = y1 + _rowHeight;
+            int y1 = TrueScaleHeight + _rowHeight * dispRow + yTop;
+            int y2 = y1 + _rowHeight - 1;
 
             /*
             gc.FillRectangle(new SolidBrush(token.Color), x1, y1, _colWidth / 2 + 1, _rowHeight);
@@ -549,27 +609,44 @@ namespace Genesis.Ambience.Controls
                 gc.DrawLine(Pens.Black, x1, y1, x1, y2);
              */
             Color def = token.Color, lite = ControlPaint.LightLight(def);
+            Color dark = ControlPaint.Dark(def, 0.01f);
             Color main = token.IsHighlighted ? def : lite;
-            Brush fillBrush = new SolidBrush(main);
+            Brush fillBrush = token.IsHighlighted ? (Brush)(new SolidBrush(main)) :
+                new LinearGradientBrush(new Point(0, y1), new Point(0, y2), lite, dark);
+            Pen border = new Pen(token.IsHighlighted ? lite : def, token.IsHighlighted ? 2f : 1f);
             if (edge)
             {
                 gc.FillRectangle(fillBrush, x1 + 4, y1, _colWidth / 2 - 3, _rowHeight);
                 gc.FillRectangle(fillBrush, x1 + 2, y1 + 1, 2, _rowHeight - 2);
                 gc.FillRectangle(fillBrush, x1 + 1, y1 + 2, 1, _rowHeight - 4);
                 gc.FillRectangle(fillBrush, x1, y1 + 4, 1, _rowHeight - 8);
+                gc.DrawLine(border, x1 + 4, y1, x2, y1);
+                gc.DrawLine(border, x1 + 2, y1 + 1, x1 + 3, y1 + 1);
+                gc.DrawLine(border, x1 + 1, y1 + 2, x1 + 1, y1 + 3);
+                gc.DrawLine(border, x1, y1 + 4, x1, y2 - 4);
+                gc.DrawLine(border, x1 + 1, y2 - 2, x1 + 1, y2 - 3);
+                gc.DrawLine(border, x1 + 2, y2 - 1, x1 + 3, y2 - 1);
+                gc.DrawLine(border, x1 + 4, y2, x2, y2);
             }
             else
             {
                 gc.FillRectangle(fillBrush, x1, y1, _colWidth / 2 + 1, _rowHeight);
+                gc.DrawLine(border, x1, y1, x2, y1);
+                gc.DrawLine(border, x1, y2, x2, y2);
             }
         }
 
         private void drawRightToken(Graphics gc, int dispRow, int dispCol, EventToken token, bool edge)
         {
-            int x2 = _colWidth * (dispCol + 1);
+            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
+            bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
+            int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
+            int yTop = rowHangOver ? (ViewRectangle.Height - TrueScaleHeight - DisplayedRowCount * _rowHeight) : 0;
+
+            int x2 = _colWidth * (dispCol + 1) + xLeft;
             int x1 = x2 - _colWidth / 2 - 1;
-            int y1 = TrueScaleHeight + _rowHeight * dispRow;
-            int y2 = y1 + _rowHeight;
+            int y1 = TrueScaleHeight + _rowHeight * dispRow + yTop;
+            int y2 = y1 + _rowHeight - 1;
 
             /*
             gc.FillRectangle(new SolidBrush(token.Color), x1, y1, _colWidth / 2 + 1, _rowHeight);
@@ -579,18 +656,30 @@ namespace Genesis.Ambience.Controls
                 gc.DrawLine(Pens.Black, x2, y1, x2, y2);
              */
             Color def = token.Color, lite = ControlPaint.LightLight(def);
+            Color dark = ControlPaint.Dark(def, 0.01f);
             Color main = token.IsHighlighted ? def : lite;
-            Brush fillBrush = new SolidBrush(main);
+            Brush fillBrush = token.IsHighlighted ? (Brush)(new SolidBrush(main)) :
+                new LinearGradientBrush(new Point(0, y1), new Point(0, y2), lite, dark);
+            Pen border = new Pen(token.IsHighlighted ? lite : def, token.IsHighlighted ? 2f : 1f);
             if (edge)
             {
                 gc.FillRectangle(fillBrush, x1, y1, _colWidth / 2 - 2, _rowHeight);
                 gc.FillRectangle(fillBrush, x2 - 3, y1 + 1, 2, _rowHeight - 2);
                 gc.FillRectangle(fillBrush, x2 - 1, y1 + 2, 1, _rowHeight - 4);
                 gc.FillRectangle(fillBrush, x2, y1 + 4, 1, _rowHeight - 8);
+                gc.DrawLine(border, x1, y1, x2 - 4, y1);
+                gc.DrawLine(border, x2 - 2, y1 + 1, x2 - 3, y1 + 1);
+                gc.DrawLine(border, x2 - 1, y1 + 2, x2 - 1, y1 + 3);
+                gc.DrawLine(border, x2, y1 + 4, x2, y2 - 4);
+                gc.DrawLine(border, x2 - 1, y2 - 2, x2 - 1, y2 - 3);
+                gc.DrawLine(border, x2 - 2, y2 - 1, x2 - 3, y2 - 1);
+                gc.DrawLine(border, x1, y2, x2 - 4, y2);
             }
             else
             {
                 gc.FillRectangle(fillBrush, x1, y1, _colWidth / 2 + 1, _rowHeight);
+                gc.DrawLine(border, x1, y1, x2, y1);
+                gc.DrawLine(border, x1, y2, x2, y2);
             }
         }
 
@@ -602,7 +691,7 @@ namespace Genesis.Ambience.Controls
             string text = (continued ? "<< " : "") + token.Name;
             gc.DrawString(text, (continued ? _italic : _bold),
                 token.IsHighlighted ? _fontHighlight : _fontColor,
-                new RectangleF(x1, y1, _colWidth, _rowHeight));
+                new RectangleF(x1 + 2, y1 + 2, _colWidth - 4, _rowHeight - 4));
         }
 
         private bool _updatingScroll = false;
@@ -619,17 +708,17 @@ namespace Genesis.Ambience.Controls
             }
             else
             {
-                _vScroll.Visible = (DisplayedRowCount < RowCount);
+                _vScroll.Visible = (ActualDisplayedRowCount < RowCount);
                 if (_vScroll.Visible)
                 {
                     _vScroll.Minimum = 0;
-                    _vScroll.Maximum = RowCount - DisplayedRowCount;
+                    _vScroll.Maximum = RowCount - 1;
+                    _vScroll.LargeChange = FullDisplayedRowCount;
                     _vScroll.Value = TopRow;
                 }
                 _hScroll.Minimum = 0;
-                _hScroll.Maximum = (DisplayedColumnCount < ColumnCount) ?
-                    (ColumnCount - DisplayedColumnCount) :
-                    0;
+                _hScroll.Maximum = ColumnCount - 1;
+                _hScroll.LargeChange = FullDisplayedColumnCount;
                 _hScroll.Value = LeftColumn;
             }
             _updatingScroll = false;
@@ -694,6 +783,8 @@ namespace Genesis.Ambience.Controls
                                 break;
                             }
                         }
+                        if (!invalid)
+                            break;
                     }
                     if (invalid)
                     {

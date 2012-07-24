@@ -9,6 +9,7 @@ namespace Genesis.Ambience.Scheduler
     {
         bool ScheduleEvent(IScheduleEvent evt, ulong timeCode);
         void AddProvider(IEventProviderInstance prov, ulong timeCode);
+        uint TicksPerSec { get; }
     }
 
     public class EventSchedule : IDisposable
@@ -37,6 +38,11 @@ namespace Genesis.Ambience.Scheduler
             public void AddProvider(IEventProviderInstance prov, ulong timeCode)
             {
                 _parent.AddProvider(prov, timeCode);
+            }
+
+            public uint TicksPerSec
+            {
+                get { return _parent.TicksPerSec; }
             }
 
             #endregion

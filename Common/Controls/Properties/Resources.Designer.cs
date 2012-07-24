@@ -59,12 +59,5 @@ namespace Genesis.Common.Controls.Properties {
                 resourceCulture = value;
             }
         }
-        
-        internal static System.Drawing.Icon GenesisIcon {
-            get {
-                object obj = ResourceManager.GetObject("GenesisIcon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
     }
 }

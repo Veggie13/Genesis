@@ -10,6 +10,7 @@ namespace Genesis.Ambience.Scheduler
 
         bool DependsOn(IEventProvider dependent);
         IEventProviderInstance CreateInstance();
+        IEventProviderInstance CreateInstance(IEventProvider src);
     }
 
     public abstract class AEventProvider : IEventProvider
@@ -28,6 +29,7 @@ namespace Genesis.Ambience.Scheduler
 
         public abstract bool DependsOn(IEventProvider dependent);
         public abstract IEventProviderInstance CreateInstance();
+        public abstract IEventProviderInstance CreateInstance(IEventProvider src);
         #endregion
     }
 
@@ -35,6 +37,7 @@ namespace Genesis.Ambience.Scheduler
     {
         bool Next(IEventScheduler sched, ulong currTimeCode, ulong span);
         IEventProvider Model { get; }
+        IEventProvider Source { get; }
     }
 
     public abstract class AEventProviderInstance<T> : IEventProviderInstance where T : IEventProvider
@@ -46,6 +49,14 @@ namespace Genesis.Ambience.Scheduler
             _parent = parent;
         }
 
+        public AEventProviderInstance(T parent, IEventProvider src)
+        {
+            if (parent == null)
+                throw new ArgumentNullException("parent");
+            _parent = parent;
+            _src = src;
+        }
+
         public abstract bool Next(IEventScheduler sched, ulong currTimeCode, ulong span);
         
         protected T _parent;
@@ -53,6 +64,13 @@ namespace Genesis.Ambience.Scheduler
         {
             get { return _parent; }
         }
+
+        private IEventProvider _src = null;
+        public virtual IEventProvider Source
+        {
+            get { return (_src == null) ? Model : _src; }
+        }
+
     }
 
 }

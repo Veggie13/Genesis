@@ -13,6 +13,11 @@ namespace Genesis.Ambience.Scheduler
             {
             }
 
+            public Instance(DelayEventProvider parent, IEventProvider src)
+                : base(parent, src)
+            {
+            }
+
             public override bool Next(IEventScheduler sched, ulong currTimeCode, ulong span)
             {
                 if (_parent.Subordinate != null)
@@ -47,6 +52,11 @@ namespace Genesis.Ambience.Scheduler
         public override IEventProviderInstance CreateInstance()
         {
             return new Instance(this);
+        }
+
+        public override IEventProviderInstance CreateInstance(IEventProvider src)
+        {
+            return new Instance(this, src);
         }
 
         #endregion

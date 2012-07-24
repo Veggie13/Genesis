@@ -26,6 +26,11 @@ namespace Genesis.Ambience.Scheduler
             return this;
         }
 
+        public override IEventProviderInstance CreateInstance(IEventProvider src)
+        {
+            return this;
+        }
+
         #endregion
 
         #region IEventProviderInstance Members
@@ -43,6 +48,12 @@ namespace Genesis.Ambience.Scheduler
         public IEventProvider Model
         {
             get { return this; }
+        }
+
+        private IEventProvider _src;
+        public IEventProvider Source
+        {
+            get { return (_src == null) ? Model : _src; }
         }
 
         #endregion

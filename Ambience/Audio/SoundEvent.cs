@@ -19,9 +19,14 @@ namespace Genesis.Ambience.Audio
                 {
                 }
 
+                public Instance(Provider parent, IEventProvider src)
+                    : base(parent, src)
+                {
+                }
+
                 public override bool Next(IEventScheduler sched, ulong currTimeCode, ulong span)
                 {
-                    sched.ScheduleEvent(_parent.CreateEvent(), currTimeCode);
+                    sched.ScheduleEvent(_parent.CreateEvent(sched.TicksPerSec), currTimeCode);
                     return false;
                 }
             }
@@ -50,10 +55,15 @@ namespace Genesis.Ambience.Audio
                 return new Instance(this);
             }
 
+            public override IEventProviderInstance CreateInstance(IEventProvider src)
+            {
+                return new Instance(this, src);
+            }
+
             #endregion
 
             private List<SoundEvent> _all = new List<SoundEvent>();
-            private SoundEvent CreateEvent()
+            private SoundEvent CreateEvent(uint timePerSecond)
             {
                 WaveStream reader;
                 if (_filename.EndsWith(".mp3"))
@@ -71,7 +81,7 @@ namespace Genesis.Ambience.Audio
                     throw new InvalidOperationException("Unsupported extension.");
                 }
 
-                SoundEvent evt = new SoundEvent(this, reader, 1);
+                SoundEvent evt = new SoundEvent(this, reader, timePerSecond);
                 _all.Add(evt);
                 return evt;
             }
@@ -113,6 +123,12 @@ namespace Genesis.Ambience.Audio
         public bool Active
         {
             get { return _active; }
+        }
+
+        private string _name = "";
+        public string Name
+        {
+            get { return _name; }
         }
 
         private Provider _source;
