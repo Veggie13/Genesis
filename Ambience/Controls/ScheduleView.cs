@@ -260,6 +260,82 @@ namespace Genesis.Ambience.Controls
         }
         #endregion
 
+        #region ScaleFont
+        private static readonly Font DefaultScaleFont = new Font("Arial", 8f);
+        private Font _scaleFont = DefaultScaleFont;
+        public Font ScaleFont
+        {
+            get { return _scaleFont; }
+            set
+            {
+                Font font = (value == null) ? DefaultScaleFont : value;
+                _scaleFont = new Font(font, font.Style);
+                invalidateView();
+            }
+        }
+        private bool ShouldSerializeScaleFont()
+        {
+            return !_scaleFont.Equals(DefaultScaleFont);
+        }
+        #endregion
+
+        #region ScaleFontColor
+        private SolidBrush _scaleColor = new SolidBrush(Color.Black);
+        [DefaultValue(typeof(Color), "Black")]
+        public Color ScaleFontColor
+        {
+            get { return _scaleColor.Color; }
+            set
+            {
+                _scaleColor.Color = value;
+                invalidateView();
+            }
+        }
+        #endregion
+
+        #region ScaleInterval
+        private static TimeSpan DefaultScaleInterval = new TimeSpan(0, 0, 1);
+        private TimeSpan _scaleInterval = DefaultScaleInterval;
+        public TimeSpan ScaleInterval
+        {
+            get { return _scaleInterval; }
+            set
+            {
+                _scaleInterval = value;
+                invalidateView();
+            }
+        }
+        private bool ShouldSerializeScaleInterval()
+        {
+            return !(_scaleInterval.Equals(DefaultScaleInterval));
+        }
+
+        [DefaultValue(1000)]
+        public int ScaleIntervalMs
+        {
+            get { return (int)_scaleInterval.TotalMilliseconds; }
+            set
+            {
+                _scaleInterval = new TimeSpan(0, 0, 0, 0, value);
+                invalidateView();
+            }
+        }
+        #endregion
+
+        #region ScaleFormat
+        private string _scaleFormat = "M:ss";
+        [DefaultValue("M:ss")]
+        public string ScaleFormat
+        {
+            get { return _scaleFormat; }
+            set
+            {
+                _scaleFormat = value;
+                invalidateView();
+            }
+        }
+        #endregion
+
         #region Background
         private SolidBrush _bg = new SolidBrush(Color.White);
         [DefaultValue(typeof(Color), "White")]
@@ -654,22 +730,46 @@ namespace Genesis.Ambience.Controls
         private void drawTable(Graphics gc)
         {
             gc.FillRectangle(_bg, ViewRectangle);
+            
             int scaleBottom = TrueScaleHeight;
-            if (ShowScale)
-            {
-                gc.FillRectangle(_scaleBg, 0, 0, ViewRectangle.Width, ScaleHeight);
-            }
             bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
             int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
             for (int x = xLeft; x < ViewRectangle.Width; x += _colWidth)
             {
                 gc.DrawLine(_borders, x, 0, x, ViewRectangle.Height);
             }
+            
             bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
             int yTop = rowHangOver ? (ViewRectangle.Height - scaleBottom - DisplayedRowCount * _rowHeight) : 0;
             for (int y = scaleBottom + yTop; y < ViewRectangle.Height; y += _rowHeight)
             {
                 gc.DrawLine(_borders, 0, y, ViewRectangle.Width, y);
+            }
+
+            if (ShowScale)
+            {
+                gc.FillRectangle(_scaleBg, 0, 0, ViewRectangle.Width, ScaleHeight);
+                if (_sched != null)
+                    drawScaleText(gc);
+            }
+        }
+
+        private void drawScaleText(Graphics gc)
+        {
+            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
+            int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
+
+            double ticksPerInterval = _sched.TicksPerSec * _scaleInterval.TotalSeconds;
+            int colLeft = (colHangOver ? LeftColumn - 1 : LeftColumn);
+            int firstInterval = (int)Math.Ceiling(colLeft / ticksPerInterval);
+            double pixPerInterval = ticksPerInterval * _colWidth;
+            double xFirst = (pixPerInterval * firstInterval) - (colLeft * _colWidth);
+            int nInterval = firstInterval;
+            for (double x = xFirst + xLeft; x < ViewRectangle.Width; x += pixPerInterval, nInterval++)
+            {
+                TimeSpan interval = new TimeSpan(_scaleInterval.Ticks * (long)nInterval);
+                gc.DrawString(interval.Format((int)_sched.TicksPerSec, _scaleFormat), _scaleFont, _scaleColor,
+                    new RectangleF((int)x + 2, 2, _colWidth - 4, _scaleHeight - 4));
             }
         }
 
@@ -818,8 +918,13 @@ namespace Genesis.Ambience.Controls
 
         private void drawTokenText(Graphics gc, int dispRow, int dispCol, EventToken token, bool continued)
         {
-            int x1 = _colWidth * dispCol;
-            int y1 = TrueScaleHeight + _rowHeight * dispRow;
+            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
+            bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
+            int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
+            int yTop = rowHangOver ? (ViewRectangle.Height - TrueScaleHeight - DisplayedRowCount * _rowHeight) : 0;
+
+            int x1 = _colWidth * dispCol + xLeft;
+            int y1 = TrueScaleHeight + _rowHeight * dispRow + yTop;
 
             string text = (continued ? "<< " : "") + token.Name;
             gc.DrawString(text, (continued ? _italic : _bold),

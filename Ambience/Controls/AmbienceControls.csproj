@@ -51,6 +51,7 @@
     <Compile Include="ScheduleView.Designer.cs">
       <DependentUpon>ScheduleView.cs</DependentUpon>
     </Compile>
+    <Compile Include="TimeFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Scheduler\Scheduler.csproj">
