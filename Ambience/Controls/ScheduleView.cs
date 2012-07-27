@@ -13,9 +13,14 @@ namespace Genesis.Ambience.Controls
 {
     public partial class ScheduleView : UserControl
     {
+        #region Private Members
         private Dictionary<int, EventToken[,]> _history = new Dictionary<int, EventToken[,]>();
         private int _curIndex = -1;
+        private Point _lastMousePos = new Point();
+        private bool _updatingScroll = false;
+        #endregion
 
+        #region Constructor
         public ScheduleView()
         {
             InitializeComponent();
@@ -23,6 +28,7 @@ namespace Genesis.Ambience.Controls
             _view.Paint += new PaintEventHandler(_view_Paint);
             _view.MouseHover += new EventHandler(_view_MouseHover);
             _view.MouseMove += new MouseEventHandler(_view_MouseMove);
+            _view.MouseLeave += new EventHandler(_view_MouseLeave);
             _view.MouseClick += new MouseEventHandler(_view_MouseClick);
 
             _hScroll.ValueChanged += new EventHandler(_hScroll_ValueChanged);
@@ -33,28 +39,9 @@ namespace Genesis.Ambience.Controls
             this.SetStyle(ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
             this.DoubleBuffered = true;
         }
+        #endregion
 
-        void _view_MouseClick(object sender, MouseEventArgs e)
-        {
-            int col = LeftColumn + e.Location.X / ColumnWidth;
-            int row = TopRow + (e.Location.Y - TrueScaleHeight) / RowHeight;
-            if (e.Location.Y < TrueScaleHeight)
-                row = -1;
-            EventToken[] origCol = GetInstantTokens(col);
-            EventToken orig = (row >= 0 && row < origCol.Length) ? origCol[row] : null;
-
-            if (orig != null && TokenMouseClick != null)
-            {
-                Point pt = new Point(e.Location.X, e.Location.Y);
-                TokenMouseClick(orig, _view, pt);
-            }
-        }
-
-        void ScheduleView_Invalidated(object sender, InvalidateEventArgs e)
-        {
-            invalidateView();
-        }
-
+        #region Events
         public delegate void TokenMouseEvent(EventToken token, Control sender, Point loc);
         public event TokenMouseEvent TokenMouseEnter;
         public event TokenMouseEvent TokenMouseLeave;
@@ -64,88 +51,10 @@ namespace Genesis.Ambience.Controls
         public delegate void ViewValueChangeEvent(ScheduleView sender, int oldValue, int newValue);
         public event ViewValueChangeEvent LeftColumnChanged;
         public event ViewValueChangeEvent TopRowChanged;
+        #endregion
 
-        private Point _lastMousePos = new Point();
-        void _view_MouseMove(object sender, MouseEventArgs e)
-        {
-            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
-            bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
-            int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
-            int yTop = rowHangOver ? (ViewRectangle.Height - TrueScaleHeight - DisplayedRowCount * _rowHeight) : 0;
-            int colOffset = colHangOver ? -1 : 0;
-            int rowOffset = rowHangOver ? -1 : 0;
-
-            int col = LeftColumn + colOffset + (_lastMousePos.X - xLeft) / ColumnWidth;
-            int row = TopRow + rowOffset + (_lastMousePos.Y - TrueScaleHeight - yTop) / RowHeight;
-            if (_lastMousePos.Y < TrueScaleHeight)
-                row = -1;
-            EventToken[] origCol = GetInstantTokens(col);
-            EventToken orig = (row >= 0 && row < origCol.Length) ? origCol[row] : null;
-
-            _lastMousePos.X = e.Location.X;
-            _lastMousePos.Y = e.Location.Y;
-
-            col = LeftColumn + colOffset + (_lastMousePos.X - xLeft) / ColumnWidth;
-            row = TopRow + rowOffset + (_lastMousePos.Y - TrueScaleHeight - yTop) / RowHeight;
-            if (_lastMousePos.Y < TrueScaleHeight)
-                row = -1;
-            EventToken[] nextCol = GetInstantTokens(col);
-            EventToken next = (row >= 0 && row < nextCol.Length) ? nextCol[row] : null;
-
-            if (orig != next)
-            {
-                if (orig != null && TokenMouseLeave != null)
-                {
-                    Point pt1 = new Point(e.Location.X, e.Location.Y);
-                    TokenMouseLeave(orig, _view, pt1);
-                }
-                if (next != null && TokenMouseEnter != null)
-                {
-                    Point pt2 = new Point(e.Location.X, e.Location.Y);
-                    TokenMouseEnter(next, _view, pt2);
-                }
-            }
-        }
-        
-        void _view_MouseHover(object sender, EventArgs e)
-        {
-            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
-            bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
-            int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
-            int yTop = rowHangOver ? (ViewRectangle.Height - TrueScaleHeight - DisplayedRowCount * _rowHeight) : 0;
-            int colOffset = colHangOver ? -1 : 0;
-            int rowOffset = rowHangOver ? -1 : 0;
-
-            int col = LeftColumn + colOffset + (_lastMousePos.X - xLeft) / ColumnWidth;
-            int row = TopRow + rowOffset + (_lastMousePos.Y - TrueScaleHeight - yTop) / RowHeight;
-            EventToken[] origCol = GetInstantTokens(col);
-            EventToken orig = (row < origCol.Length) ? origCol[row] : null;
-
-            if (orig != null && TokenMouseHover != null)
-            {
-                Point pt = new Point(_lastMousePos.X, _lastMousePos.Y);
-                TokenMouseHover(orig, _view, pt);
-            }
-        }
-
-        void _vScroll_ValueChanged(object sender, EventArgs e)
-        {
-            if (!_updatingScroll)
-            {
-                TopRow = _vScroll.Value;
-                invalidateView();
-            }
-        }
-
-        void _hScroll_ValueChanged(object sender, EventArgs e)
-        {
-            if (!_updatingScroll)
-            {
-                LeftColumn = _hScroll.Value;
-                invalidateView();
-            }
-        }
-
+        #region Properties
+        #region Schedule
         private EventSchedule _sched;
         [Browsable(false)]
         public EventSchedule Schedule
@@ -176,45 +85,9 @@ namespace Genesis.Ambience.Controls
                 }
             }
         }
+        #endregion
 
-        void _sched_Finished(EventSchedule sched)
-        {
-            _curIndex = -1;
-            invalidateView();
-        }
-
-        void _sched_Started(EventSchedule sched)
-        {
-            _curIndex = 0;
-            invalidateView();
-        }
-
-        void _sched_Tick(EventSchedule sched, ulong newTimeCode)
-        {
-            EventToken[] curTokens = GetInstantTokens((int)newTimeCode);
-            for (int col = _curIndex; col < (int)newTimeCode; col++)
-            {
-                EventToken[] tokens = GetInstantTokens(col);
-                for (int row = 0; row < tokens.Length; row++)
-                {
-                    EventToken token = tokens[row];
-                    if (token != null && token.Event != null && curTokens[row] != token)
-                        token.Finish();
-                }
-            }
-
-            bool wasVisible = indexIsVisible(_curIndex);
-            _curIndex = (int)newTimeCode;
-            if (wasVisible && !indexIsVisible(_curIndex))
-            {
-                LeftColumn = Math.Min(_curIndex, ColumnCount - FullDisplayedColumnCount + 1);
-            }
-            else
-            {
-                invalidateView();
-            }
-        }
-
+        #region ColorProvider
         private IEventColorProvider _colorer;
         [Browsable(false)]
         public IEventColorProvider ColorProvider
@@ -226,12 +99,28 @@ namespace Genesis.Ambience.Controls
                 invalidateView();
             }
         }
+        #endregion
 
-        void  _sched_ScheduleExtended(EventSchedule sched)
+        #region ColumnCount
+        private int _colCount;
+        [Browsable(false)]
+        public int ColumnCount
         {
-            updateHistory();
+            get { return _colCount; }
         }
+        #endregion
 
+        #region RowCount
+        private int _rowCount;
+        [Browsable(false)]
+        public int RowCount
+        {
+            get { return _rowCount; }
+        }
+        #endregion
+
+        #region UI
+        #region ColumnWidth
         private int _colWidth = 50;
         [DefaultValue(50)]
         public int ColumnWidth
@@ -243,7 +132,9 @@ namespace Genesis.Ambience.Controls
                 updateScrollBars();
             }
         }
+        #endregion
 
+        #region RowHeight
         private int _rowHeight = 15;
         [DefaultValue(15)]
         public int RowHeight
@@ -255,7 +146,9 @@ namespace Genesis.Ambience.Controls
                 updateScrollBars();
             }
         }
+        #endregion
 
+        #region LeftColumn
         private int _leftCol = 0;
         [DefaultValue(0)]
         public int LeftColumn
@@ -273,22 +166,9 @@ namespace Genesis.Ambience.Controls
                 }
             }
         }
-        private delegate void ScrollUpdate(int val);
-        private void hScrollUpdate(int val)
-        {
-            if (InvokeRequired)
-                Invoke(new ScrollUpdate(hScrollUpdate), val);
-            else
-                _hScroll.Value = val;
-        }
-        private void vScrollUpdate(int val)
-        {
-            if (InvokeRequired)
-                Invoke(new ScrollUpdate(vScrollUpdate), val);
-            else
-                _vScroll.Value = val;
-        }
+        #endregion
 
+        #region TopRow
         private int _topRow = 0;
         [DefaultValue(0)]
         public int TopRow
@@ -306,20 +186,7 @@ namespace Genesis.Ambience.Controls
                 }
             }
         }
-
-        private int _colCount;
-        [Browsable(false)]
-        public int ColumnCount
-        {
-            get { return _colCount; }
-        }
-
-        private int _rowCount;
-        [Browsable(false)]
-        public int RowCount
-        {
-            get { return _rowCount; }
-        }
+        #endregion
 
         public double ActualDisplayedRowCount
         {
@@ -351,6 +218,7 @@ namespace Genesis.Ambience.Controls
             get { return (int)Math.Floor(ActualDisplayedColumnCount); }
         }
 
+        #region ShowScale
         private bool _showScale = false;
         [DefaultValue(false)]
         public bool ShowScale
@@ -362,7 +230,9 @@ namespace Genesis.Ambience.Controls
                 updateScrollBars();
             }
         }
+        #endregion
 
+        #region ScaleHeight
         private int _scaleHeight = 15;
         [DefaultValue(15)]
         public int ScaleHeight
@@ -374,12 +244,9 @@ namespace Genesis.Ambience.Controls
                 updateScrollBars();
             }
         }
+        #endregion
 
-        private int TrueScaleHeight
-        {
-            get { return ShowScale ? ScaleHeight : 0; }
-        }
-
+        #region ScaleBackground
         private SolidBrush _scaleBg = new SolidBrush(Color.LightGray);
         [DefaultValue(typeof(Color), "LightGray")]
         public Color ScaleBackground
@@ -391,7 +258,9 @@ namespace Genesis.Ambience.Controls
                 invalidateView();
             }
         }
+        #endregion
 
+        #region Background
         private SolidBrush _bg = new SolidBrush(Color.White);
         [DefaultValue(typeof(Color), "White")]
         public Color Background
@@ -403,9 +272,13 @@ namespace Genesis.Ambience.Controls
                 invalidateView();
             }
         }
+        #endregion
 
+        #region Border
         private static Pen DefaultBorder = new Pen(Color.LightGray, 1f);
         private Pen _borders = new Pen(DefaultBorder.Color, DefaultBorder.Width);
+
+        #region BorderColor
         public Color BorderColor
         {
             get { return _borders.Color; }
@@ -419,7 +292,9 @@ namespace Genesis.Ambience.Controls
         {
             return !(_borders.Color.Equals(DefaultBorder.Color));
         }
+        #endregion
 
+        #region BorderThickness
         public float BorderThickness
         {
             get { return _borders.Width; }
@@ -433,7 +308,10 @@ namespace Genesis.Ambience.Controls
         {
             return (_borders.Width != DefaultBorder.Width);
         }
+        #endregion
+        #endregion
 
+        #region TokenFont
         private static readonly Font DefaultTokenFont = new Font("Arial", 8f);
         private Font _font = DefaultTokenFont;
         private Font _bold = new Font(DefaultTokenFont, FontStyle.Bold);
@@ -454,7 +332,9 @@ namespace Genesis.Ambience.Controls
         {
             return !_font.Equals(DefaultTokenFont);
         }
+        #endregion
 
+        #region TokenFontColor
         private SolidBrush _fontColor = new SolidBrush(Color.Black);
         [DefaultValue(typeof(Color), "Black")]
         public Color TokenFontColor
@@ -466,7 +346,9 @@ namespace Genesis.Ambience.Controls
                 invalidateView();
             }
         }
+        #endregion
 
+        #region TokenFontHighlightColor
         private SolidBrush _fontHighlight = new SolidBrush(Color.White);
         [DefaultValue(typeof(Color), "White")]
         public Color TokenFontHighlightColor
@@ -478,7 +360,9 @@ namespace Genesis.Ambience.Controls
                 invalidateView();
             }
         }
+        #endregion
 
+        #region TrailingIndicatorColor
         private Pen _trail = new Pen(Color.BlueViolet, 2f);
         [DefaultValue(typeof(Color), "BlueViolet")]
         public Color TrailingIndicatorColor
@@ -490,7 +374,9 @@ namespace Genesis.Ambience.Controls
                 invalidateView();
             }
         }
+        #endregion
 
+        #region LeadingIndicatorColor
         private Pen _lead = new Pen(Color.MediumVioletRed, 2f);
         [DefaultValue(typeof(Color), "MediumVioletRed")]
         public Color LeadingIndicatorColor
@@ -502,7 +388,9 @@ namespace Genesis.Ambience.Controls
                 invalidateView();
             }
         }
+        #endregion
 
+        #region ShowIndicators
         private bool _showIndicators = true;
         [DefaultValue(true)]
         public bool ShowIndicators
@@ -514,8 +402,70 @@ namespace Genesis.Ambience.Controls
                 invalidateView();
             }
         }
+        #endregion
+        #endregion
+        #endregion
 
-        void _view_Paint(object sender, PaintEventArgs e)
+        #region Event Handlers
+        #region ScheduleView
+        private void ScheduleView_Load(object sender, EventArgs e)
+        {
+            updateScrollBars();
+        }
+
+        private void ScheduleView_Invalidated(object sender, InvalidateEventArgs e)
+        {
+            invalidateView();
+        }
+        #endregion
+
+        #region _sched
+        private void _sched_Finished(EventSchedule sched)
+        {
+            _curIndex = -1;
+            invalidateView();
+        }
+
+        private void _sched_Started(EventSchedule sched)
+        {
+            _curIndex = 0;
+            invalidateView();
+        }
+
+        private void _sched_Tick(EventSchedule sched, ulong newTimeCode)
+        {
+            EventToken[] curTokens = GetInstantTokens((int)newTimeCode);
+            for (int col = _curIndex; col < (int)newTimeCode; col++)
+            {
+                EventToken[] tokens = GetInstantTokens(col);
+                for (int row = 0; row < tokens.Length; row++)
+                {
+                    EventToken token = tokens[row];
+                    if (token != null && token.Event != null && curTokens[row] != token)
+                        token.Finish();
+                }
+            }
+
+            bool wasVisible = indexIsVisible(_curIndex);
+            _curIndex = (int)newTimeCode;
+            if (wasVisible && !indexIsVisible(_curIndex))
+            {
+                LeftColumn = Math.Min(_curIndex, ColumnCount - FullDisplayedColumnCount + 1);
+            }
+            else
+            {
+                invalidateView();
+            }
+        }
+
+        private void _sched_ScheduleExtended(EventSchedule sched)
+        {
+            updateHistory();
+        }
+        #endregion
+
+        #region _view
+        private void _view_Paint(object sender, PaintEventArgs e)
         {
             if (DesignMode)
                 drawTable(e.Graphics);
@@ -528,11 +478,179 @@ namespace Genesis.Ambience.Controls
             }
         }
 
+        private void _view_MouseLeave(object sender, EventArgs e)
+        {
+            int row, col;
+            if (!getVisibleCell(_lastMousePos, out col, out row))
+                row = -1;
+            EventToken[] origCol = GetInstantTokens(col);
+            EventToken cell = (row >= 0 && row < origCol.Length) ? origCol[row] : null;
+
+            if (cell != null && TokenMouseLeave != null)
+            {
+                Point pt = new Point(_lastMousePos.X, _lastMousePos.Y);
+                TokenMouseLeave(cell, _view, pt);
+            }
+        }
+
+        private void _view_MouseClick(object sender, MouseEventArgs e)
+        {
+            int row, col;
+            if (!getVisibleCell(e.Location, out col, out row))
+                row = -1;
+            EventToken[] origCol = GetInstantTokens(col);
+            EventToken orig = (row >= 0 && row < origCol.Length) ? origCol[row] : null;
+
+            if (orig != null && TokenMouseClick != null)
+            {
+                Point pt = new Point(e.Location.X, e.Location.Y);
+                TokenMouseClick(orig, _view, pt);
+            }
+        }
+
+        private void _view_MouseMove(object sender, MouseEventArgs e)
+        {
+            int row, col;
+            if (!getVisibleCell(_lastMousePos, out col, out row))
+                row = -1;
+            EventToken[] origCol = GetInstantTokens(col);
+            EventToken orig = (row >= 0 && row < origCol.Length) ? origCol[row] : null;
+
+            _lastMousePos.X = e.Location.X;
+            _lastMousePos.Y = e.Location.Y;
+
+            if (!getVisibleCell(_lastMousePos, out col, out row))
+                row = -1;
+            EventToken[] nextCol = GetInstantTokens(col);
+            EventToken next = (row >= 0 && row < nextCol.Length) ? nextCol[row] : null;
+
+            if (orig != next)
+            {
+                if (orig != null && TokenMouseLeave != null)
+                {
+                    Point pt1 = new Point(e.Location.X, e.Location.Y);
+                    TokenMouseLeave(orig, _view, pt1);
+                }
+                if (next != null && TokenMouseEnter != null)
+                {
+                    Point pt2 = new Point(e.Location.X, e.Location.Y);
+                    TokenMouseEnter(next, _view, pt2);
+                }
+            }
+        }
+
+        private void _view_MouseHover(object sender, EventArgs e)
+        {
+            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
+            bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
+            int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
+            int yTop = rowHangOver ? (ViewRectangle.Height - TrueScaleHeight - DisplayedRowCount * _rowHeight) : 0;
+            int colOffset = colHangOver ? -1 : 0;
+            int rowOffset = rowHangOver ? -1 : 0;
+
+            int col = LeftColumn + colOffset + (_lastMousePos.X - xLeft) / ColumnWidth;
+            int row = TopRow + rowOffset + (_lastMousePos.Y - TrueScaleHeight - yTop) / RowHeight;
+            EventToken[] origCol = GetInstantTokens(col);
+            EventToken orig = (row < origCol.Length) ? origCol[row] : null;
+
+            if (orig != null && TokenMouseHover != null)
+            {
+                Point pt = new Point(_lastMousePos.X, _lastMousePos.Y);
+                TokenMouseHover(orig, _view, pt);
+            }
+        }
+        #endregion
+
+        #region Scrollbars
+        private void _vScroll_ValueChanged(object sender, EventArgs e)
+        {
+            if (!_updatingScroll)
+            {
+                TopRow = _vScroll.Value;
+                invalidateView();
+            }
+        }
+
+        private void _hScroll_ValueChanged(object sender, EventArgs e)
+        {
+            if (!_updatingScroll)
+            {
+                LeftColumn = _hScroll.Value;
+                invalidateView();
+            }
+        }
+        #endregion
+        #endregion
+
+        #region Private Helpers
+        #region Properties
+        private int TrueScaleHeight
+        {
+            get { return ShowScale ? ScaleHeight : 0; }
+        }
+
         private Rectangle ViewRectangle
         {
             get { return _view.DisplayRectangle; }
         }
+        #endregion
 
+        #region Scrollbars
+        private void hScrollUpdate(int val)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<int>(hScrollUpdate), val);
+            else
+                _hScroll.Value = val;
+        }
+
+        private void vScrollUpdate(int val)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<int>(vScrollUpdate), val);
+            else
+                _vScroll.Value = val;
+        }
+
+        private void updateScrollBars()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(updateScrollBars));
+                return;
+            }
+
+            _updatingScroll = true;
+            if (_sched == null)
+            {
+                _vScroll.Visible = false;
+                _hScroll.Minimum = 0;
+                _hScroll.Maximum = 0;
+                TopRow = 0;
+                LeftColumn = 0;
+            }
+            else
+            {
+                _vScroll.Visible = (ActualDisplayedRowCount < RowCount);
+                if (_vScroll.Visible)
+                {
+                    _vScroll.Minimum = 0;
+                    _vScroll.Maximum = RowCount - 1;
+                    _vScroll.LargeChange = FullDisplayedRowCount;
+                    _vScroll.Value = TopRow;
+                }
+                _hScroll.Minimum = 0;
+                _hScroll.Maximum = ColumnCount - 1;
+                _hScroll.LargeChange = FullDisplayedColumnCount;
+                _hScroll.Value = LeftColumn;
+            }
+            _updatingScroll = false;
+
+            invalidateView();
+        }
+        #endregion
+
+        #region Drawing
         private void drawTable(Graphics gc)
         {
             gc.FillRectangle(_bg, ViewRectangle);
@@ -708,50 +826,9 @@ namespace Genesis.Ambience.Controls
                 token.IsHighlighted ? _fontHighlight : _fontColor,
                 new RectangleF(x1 + 2, y1 + 2, _colWidth - 4, _rowHeight - 4));
         }
+        #endregion
 
-        private bool _updatingScroll = false;
-        private void updateScrollBars()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new MethodInvoker(updateScrollBars));
-                return;
-            }
-
-            _updatingScroll = true;
-            if (_sched == null)
-            {
-                _vScroll.Visible = false;
-                _hScroll.Minimum = 0;
-                _hScroll.Maximum = 0;
-                TopRow = 0;
-                LeftColumn = 0;
-            }
-            else
-            {
-                _vScroll.Visible = (ActualDisplayedRowCount < RowCount);
-                if (_vScroll.Visible)
-                {
-                    _vScroll.Minimum = 0;
-                    _vScroll.Maximum = RowCount - 1;
-                    _vScroll.LargeChange = FullDisplayedRowCount;
-                    _vScroll.Value = TopRow;
-                }
-                _hScroll.Minimum = 0;
-                _hScroll.Maximum = ColumnCount - 1;
-                _hScroll.LargeChange = FullDisplayedColumnCount;
-                _hScroll.Value = LeftColumn;
-            }
-            _updatingScroll = false;
-
-            invalidateView();
-        }
-
-        private void ScheduleView_Load(object sender, EventArgs e)
-        {
-            updateScrollBars();
-        }
-
+        #region Accessors
         private EventToken[] GetInstantTokens(int index)
         {
             var lessKeys = _history.Keys.Where((k) => (k <= index));
@@ -768,6 +845,23 @@ namespace Genesis.Ambience.Controls
             return result;
         }
 
+        private bool getVisibleCell(Point loc, out int col, out int row)
+        {
+            bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
+            bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
+            int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
+            int yTop = rowHangOver ? (ViewRectangle.Height - TrueScaleHeight - DisplayedRowCount * _rowHeight) : 0;
+            int colOffset = colHangOver ? -1 : 0;
+            int rowOffset = rowHangOver ? -1 : 0;
+
+            col = LeftColumn + colOffset + (loc.X - xLeft) / ColumnWidth;
+            row = TopRow + rowOffset + (loc.Y - TrueScaleHeight - yTop) / RowHeight;
+
+            return (loc.Y >= TrueScaleHeight);
+        }
+        #endregion
+
+        #region Operations
         private void updateHistory()
         {
             ulong curTime;
@@ -833,11 +927,6 @@ namespace Genesis.Ambience.Controls
             }
         }
 
-        private bool indexIsVisible(int index)
-        {
-            return (index >= LeftColumn && index - LeftColumn < FullDisplayedColumnCount);
-        }
-
         private void invalidateView()
         {
             if (InvokeRequired)
@@ -845,5 +934,14 @@ namespace Genesis.Ambience.Controls
             else
                 _view.Invalidate();
         }
+        #endregion
+
+        #region Flags
+        private bool indexIsVisible(int index)
+        {
+            return (index >= LeftColumn && index - LeftColumn < FullDisplayedColumnCount);
+        }
+        #endregion
+        #endregion
     }
 }
