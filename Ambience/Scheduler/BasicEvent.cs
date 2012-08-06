@@ -9,7 +9,7 @@ namespace Genesis.Ambience.Scheduler
             public class Instance : AEventProviderInstance<Provider>
             {
                 public Instance(Provider parent)
-                    : base(parent)
+                    : base(parent, parent)
                 {
                 }
 

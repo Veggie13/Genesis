@@ -31,10 +31,14 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.scheduleView1 = new Genesis.Ambience.Controls.ScheduleView();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.providerTokenList1 = new Genesis.Ambience.Controls.ProviderTokenList();
+            this.eventTokenTile2 = new Genesis.Ambience.Controls.ProviderTokenTile();
+            this.eventTokenTile1 = new Genesis.Ambience.Controls.ProviderTokenTile();
+            this.scheduleView1 = new Genesis.Ambience.Controls.ScheduleView();
             this.SuspendLayout();
             // 
             // button1
@@ -66,17 +70,6 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "label1";
             // 
-            // scheduleView1
-            // 
-            this.scheduleView1.ColorProvider = null;
-            this.scheduleView1.Location = new System.Drawing.Point(12, 12);
-            this.scheduleView1.Name = "scheduleView1";
-            this.scheduleView1.RowHeight = 35;
-            this.scheduleView1.Schedule = null;
-            this.scheduleView1.ShowScale = true;
-            this.scheduleView1.Size = new System.Drawing.Size(529, 85);
-            this.scheduleView1.TabIndex = 0;
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -104,11 +97,69 @@
             this.label4.TabIndex = 6;
             this.label4.Text = "label4";
             // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(423, 123);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox1.Size = new System.Drawing.Size(348, 181);
+            this.textBox1.TabIndex = 10;
+            // 
+            // providerTokenList1
+            // 
+            this.providerTokenList1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.providerTokenList1.ColorProvider = null;
+            this.providerTokenList1.Location = new System.Drawing.Point(56, 332);
+            this.providerTokenList1.Name = "providerTokenList1";
+            this.providerTokenList1.Size = new System.Drawing.Size(715, 94);
+            this.providerTokenList1.TabIndex = 9;
+            this.providerTokenList1.UseHoverScroll = true;
+            this.providerTokenList1.ViewOrientation = Genesis.Ambience.Controls.ProviderTokenList.Orientation.Horizontal;
+            // 
+            // eventTokenTile2
+            // 
+            this.eventTokenTile2.AllowDrop = true;
+            this.eventTokenTile2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.eventTokenTile2.Location = new System.Drawing.Point(280, 169);
+            this.eventTokenTile2.Name = "eventTokenTile2";
+            this.eventTokenTile2.Padding = new System.Windows.Forms.Padding(2);
+            this.eventTokenTile2.Size = new System.Drawing.Size(137, 88);
+            this.eventTokenTile2.TabIndex = 8;
+            this.eventTokenTile2.Token = null;
+            this.eventTokenTile2.TokenFont = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Bold);
+            // 
+            // eventTokenTile1
+            // 
+            this.eventTokenTile1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.eventTokenTile1.Location = new System.Drawing.Point(159, 169);
+            this.eventTokenTile1.Name = "eventTokenTile1";
+            this.eventTokenTile1.Padding = new System.Windows.Forms.Padding(2);
+            this.eventTokenTile1.Size = new System.Drawing.Size(115, 59);
+            this.eventTokenTile1.TabIndex = 7;
+            this.eventTokenTile1.Token = null;
+            this.eventTokenTile1.TokenFont = new System.Drawing.Font("Arial", 8F, System.Drawing.FontStyle.Bold);
+            // 
+            // scheduleView1
+            // 
+            this.scheduleView1.ColorProvider = null;
+            this.scheduleView1.Location = new System.Drawing.Point(12, 12);
+            this.scheduleView1.Name = "scheduleView1";
+            this.scheduleView1.RowHeight = 35;
+            this.scheduleView1.Schedule = null;
+            this.scheduleView1.ShowScale = true;
+            this.scheduleView1.Size = new System.Drawing.Size(529, 85);
+            this.scheduleView1.TabIndex = 0;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(669, 273);
+            this.ClientSize = new System.Drawing.Size(805, 471);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.providerTokenList1);
+            this.Controls.Add(this.eventTokenTile2);
+            this.Controls.Add(this.eventTokenTile1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -132,6 +183,10 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
+        private Genesis.Ambience.Controls.ProviderTokenTile eventTokenTile1;
+        private Genesis.Ambience.Controls.ProviderTokenTile eventTokenTile2;
+        private Genesis.Ambience.Controls.ProviderTokenList providerTokenList1;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

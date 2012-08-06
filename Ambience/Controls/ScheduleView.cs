@@ -28,6 +28,7 @@ namespace Genesis.Ambience.Controls
             _view.Paint += new PaintEventHandler(_view_Paint);
             _view.MouseHover += new EventHandler(_view_MouseHover);
             _view.MouseMove += new MouseEventHandler(_view_MouseMove);
+            _view.MouseEnter += new EventHandler(_view_MouseEnter);
             _view.MouseLeave += new EventHandler(_view_MouseLeave);
             _view.MouseClick += new MouseEventHandler(_view_MouseClick);
 
@@ -551,6 +552,23 @@ namespace Genesis.Ambience.Controls
                 drawTokens(e.Graphics);
                 if (ShowIndicators)
                     drawIndicators(e.Graphics);
+            }
+        }
+
+        private void _view_MouseEnter(object sender, EventArgs e)
+        {
+            _lastMousePos = _view.PointToClient(Cursor.Position);
+
+            int row, col;
+            if (!getVisibleCell(_lastMousePos, out col, out row))
+                row = -1;
+            EventToken[] origCol = GetInstantTokens(col);
+            EventToken cell = (row >= 0 && row < origCol.Length) ? origCol[row] : null;
+
+            if (cell != null && TokenMouseEnter != null)
+            {
+                Point pt = new Point(_lastMousePos.X, _lastMousePos.Y);
+                TokenMouseEnter(cell, _view, pt);
             }
         }
 

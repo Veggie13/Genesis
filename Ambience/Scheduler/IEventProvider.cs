@@ -42,12 +42,12 @@ namespace Genesis.Ambience.Scheduler
 
     public abstract class AEventProviderInstance<T> : IEventProviderInstance where T : IEventProvider
     {
-        public AEventProviderInstance(T parent)
+        /*public AEventProviderInstance(T parent)
         {
             if (parent == null)
                 throw new ArgumentNullException("parent");
             _parent = parent;
-        }
+        }*/
 
         public AEventProviderInstance(T parent, IEventProvider src)
         {

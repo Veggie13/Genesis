@@ -13,7 +13,7 @@ namespace Genesis.Ambience.Scheduler
             private ulong _nextPoint, _currBase = 0;
 
             public Instance(PeriodicEventProvider parent)
-                : base(parent)
+                : base(parent, parent)
             {
                 ChooseNextPoint();
             }

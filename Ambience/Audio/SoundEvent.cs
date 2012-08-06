@@ -15,7 +15,7 @@ namespace Genesis.Ambience.Audio
             public class Instance : AEventProviderInstance<Provider>
             {
                 public Instance(Provider parent)
-                    : base(parent)
+                    : base(parent, parent)
                 {
                 }
 

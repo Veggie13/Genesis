@@ -43,6 +43,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventToken.cs" />
+    <Compile Include="ProviderToken.cs" />
+    <Compile Include="ProviderTokenList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProviderTokenList.Designer.cs">
+      <DependentUpon>ProviderTokenList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProviderTokenTile.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProviderTokenTile.Designer.cs">
+      <DependentUpon>ProviderTokenTile.cs</DependentUpon>
+    </Compile>
     <Compile Include="IEventColorProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScheduleView.cs">
@@ -60,6 +73,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ProviderTokenList.resx">
+      <DependentUpon>ProviderTokenList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProviderTokenTile.resx">
+      <DependentUpon>ProviderTokenTile.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ScheduleView.resx">
       <DependentUpon>ScheduleView.cs</DependentUpon>
     </EmbeddedResource>

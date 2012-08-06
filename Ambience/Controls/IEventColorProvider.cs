@@ -10,5 +10,6 @@ namespace Genesis.Ambience.Controls
     public interface IEventColorProvider
     {
         Color this[IScheduleEvent evt] { get; }
+        Color this[IEventProvider prov] { get; }
     }
 }

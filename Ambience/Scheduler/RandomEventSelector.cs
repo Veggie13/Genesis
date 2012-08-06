@@ -4,8 +4,31 @@ using System.Text;
 
 namespace Genesis.Ambience.Scheduler
 {
-    public class RandomEventSelector : AEventProvider, IEventProviderInstance
+    public class RandomEventSelector : AEventProvider
     {
+        public class Instance : AEventProviderInstance<RandomEventSelector>
+        {
+            public Instance(RandomEventSelector parent)
+                : base(parent, parent)
+            {
+            }
+
+            public Instance(RandomEventSelector parent, IEventProvider src)
+                : base(parent, src)
+            {
+            }
+
+            public override bool Next(IEventScheduler sched, ulong currTimeCode, ulong span)
+            {
+                if (_parent.Selection.Count == 0)
+                    return false;
+
+                int sel = Rand.Next(_parent.Selection.Count);
+                sched.AddProvider(_parent.Selection[sel].CreateInstance(this.Source), currTimeCode);
+                return true;
+            }
+        }
+
         private static readonly Random Rand = new Random();
 
         public RandomEventSelector(string name) : base(name) { }
@@ -25,37 +48,12 @@ namespace Genesis.Ambience.Scheduler
 
         public override IEventProviderInstance CreateInstance()
         {
-            return this;
+            return new Instance(this);
         }
 
         public override IEventProviderInstance CreateInstance(IEventProvider src)
         {
-            return this;
-        }
-
-        #endregion
-
-        #region IEventProviderInstance Members
-
-        public bool Next(IEventScheduler sched, ulong currTimeCode, ulong span)
-        {
-            if (_selection == null || _selection.Count == 0)
-                return false;
-
-            int sel = Rand.Next(_selection.Count);
-            sched.AddProvider(_selection[sel].CreateInstance(), currTimeCode);
-            return true;
-        }
-
-        public IEventProvider Model
-        {
-            get { return this; }
-        }
-
-        private IEventProvider _src;
-        public IEventProvider Source
-        {
-            get { return (_src == null) ? Model : _src; }
+            return new Instance(this, src);
         }
 
         #endregion
