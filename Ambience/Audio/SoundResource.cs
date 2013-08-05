@@ -58,7 +58,7 @@ namespace Genesis.Ambience.Audio
             }
         }
 
-        public void Init()
+        internal void init()
         {
             _manager.syncAction(() =>
             {

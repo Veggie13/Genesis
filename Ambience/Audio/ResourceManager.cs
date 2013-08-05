@@ -15,7 +15,8 @@ namespace Genesis.Ambience.Audio
 
         public void LoadLibrary(string path)
         {
-            _libs[path] = new FileSystemLibrary(path);
+            ILibrary lib = new FileSystemLibrary(path);
+            _libs[lib.Name] = lib;
         }
 
         public void UnloadLibrary(string path)
@@ -64,7 +65,7 @@ namespace Genesis.Ambience.Audio
                 return;
             }
 
-            string name = resName;
+            string name = resName.ToLower();
             lib = _libs.Where(p => p.Value.Sounds.Contains(name)).Select(p => p.Value).FirstOrDefault();
             if (lib == null)
                 throw new ArgumentException("name");
@@ -78,7 +79,7 @@ namespace Genesis.Ambience.Audio
             syncAction(() =>
             {
                 b.res = new SoundResource(mgr, lib.OpenStream(resName), lib.FileFormat(resName));
-                b.res.Init();
+                b.res.init();
                 signal.Set();
             });
             signal.WaitOne();

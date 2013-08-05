@@ -87,7 +87,6 @@ namespace Genesis.Ambience.Audio
             _length = (ulong)Math.Ceiling(res.Length * (double)timePerSecond);
             if (_length < 1)
                 _length = 1;
-            res.Init();
         }
 
         private void PlaybackFinished()

@@ -26,24 +26,24 @@ namespace Genesis.Ambience.Audio
         
         public FileSystemLibrary(string path)
         {
-            string subpath = path;
-            if (Directory.Exists(path))
+            string subpath = System.IO.Path.GetFullPath(path);
+            if (Directory.Exists(subpath))
             {
                 _location = new DirectoryInfo(subpath);
 
                 _files = new Dictionary<string, FileInfo>();
                 FileInfo[] allFiles = _location.GetFiles("*", SearchOption.AllDirectories);
-                foreach (var file in allFiles.Where(fi => fi.Extension.Equals(".wav") || fi.Extension.Equals(".mp3")))
+                foreach (var file in allFiles.Where(fi => fi.Extension.ToLower().Equals(".wav") || fi.Extension.ToLower().Equals(".mp3")))
                 {
                     //StringBuilder relpath = new StringBuilder();
                     //PathRelativePathTo(relpath, subpath, FileAttributes.Directory, file.FullName, 0);
 
-                    _files[file.Name] = file;
+                    _files[file.Name.ToLower()] = file;
                 }
 
                 _name = _location.Name;
             }
-            else if (File.Exists(path))
+            else if (File.Exists(subpath))
             {
                 _location = new FileInfo(path).Directory;
 
@@ -80,6 +80,7 @@ namespace Genesis.Ambience.Audio
 
         public System.IO.Stream OpenStream(string name)
         {
+            name = name.ToLower();
             if (!_files.ContainsKey(name))
                 throw new ArgumentException("name");
 
@@ -90,6 +91,7 @@ namespace Genesis.Ambience.Audio
 
         public Format FileFormat(string name)
         {
+            name = name.ToLower();
             if (!_files.ContainsKey(name))
                 throw new ArgumentException("name");
 
