@@ -31,12 +31,15 @@ namespace SchedulerTest
 
         void giver()
         {
+            ResourceManager manager = new ResourceManager();
+            manager.LoadLibrary(@"E:\Media");
+            
             EventSchedule sched = new EventSchedule(32);
             sched.TicksPerSec = 1;
 
             //BasicEvent.Provider prov = new BasicEvent.Provider();
-            SoundEvent.Provider prov1 = new SoundEvent.Provider("Chord", @"C:\Windows\Media\chord.wav");
-            SoundEvent.Provider prov2 = new SoundEvent.Provider("Ding", @"C:\Windows\Media\ding.wav");
+            SoundEvent.Provider prov1 = new SoundEvent.Provider("Chord", manager, "chord.wav");
+            SoundEvent.Provider prov2 = new SoundEvent.Provider("Ding", manager, "ding.wav");
             /*RandomEventSelector rnd = new RandomEventSelector();
             rnd.Selection.Add(prov1);
             rnd.Selection.Add(prov2);

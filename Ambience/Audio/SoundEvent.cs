@@ -12,6 +12,8 @@ namespace Genesis.Ambience.Audio
     {
         public class Provider : AEventProvider
         {
+            private ResourceManager _manager;
+
             public class Instance : AEventProviderInstance<Provider>
             {
                 public Instance(Provider parent)
@@ -31,16 +33,17 @@ namespace Genesis.Ambience.Audio
                 }
             }
 
-            public Provider(string name, string filename)
+            public Provider(string name, ResourceManager mgr, string resName)
                 : base(name)
             {
-                _filename = filename;
+                ResourceName = resName;
+                _manager = mgr;
             }
 
-            private string _filename;
-            public string Filename
+            public string ResourceName
             {
-                get { return _filename; }
+                get;
+                private set;
             }
 
             #region IEventProvider Members
@@ -65,48 +68,29 @@ namespace Genesis.Ambience.Audio
             private List<SoundEvent> _all = new List<SoundEvent>();
             private SoundEvent CreateEvent(uint timePerSecond)
             {
-                WaveStream reader;
-                if (_filename.EndsWith(".mp3"))
-                {
-                    Mp3FileReader mp3 = new Mp3FileReader(_filename);
-                    reader = mp3;
-                }
-                else if (_filename.EndsWith(".wav"))
-                {
-                    WaveFileReader wav = new WaveFileReader(_filename);
-                    reader = wav;
-                }
-                else
-                {
-                    throw new InvalidOperationException("Unsupported extension.");
-                }
-
-                SoundEvent evt = new SoundEvent(this, reader, timePerSecond);
+                var res = _manager.GetResource(ResourceName);
+                SoundEvent evt = new SoundEvent(this, res, timePerSecond);
                 _all.Add(evt);
                 return evt;
             }
         }
 
-        private WaveStream _reader;
-        private WaveChannel32 _stream;
-        private IWavePlayer _wavDevice = new WaveOut();
+        private SoundResource _resource;
         private static int s_next = 1;
         private int _id = s_next++;
         
-        public SoundEvent(Provider src, WaveStream wav, uint timePerSecond)
+        public SoundEvent(Provider src, SoundResource res, uint timePerSecond)
         {
             Console.WriteLine("{0} created", _id);
             _source = src;
-            _reader = wav;
-            _stream = new WaveChannel32(wav);
-            _stream.PadWithZeroes = false;
-            _length = (ulong)Math.Ceiling(_stream.TotalTime.TotalSeconds * (double)timePerSecond);
+            _resource = res;
+            _length = (ulong)Math.Ceiling(res.Length * (double)timePerSecond);
             if (_length < 1)
                 _length = 1;
-            _wavDevice.Init(_stream);
+            res.Init();
         }
 
-        private void PlaybackFinished(object sender, EventArgs e)
+        private void PlaybackFinished()
         {
             _active = false;
         }
@@ -125,10 +109,9 @@ namespace Genesis.Ambience.Audio
             get { return _active; }
         }
 
-        private string _name = "";
         public string Name
         {
-            get { return _name; }
+            get { return _source.Name; }
         }
 
         private Provider _source;
@@ -141,8 +124,8 @@ namespace Genesis.Ambience.Audio
         {
             //Console.WriteLine("Event started");
             _active = true;
-            _wavDevice.PlaybackStopped += new EventHandler(PlaybackFinished);
-            _wavDevice.Play();
+            _resource.PlaybackStopped += PlaybackFinished;
+            _resource.Play();
         }
 
         public void Update()
@@ -153,11 +136,9 @@ namespace Genesis.Ambience.Audio
         public void Stop()
         {
             //Console.WriteLine("Event Stopped");
-            _wavDevice.Stop();
+            _resource.PlaybackStopped -= PlaybackFinished;
+            _resource.Stop();
             Console.WriteLine("{0} disposed", _id);
-            _wavDevice.Dispose();
-            _stream.Close();
-            _reader.Close();
         }
 
         #endregion
@@ -165,9 +146,6 @@ namespace Genesis.Ambience.Audio
         #region IDisposable Members
         public void Dispose()
         {
-            _wavDevice.Dispose();
-            _stream.Close();
-            _reader.Close();
         }
         #endregion
     }

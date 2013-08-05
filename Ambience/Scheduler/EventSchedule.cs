@@ -461,6 +461,7 @@ namespace Genesis.Ambience.Scheduler
         #region IDisposable Members
         public void Dispose()
         {
+            Stop();
             foreach (IScheduleEvent evt in _active)
                 evt.Dispose();
             foreach (IScheduleEvent evt in _waiting)
