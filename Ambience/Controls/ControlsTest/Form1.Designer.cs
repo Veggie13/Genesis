@@ -34,7 +34,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.providerTokenList1 = new Genesis.Ambience.Controls.ProviderTokenList();
             this.eventTokenTile2 = new Genesis.Ambience.Controls.ProviderTokenTile();
             this.eventTokenTile1 = new Genesis.Ambience.Controls.ProviderTokenTile();
@@ -43,7 +42,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(56, 123);
+            this.button1.Location = new System.Drawing.Point(173, 171);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 1;
@@ -53,7 +52,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(78, 169);
+            this.button2.Location = new System.Drawing.Point(254, 171);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
@@ -64,7 +63,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(294, 104);
+            this.label1.Location = new System.Drawing.Point(621, 100);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 3;
@@ -91,20 +90,11 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(294, 128);
+            this.label4.Location = new System.Drawing.Point(621, 131);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(35, 13);
             this.label4.TabIndex = 6;
             this.label4.Text = "label4";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(423, 123);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(348, 181);
-            this.textBox1.TabIndex = 10;
             // 
             // providerTokenList1
             // 
@@ -121,7 +111,7 @@
             // 
             this.eventTokenTile2.AllowDrop = true;
             this.eventTokenTile2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.eventTokenTile2.Location = new System.Drawing.Point(280, 169);
+            this.eventTokenTile2.Location = new System.Drawing.Point(456, 171);
             this.eventTokenTile2.Name = "eventTokenTile2";
             this.eventTokenTile2.Padding = new System.Windows.Forms.Padding(2);
             this.eventTokenTile2.Size = new System.Drawing.Size(137, 88);
@@ -132,7 +122,7 @@
             // eventTokenTile1
             // 
             this.eventTokenTile1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.eventTokenTile1.Location = new System.Drawing.Point(159, 169);
+            this.eventTokenTile1.Location = new System.Drawing.Point(335, 171);
             this.eventTokenTile1.Name = "eventTokenTile1";
             this.eventTokenTile1.Padding = new System.Windows.Forms.Padding(2);
             this.eventTokenTile1.Size = new System.Drawing.Size(115, 59);
@@ -148,7 +138,7 @@
             this.scheduleView1.RowHeight = 35;
             this.scheduleView1.Schedule = null;
             this.scheduleView1.ShowScale = true;
-            this.scheduleView1.Size = new System.Drawing.Size(529, 85);
+            this.scheduleView1.Size = new System.Drawing.Size(529, 153);
             this.scheduleView1.TabIndex = 0;
             // 
             // Form1
@@ -156,7 +146,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(805, 471);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.providerTokenList1);
             this.Controls.Add(this.eventTokenTile2);
             this.Controls.Add(this.eventTokenTile1);
@@ -186,7 +175,6 @@
         private Genesis.Ambience.Controls.ProviderTokenTile eventTokenTile1;
         private Genesis.Ambience.Controls.ProviderTokenTile eventTokenTile2;
         private Genesis.Ambience.Controls.ProviderTokenList providerTokenList1;
-        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

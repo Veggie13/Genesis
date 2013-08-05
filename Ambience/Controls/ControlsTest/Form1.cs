@@ -16,34 +16,50 @@ namespace ControlsTest
     public partial class Form1 : Form, IEventColorProvider
     {
         private EventSchedule _sched;
+        private ResourceManager _manager;
         private Dictionary<IEventProvider, Color> _colors = new Dictionary<IEventProvider, Color>();
 
         public Form1()
         {
             InitializeComponent();
 
+            _manager = new ResourceManager();
+            _manager.LoadLibrary(@"E:\Media");
+            _manager.Start();
+
             _sched = new EventSchedule(32);
             _sched.TicksPerSec = 2;
 
-            BasicEvent.Provider prov1 = new BasicEvent.Provider("Chord");
-            BasicEvent.Provider prov2 = new BasicEvent.Provider("Ding");
-            //SoundEvent.Provider prov1 = new SoundEvent.Provider("Chord", @"C:\Windows\Media\chord.wav");
-            //SoundEvent.Provider prov2 = new SoundEvent.Provider("Ding", @"C:\Windows\Media\ding.wav");
+            //BasicEvent.Provider prov1 = new BasicEvent.Provider("Chord");
+            //BasicEvent.Provider prov2 = new BasicEvent.Provider("Ding");
+            SoundEvent.Provider prov1 = new SoundEvent.Provider("Chord", _manager, "chord.wav");
+            SoundEvent.Provider prov2 = new SoundEvent.Provider("Ding", _manager, "krkfunny.WAV");
             PeriodicEventProvider per1 = new PeriodicEventProvider("Period");
-            SimultaneousEventProvider sim2 = new SimultaneousEventProvider("Simul");
+            //SimultaneousEventProvider sim2 = new SimultaneousEventProvider("Simul");
+            PeriodicEventProvider per2 = new PeriodicEventProvider("Period2");
+            DelayEventProvider del1 = new DelayEventProvider("Delay1");
 
-            sim2.Group.Add(prov1);
-            sim2.Group.Add(prov2);
+            //sim2.Group.Add(prov1);
+            //sim2.Group.Add(prov2);
             
-            per1.Subordinate = sim2;
+            per1.Subordinate = prov1;
             per1.Period = 4;
+
+            per2.Subordinate = prov2;
+            per2.Period = 5;
+
+            del1.Subordinate = prov2;
+            del1.Delay = 5;
 
             _colors[per1] = Color.Red;
             _colors[prov2] = Color.Orange;
             _colors[prov1] = Color.Green;
 
             _sched.Initialize();
+            _sched.AddProvider(prov2);
             _sched.AddProvider(per1);
+            //_sched.AddProvider(del1);
+            _sched.AddProvider(per2);
             //_sched.AddProvider(prov2);
 
             scheduleView1.ColorProvider = this;
@@ -59,7 +75,7 @@ namespace ControlsTest
             providerTokenList1.Items.Add(prov1);
             providerTokenList1.Items.Add(prov2);
             providerTokenList1.Items.Add(per1);
-            providerTokenList1.Items.Add(sim2);
+            providerTokenList1.Items.Add(per2);
             providerTokenList1.Items.Add(new BasicEvent.Provider("A"));
             providerTokenList1.Items.Add(new BasicEvent.Provider("B"));
             providerTokenList1.Items.Add(new BasicEvent.Provider("C"));
@@ -118,6 +134,8 @@ namespace ControlsTest
         {
             _sched.Dispose();
             _sched = null;
+
+            _manager.Stop();
         }
 
         void scheduleView1_TokenMouseLeave(EventToken token, Control sender, Point loc)
