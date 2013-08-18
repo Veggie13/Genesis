@@ -18,6 +18,7 @@ namespace Genesis.Ambience.Controls
         private int _curIndex = -1;
         private Point _lastMousePos = new Point();
         private bool _updatingScroll = false;
+        private Bitmap _drawingBuffer;
         #endregion
 
         #region Constructor
@@ -31,11 +32,15 @@ namespace Genesis.Ambience.Controls
             _view.MouseEnter += new EventHandler(_view_MouseEnter);
             _view.MouseLeave += new EventHandler(_view_MouseLeave);
             _view.MouseClick += new MouseEventHandler(_view_MouseClick);
+            _view.Resize += new EventHandler(_view_Resize);
 
             _hScroll.ValueChanged += new EventHandler(_hScroll_ValueChanged);
             _vScroll.ValueChanged += new EventHandler(_vScroll_ValueChanged);
 
             this.Invalidated += new InvalidateEventHandler(ScheduleView_Invalidated);
+
+            // Set defaults
+            this.UseDrawingBuffer = DefaultUseDrawingBuffer;
 
             this.SetStyle(ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
             this.DoubleBuffered = true;
@@ -481,6 +486,16 @@ namespace Genesis.Ambience.Controls
         }
         #endregion
         #endregion
+
+        #region UseDrawingBuffer
+        private const bool DefaultUseDrawingBuffer = true;
+        [DefaultValue(DefaultUseDrawingBuffer)]
+        public bool UseDrawingBuffer
+        {
+            get;
+            set;
+        }
+        #endregion
         #endregion
 
         #region Event Handlers
@@ -488,6 +503,8 @@ namespace Genesis.Ambience.Controls
         private void ScheduleView_Load(object sender, EventArgs e)
         {
             updateScrollBars();
+
+
         }
 
         private void ScheduleView_Invalidated(object sender, InvalidateEventArgs e)
@@ -544,14 +561,21 @@ namespace Genesis.Ambience.Controls
         #region _view
         private void _view_Paint(object sender, PaintEventArgs e)
         {
+            Graphics g = UseDrawingBuffer ? Graphics.FromImage(_drawingBuffer) : e.Graphics;
+
             if (DesignMode)
-                drawTable(e.Graphics);
+                drawTable(g);
             else if (_sched != null)
             {
-                drawTable(e.Graphics);
-                drawTokens(e.Graphics);
+                drawTable(g);
+                drawTokens(g);
                 if (ShowIndicators)
-                    drawIndicators(e.Graphics);
+                    drawIndicators(g);
+            }
+
+            if (UseDrawingBuffer)
+            {
+                e.Graphics.DrawImage(_drawingBuffer, 0, 0);
             }
         }
 
@@ -652,6 +676,12 @@ namespace Genesis.Ambience.Controls
                 Point pt = new Point(_lastMousePos.X, _lastMousePos.Y);
                 TokenMouseHover(orig, _view, pt);
             }
+        }
+
+        private void _view_Resize(object sender, EventArgs e)
+        {
+            if (UseDrawingBuffer)
+                resizeDrawingBuffer();
         }
         #endregion
 
@@ -948,6 +978,11 @@ namespace Genesis.Ambience.Controls
             gc.DrawString(text, (continued ? _italic : _bold),
                 token.IsHighlighted ? _fontHighlight : _fontColor,
                 new RectangleF(x1 + 2, y1 + 2, _colWidth - 4, _rowHeight - 4));
+        }
+
+        private void resizeDrawingBuffer()
+        {
+            _drawingBuffer = new Bitmap(_view.DisplayRectangle.Width, _view.DisplayRectangle.Height);
         }
         #endregion
 
