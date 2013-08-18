@@ -48,6 +48,18 @@
     <Compile Include="AEventControl.Designer.cs">
       <DependentUpon>AEventControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SimultaneousEventControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SimultaneousEventControl.Designer.cs">
+      <DependentUpon>SimultaneousEventControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SequentialEventControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SequentialEventControl.Designer.cs">
+      <DependentUpon>SequentialEventControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="DelayEventControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -118,6 +130,14 @@
   <ItemGroup>
     <EmbeddedResource Include="AEventControl.resx">
       <DependentUpon>AEventControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SimultaneousEventControl.resx">
+      <DependentUpon>SimultaneousEventControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SequentialEventControl.resx">
+      <DependentUpon>SequentialEventControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DelayEventControl.resx">
       <DependentUpon>DelayEventControl.cs</DependentUpon>

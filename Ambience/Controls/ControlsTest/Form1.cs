@@ -19,6 +19,8 @@ namespace ControlsTest
         private ResourceManager _manager;
         private Dictionary<IEventProvider, Color> _colors = new Dictionary<IEventProvider, Color>();
         private RandomEventSelector _randEventSel = new RandomEventSelector("Randy");
+        DelayEventProvider del1 = new DelayEventProvider("Delay1");
+        PeriodicEventProvider per2 = new PeriodicEventProvider("Period2");
 
         public Form1()
         {
@@ -37,8 +39,6 @@ namespace ControlsTest
             //SoundEvent.Provider prov2 = new SoundEvent.Provider("Ding", _manager, "krkfunny.WAV");
             PeriodicEventProvider per1 = new PeriodicEventProvider("Period");
             //SimultaneousEventProvider sim2 = new SimultaneousEventProvider("Simul");
-            PeriodicEventProvider per2 = new PeriodicEventProvider("Period2");
-            DelayEventProvider del1 = new DelayEventProvider("Delay1");
             _randEventSel.Selection.Add(prov1);
             _randEventSel.Selection.Add(prov2);
 
@@ -81,7 +81,7 @@ namespace ControlsTest
         void Form1_Load(object sender, EventArgs e)
         {
             Form2 frm = new Form2();
-            frm.eventProviderEditorControl1.Provider = _randEventSel;
+            frm.eventProviderEditorControl1.Provider = per2;
             frm.eventProviderEditorControl1.ColorProvider = this;
             frm.Show();
         }
