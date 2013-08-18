@@ -1,16 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Genesis.Common.Tools;
 
 namespace Genesis.Ambience.Scheduler
 {
-    public interface IEventProvider
+    public interface IEventProvider : IVisitable<IEventProviderVisitor, IEventProvider>
     {
         string Name { get; }
 
         bool DependsOn(IEventProvider dependent);
         IEventProviderInstance CreateInstance();
         IEventProviderInstance CreateInstance(IEventProvider src);
+    }
+
+    public interface IEventProviderVisitor : IVisitor<IEventProviderVisitor, IEventProvider>
+    {
+        void Visit(DelayEventProvider provider);
+        void Visit(PeriodicEventProvider provider);
+        void Visit(RandomEventSelector provider);
+        void Visit(SequentialEventSelector provider);
+        void Visit(SimultaneousEventProvider provider);
     }
 
     public abstract class AEventProvider : IEventProvider
@@ -30,6 +40,10 @@ namespace Genesis.Ambience.Scheduler
         public abstract bool DependsOn(IEventProvider dependent);
         public abstract IEventProviderInstance CreateInstance();
         public abstract IEventProviderInstance CreateInstance(IEventProvider src);
+
+        #region IVisitable
+        public abstract void Accept(IEventProviderVisitor visitor);
+        #endregion
         #endregion
     }
 

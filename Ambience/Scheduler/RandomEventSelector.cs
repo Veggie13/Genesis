@@ -56,6 +56,13 @@ namespace Genesis.Ambience.Scheduler
             return new Instance(this, src);
         }
 
+        #region IVisitable
+        public override void Accept(IEventProviderVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+        #endregion
+
         #endregion
     }
 }

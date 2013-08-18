@@ -90,6 +90,10 @@
       <Project>{599A7649-E582-4D8A-BE13-898C12336ED0}</Project>
       <Name>GenesisComms</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
+      <Project>{311112D5-44B0-4078-8EDA-237B3C17BD78}</Project>
+      <Name>Tools</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

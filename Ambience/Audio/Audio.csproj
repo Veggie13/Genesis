@@ -65,6 +65,10 @@
     <Compile Include="SoundResource.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
+      <Project>{311112D5-44B0-4078-8EDA-237B3C17BD78}</Project>
+      <Name>Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="NAudio-Source\NAudio\NAudio.csproj">
       <Project>{DA4F02E3-0B5E-42CD-B8D9-5583FA51D66E}</Project>
       <Name>NAudio</Name>
