@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this._panel = new System.Windows.Forms.TableLayoutPanel();
-            this._label = new System.Windows.Forms.Label();
+            this._panel = new MainPanel();
+            this._label = new MyLabel();
             this._panel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -58,11 +58,11 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this._label.AutoSize = true;
-            this._label.Location = new System.Drawing.Point(45, 73);
+            this._label.Location = new System.Drawing.Point(45, 67);
             this._label.Name = "_label";
-            this._label.Size = new System.Drawing.Size(94, 13);
+            this._label.Size = new System.Drawing.Size(94, 26);
             this._label.TabIndex = 1;
-            this._label.Text = "Drag element here";
+            this._label.Text = "Drag element here\r\nor right-click";
             this._label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ProviderTokenTile
@@ -80,8 +80,8 @@
 
         #endregion
 
-        private System.Windows.Forms.TableLayoutPanel _panel;
-        private System.Windows.Forms.Label _label;
+        private MainPanel _panel;
+        private MyLabel _label;
 
     }
 }

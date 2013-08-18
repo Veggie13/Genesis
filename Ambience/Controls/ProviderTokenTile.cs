@@ -7,23 +7,101 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
+using Genesis.Common.Tools;
+using System.Diagnostics;
 
 namespace Genesis.Ambience.Controls
 {
     public partial class ProviderTokenTile : UserControl
     {
+        private class MyLabel : Label
+        {
+            protected override void OnDragDrop(DragEventArgs drgevent)
+            {
+                base.OnDragDrop(drgevent);
+            }
+        }
+
+        private class MainPanel : TableLayoutPanel
+        {
+            private bool _inside = false;
+            private DragDropEffects _lastEffect = DragDropEffects.None;
+
+            protected override void OnDragEnter(DragEventArgs drgevent)
+            {
+                if (!_inside)
+                {
+                    _inside = true;
+                    base.OnDragEnter(drgevent);
+                    _lastEffect = drgevent.Effect;
+                }
+                else
+                {
+                    drgevent.Effect = _lastEffect;
+                }
+            }
+
+            protected override void OnDragLeave(EventArgs e)
+            {
+                if (!_inside || this.ClientRectangle.Contains(this.PointToClient(Control.MousePosition)))
+                    return;
+
+                _inside = false;
+                base.OnDragLeave(e);
+            }
+
+            public void setup(Label label)
+            {
+                label.DragEnter += new DragEventHandler(label_DragEnter);
+                label.DragDrop += new DragEventHandler(label_DragDrop);
+                label.DragOver += new DragEventHandler(label_DragOver);
+                label.DragLeave += new EventHandler(label_DragLeave);
+                label.GiveFeedback += new GiveFeedbackEventHandler(label_GiveFeedback);
+            }
+
+            void label_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+            {
+                OnGiveFeedback(e);
+            }
+
+            void label_DragLeave(object sender, EventArgs e)
+            {
+                OnDragLeave(e);
+            }
+
+            void label_DragOver(object sender, DragEventArgs e)
+            {
+                OnDragOver(e);
+            }
+
+            void label_DragDrop(object sender, DragEventArgs e)
+            {
+                OnDragDrop(e);
+            }
+
+            void label_DragEnter(object sender, DragEventArgs e)
+            {
+                OnDragEnter(e);
+            }
+        }
+
         public ProviderTokenTile()
         {
             InitializeComponent();
 
             _panel.Paint += new PaintEventHandler(_panel_Paint);
             _panel.MouseDown += new MouseEventHandler(_panel_MouseDown);
+            _label.MouseDown += new MouseEventHandler(_panel_MouseDown);
             
             _panel.DragEnter += new DragEventHandler(empty_DragEnter);
             _panel.DragDrop += new DragEventHandler(empty_DragDrop);
-            
-            _label.DragEnter += new DragEventHandler(empty_DragEnter);
-            _label.DragDrop += new DragEventHandler(empty_DragDrop);
+            _panel.DragOver += new DragEventHandler(empty_DragOver);
+            _panel.DragLeave += new EventHandler(empty_DragLeave);
+            _panel.setup(_label);
+
+            this.GiveFeedback += new GiveFeedbackEventHandler(dragGiveFeedback);
+            _panel.GiveFeedback += new GiveFeedbackEventHandler(dragGiveFeedback);
 
             this.DoubleBuffered = true;
         }
@@ -76,9 +154,42 @@ namespace Genesis.Ambience.Controls
                 base.MouseLeave -= value;
             }
         }
+
+        public delegate void TokenEvent(ProviderToken token);
+        public event TokenEvent TokenChanged;
+        private void emitTokenChanged()
+        {
+            if (TokenChanged != null)
+                TokenChanged(_token);
+        }
+
+        public event ProviderTokenTileDragEventHandler AboutToDrag = (o, e) => { };
+        public event ProviderTokenTileDragEventHandler AboutToDrop = (o, e) => { };
         #endregion
 
         #region Properties
+        #region AllowDrag
+        private const bool DefaultAllowDrag = true;
+        private bool _allowDrag = DefaultAllowDrag;
+        [DefaultValue(DefaultAllowDrag)]
+        public bool AllowDrag
+        {
+            get { return _allowDrag; }
+            set { _allowDrag = value; }
+        }
+        #endregion
+
+        #region AllowDrop
+        private const bool DefaultAllowDrop = true;
+        private bool _allowDrop = DefaultAllowDrop;
+        [DefaultValue(DefaultAllowDrop)]
+        public new bool AllowDrop
+        {
+            get { return _allowDrop; }
+            set { _allowDrop = value; }
+        }
+        #endregion
+
         #region Token
         private ProviderToken _token = null;
         [Browsable(false)]
@@ -88,6 +199,8 @@ namespace Genesis.Ambience.Controls
             set
             {
                 _token = value;
+                if (_token != null)
+                    this.Name = _token.Name;
                 _label.Visible = (_token == null);
                 _panel.Invalidate();
             }
@@ -116,24 +229,123 @@ namespace Genesis.Ambience.Controls
         #endregion
 
         #region Event Handlers
+        private void dragGiveFeedback(object sender, GiveFeedbackEventArgs e)
+        {
+            e.UseDefaultCursors = false;
+        }
+
         private void empty_DragDrop(object sender, DragEventArgs e)
         {
-            Token = (ProviderToken)e.Data.GetData(typeof(ProviderToken));
+            if (!AllowDrop || !e.IsDataPresent<ProviderTokenTileDragEventArgs>())
+                return;
+
+            var args = e.GetData<ProviderTokenTileDragEventArgs>();
+            args.Location = new Point(e.X, e.Y);
+            if (args != null)
+            {
+                AboutToDrop(this, args);
+                if (!args.Cancel && !args.Handled)
+                    Token = args.TokenTile.Token;
+            }
         }
 
         private void empty_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(ProviderToken)))
-                e.Effect = DragDropEffects.Copy;
+            if (!AllowDrop || !e.IsDataPresent<ProviderTokenTileDragEventArgs>())
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
+            e.Effect = DragDropEffects.Copy;
+            var args = e.GetData<ProviderTokenTileDragEventArgs>();
+
+            Size sz = args.TokenTile.DisplayRectangle.Size;
+            Bitmap bm = new Bitmap(sz.Width, sz.Height);
+            using (var g = Graphics.FromImage(bm))
+                args.TokenTile.paint(g);
+
+            Cursor.Current = CreateCursor(bm, 0, 0);
+
+            bm.Dispose();
+
+            OnDragEnter(e);
+        }
+
+        private void empty_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.IsDataPresent<ProviderTokenTileDragEventArgs>())
+            {
+                var args = e.GetData<ProviderTokenTileDragEventArgs>();
+                args.Location = new Point(e.X, e.Y);
+            }
+
+            OnDragOver(e);
+        }
+
+        private void empty_DragLeave(object sender, EventArgs e)
+        {
+            OnDragLeave(e);
         }
 
         private void _panel_MouseDown(object sender, MouseEventArgs e)
         {
-            if (_token != null)
-                this.DoDragDrop(_token, DragDropEffects.Copy);
+            Control ctrl = sender as Control;
+            if (e.Button != MouseButtons.Left || !AllowDrag || _token == null || ctrl == null)
+                return;
+            
+            var args = new ProviderTokenTileDragEventArgs()
+            {
+                TokenTile = this,
+                Cancel = false,
+                Handled = false,
+                Location = ctrl.PointToScreen(e.Location)
+            };
+            AboutToDrag(this, args);
+            if (!args.Cancel)
+            {
+                Debug.WriteLine(this.Name + " start drag");
+                this.DoDragDrop(args, DragDropEffects.Copy);
+            }
         }
 
         private void _panel_Paint(object sender, PaintEventArgs e)
+        {
+            paint(e.Graphics);
+        }
+        #endregion
+
+        #region Private Helpers
+        #region Cursor Helpers
+        private struct IconInfo
+        {
+            public bool fIcon;
+            public int xHotspot;
+            public int yHotspot;
+            public IntPtr hbmMask;
+            public IntPtr hbmColor;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr CreateIconIndirect(ref IconInfo icon);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetIconInfo(IntPtr hIcon, ref IconInfo pIconInfo);
+
+        private static Cursor CreateCursor(Bitmap bmp,
+            int xHotSpot, int yHotSpot)
+        {
+            IconInfo tmp = new IconInfo();
+            GetIconInfo(bmp.GetHicon(), ref tmp);
+            tmp.xHotspot = xHotSpot;
+            tmp.yHotspot = yHotSpot;
+            tmp.fIcon = false;
+            return new Cursor(CreateIconIndirect(ref tmp));
+        }
+        #endregion
+
+        private void paint(Graphics g)
         {
             if (_token != null)
             {
@@ -142,9 +354,9 @@ namespace Genesis.Ambience.Controls
                 Color dark = ControlPaint.Dark(main, 0.01f);
                 Brush bg = new LinearGradientBrush(_panel.DisplayRectangle, lite, dark, LinearGradientMode.Vertical);
                 Pen border = new Pen(main);
-                e.Graphics.FillRectangle(bg, _panel.DisplayRectangle);
-                e.Graphics.DrawRectangle(border, _panel.DisplayRectangle);
-                e.Graphics.DrawString(_token.Name, _font, Brushes.Black,
+                g.FillRectangle(bg, _panel.DisplayRectangle);
+                g.DrawRectangle(border, _panel.DisplayRectangle);
+                g.DrawString(_token.Name, _font, Brushes.Black,
                     new RectangleF(2f, 2f, _panel.DisplayRectangle.Width - 4,
                         _panel.DisplayRectangle.Height - 4));
             }
