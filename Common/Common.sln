@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "Controls\Contro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenesisComms", "API\Comms\GenesisComms.csproj", "{599A7649-E582-4D8A-BE13-898C12336ED0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools", "Tools\Tools.csproj", "{311112D5-44B0-4078-8EDA-237B3C17BD78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,16 @@ Global
 		{599A7649-E582-4D8A-BE13-898C12336ED0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{599A7649-E582-4D8A-BE13-898C12336ED0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{599A7649-E582-4D8A-BE13-898C12336ED0}.Release|x86.ActiveCfg = Release|Any CPU
+		{311112D5-44B0-4078-8EDA-237B3C17BD78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{311112D5-44B0-4078-8EDA-237B3C17BD78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{311112D5-44B0-4078-8EDA-237B3C17BD78}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{311112D5-44B0-4078-8EDA-237B3C17BD78}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{311112D5-44B0-4078-8EDA-237B3C17BD78}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{311112D5-44B0-4078-8EDA-237B3C17BD78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{311112D5-44B0-4078-8EDA-237B3C17BD78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{311112D5-44B0-4078-8EDA-237B3C17BD78}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{311112D5-44B0-4078-8EDA-237B3C17BD78}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{311112D5-44B0-4078-8EDA-237B3C17BD78}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
