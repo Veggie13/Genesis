@@ -34,7 +34,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.providerTokenList1 = new Genesis.Ambience.Controls.ProviderTokenList();
             this.eventTokenTile2 = new Genesis.Ambience.Controls.ProviderTokenTile();
             this.eventTokenTile1 = new Genesis.Ambience.Controls.ProviderTokenTile();
             this.scheduleView1 = new Genesis.Ambience.Controls.ScheduleView();
@@ -96,20 +95,9 @@
             this.label4.TabIndex = 6;
             this.label4.Text = "label4";
             // 
-            // providerTokenList1
-            // 
-            this.providerTokenList1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.providerTokenList1.ColorProvider = null;
-            this.providerTokenList1.Location = new System.Drawing.Point(56, 332);
-            this.providerTokenList1.Name = "providerTokenList1";
-            this.providerTokenList1.Size = new System.Drawing.Size(715, 94);
-            this.providerTokenList1.TabIndex = 9;
-            this.providerTokenList1.UseHoverScroll = true;
-            this.providerTokenList1.ViewOrientation = Genesis.Ambience.Controls.ProviderTokenList.Orientation.Horizontal;
-            // 
             // eventTokenTile2
             // 
-            this.eventTokenTile2.AllowDrop = true;
+            this.eventTokenTile2.AllowDrop = false;
             this.eventTokenTile2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.eventTokenTile2.Location = new System.Drawing.Point(456, 171);
             this.eventTokenTile2.Name = "eventTokenTile2";
@@ -121,6 +109,7 @@
             // 
             // eventTokenTile1
             // 
+            this.eventTokenTile1.AllowDrop = false;
             this.eventTokenTile1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.eventTokenTile1.Location = new System.Drawing.Point(335, 171);
             this.eventTokenTile1.Name = "eventTokenTile1";
@@ -145,8 +134,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(805, 471);
-            this.Controls.Add(this.providerTokenList1);
+            this.ClientSize = new System.Drawing.Size(841, 471);
             this.Controls.Add(this.eventTokenTile2);
             this.Controls.Add(this.eventTokenTile1);
             this.Controls.Add(this.label4);
@@ -174,7 +162,6 @@
         private System.Windows.Forms.Label label4;
         private Genesis.Ambience.Controls.ProviderTokenTile eventTokenTile1;
         private Genesis.Ambience.Controls.ProviderTokenTile eventTokenTile2;
-        private Genesis.Ambience.Controls.ProviderTokenList providerTokenList1;
     }
 }
 

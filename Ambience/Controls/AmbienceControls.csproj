@@ -12,12 +12,12 @@
     <AssemblyName>Genesis.Ambience.Controls</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -42,7 +42,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AEventControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AEventControl.Designer.cs">
+      <DependentUpon>AEventControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DelayEventControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DelayEventControl.Designer.cs">
+      <DependentUpon>DelayEventControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EventProviderControlFactory.cs" />
+    <Compile Include="EventProviderEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EventProviderEditorControl.Designer.cs">
+      <DependentUpon>EventProviderEditorControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="EventToken.cs" />
+    <Compile Include="GenericEventControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="ProviderToken.cs" />
     <Compile Include="ProviderTokenList.cs">
       <SubType>UserControl</SubType>
@@ -58,26 +80,62 @@
     </Compile>
     <Compile Include="IEventColorProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProviderTokenTileDragEventArgs.cs" />
+    <Compile Include="RandomEventControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="RandomEventControl.Designer.cs">
+      <DependentUpon>RandomEventControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ScheduleView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ScheduleView.Designer.cs">
       <DependentUpon>ScheduleView.cs</DependentUpon>
     </Compile>
+    <Compile Include="PeriodicEventControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PeriodicEventControl.Designer.cs">
+      <DependentUpon>PeriodicEventControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="TimeFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
+      <Project>{311112D5-44B0-4078-8EDA-237B3C17BD78}</Project>
+      <Name>Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Scheduler\Scheduler.csproj">
       <Project>{051A577E-B5B7-4C4C-92D9-B01CCB26BCED}</Project>
       <Name>Scheduler</Name>
     </ProjectReference>
+    <ProjectReference Include="Helper\AmbienceControlsHelper.csproj">
+      <Project>{CC6EA342-68E2-4A5B-B47B-B3D3790C0E6C}</Project>
+      <Name>AmbienceControlsHelper</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AEventControl.resx">
+      <DependentUpon>AEventControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DelayEventControl.resx">
+      <DependentUpon>DelayEventControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EventProviderEditorControl.resx">
+      <DependentUpon>EventProviderEditorControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PeriodicEventControl.resx">
+      <DependentUpon>PeriodicEventControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ProviderTokenList.resx">
       <DependentUpon>ProviderTokenList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProviderTokenTile.resx">
       <DependentUpon>ProviderTokenTile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RandomEventControl.resx">
+      <DependentUpon>RandomEventControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ScheduleView.resx">
       <DependentUpon>ScheduleView.cs</DependentUpon>

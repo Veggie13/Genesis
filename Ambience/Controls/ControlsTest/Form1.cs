@@ -18,6 +18,7 @@ namespace ControlsTest
         private EventSchedule _sched;
         private ResourceManager _manager;
         private Dictionary<IEventProvider, Color> _colors = new Dictionary<IEventProvider, Color>();
+        private RandomEventSelector _randEventSel = new RandomEventSelector("Randy");
 
         public Form1()
         {
@@ -30,14 +31,16 @@ namespace ControlsTest
             _sched = new EventSchedule(32);
             _sched.TicksPerSec = 2;
 
-            //BasicEvent.Provider prov1 = new BasicEvent.Provider("Chord");
-            //BasicEvent.Provider prov2 = new BasicEvent.Provider("Ding");
-            SoundEvent.Provider prov1 = new SoundEvent.Provider("Chord", _manager, "chord.wav");
-            SoundEvent.Provider prov2 = new SoundEvent.Provider("Ding", _manager, "krkfunny.WAV");
+            BasicEvent.Provider prov1 = new BasicEvent.Provider("Chord");
+            BasicEvent.Provider prov2 = new BasicEvent.Provider("Ding");
+            //SoundEvent.Provider prov1 = new SoundEvent.Provider("Chord", _manager, "chord.wav");
+            //SoundEvent.Provider prov2 = new SoundEvent.Provider("Ding", _manager, "krkfunny.WAV");
             PeriodicEventProvider per1 = new PeriodicEventProvider("Period");
             //SimultaneousEventProvider sim2 = new SimultaneousEventProvider("Simul");
             PeriodicEventProvider per2 = new PeriodicEventProvider("Period2");
             DelayEventProvider del1 = new DelayEventProvider("Delay1");
+            _randEventSel.Selection.Add(prov1);
+            _randEventSel.Selection.Add(prov2);
 
             //sim2.Group.Add(prov1);
             //sim2.Group.Add(prov2);
@@ -71,37 +74,16 @@ namespace ControlsTest
 
             eventTokenTile1.Token = new ProviderToken(prov1, this);
 
-            providerTokenList1.ColorProvider = this;
-            providerTokenList1.Items.Add(prov1);
-            providerTokenList1.Items.Add(prov2);
-            providerTokenList1.Items.Add(per1);
-            providerTokenList1.Items.Add(per2);
-            providerTokenList1.Items.Add(new BasicEvent.Provider("A"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("B"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("C"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("D"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("E"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("F"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("G"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("H"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("I"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("J"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("K"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("L"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("M"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("N"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("O"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("P"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("Q"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("R"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("S"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("T"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("U"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("V"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("W"));
-            providerTokenList1.Items.Add(new BasicEvent.Provider("X"));
-            
+            this.Load += new EventHandler(Form1_Load);
             this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
+        }
+
+        void Form1_Load(object sender, EventArgs e)
+        {
+            Form2 frm = new Form2();
+            frm.eventProviderEditorControl1.Provider = _randEventSel;
+            frm.eventProviderEditorControl1.ColorProvider = this;
+            frm.Show();
         }
 
         void scheduleView1_TopRowChanged(ScheduleView sender, int oldValue, int newValue)
