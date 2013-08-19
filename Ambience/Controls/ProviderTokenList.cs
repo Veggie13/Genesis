@@ -180,6 +180,48 @@ namespace Genesis.Ambience.Controls
         }
         #endregion
 
+        #region AllowItemDrag
+        private const bool DefaultAllowItemDrag = true;
+        private bool _allowItemDrag = DefaultAllowItemDrag;
+        [DefaultValue(DefaultAllowItemDrag)]
+        public bool AllowItemDrag
+        {
+            get { return _allowItemDrag; }
+            set
+            {
+                if (_allowItemDrag != value)
+                {
+                    foreach (ProviderTokenTile tile in _flow.Controls)
+                    {
+                        tile.AllowDrag = value;
+                    }
+                    _allowItemDrag = value;
+                }
+            }
+        }
+        #endregion
+
+        #region AllowDragArrange
+        private const bool DefaultAllowDragArrange = true;
+        private bool _allowDragArrange = DefaultAllowDragArrange;
+        [DefaultValue(DefaultAllowDragArrange)]
+        public bool AllowDragArrange
+        {
+            get { return _allowDragArrange; }
+            set
+            {
+                if (_allowDragArrange != value)
+                {
+                    foreach (ProviderTokenTile tile in _flow.Controls)
+                    {
+                        tile.AllowDrop = value;
+                    }
+                    _allowDragArrange = value;
+                }
+            }
+        }
+        #endregion
+
         #region Private
         private ScrollBar Scroller
         {
@@ -267,10 +309,11 @@ namespace Genesis.Ambience.Controls
                 tile.Width = ItemWidth;
                 tile.Height = ItemHeight;
                 tile.Margin = new System.Windows.Forms.Padding(0);
-                //tile.Anchor = _flow.Anchor;
+                tile.AllowDrag = AllowItemDrag;
+                tile.AllowDrop = AllowDragArrange;
+
                 _flow.Controls.Add(tile);
                 _flow.Controls.SetChildIndex(tile, item.Item1);
-                //_tiles[fresh] = tile;
 
                 tile.DragEnter += new DragEventHandler(_view_DragEnter);
                 tile.MouseMove += new MouseEventHandler(_view_MouseMove);
@@ -297,19 +340,25 @@ namespace Genesis.Ambience.Controls
 
         private void tile_AboutToDrag(ProviderTokenTile sender, ProviderTokenTileDragEventArgs e)
         {
+            if (!AllowItemDrag)
+                return;
+
             sender.QueryContinueDrag += new QueryContinueDragEventHandler(tile_QueryContinueDrag);
             _internalDrag = true;
-            int index = _flow.Controls.IndexOf(sender);
-            _items.RemoveAt(index);
-            _flow.Controls.Add(_empty);
-            _flow.Controls.SetChildIndex(_empty, index);
-            _flow.Controls.Remove(sender);
+            if (AllowDragArrange)
+            {
+                int index = _flow.Controls.IndexOf(sender);
+                _items.RemoveAt(index);
+                _flow.Controls.Add(_empty);
+                _flow.Controls.SetChildIndex(_empty, index);
+                _flow.Controls.Remove(sender);
+            }
         }
 
         private void tile_QueryContinueDrag(object sender, QueryContinueDragEventArgs e)
         {
             ProviderTokenTile tile = sender as ProviderTokenTile;
-            if (tile == null)
+            if (!AllowDragArrange || tile == null)
                 return;
 
             Point pt = this.PointToClient(Control.MousePosition);
@@ -333,7 +382,7 @@ namespace Genesis.Ambience.Controls
         private void _view_DragEnter(object sender, DragEventArgs e)
         {
             ProviderTokenTile tile = sender as ProviderTokenTile;
-            if (_scrolling || tile == null || tile == _empty || !e.IsDataPresent<ProviderTokenTileDragEventArgs>())
+            if (!AllowDragArrange || _scrolling || tile == null || tile == _empty || !e.IsDataPresent<ProviderTokenTileDragEventArgs>())
                 return;
 
             if (!_internalDrag)

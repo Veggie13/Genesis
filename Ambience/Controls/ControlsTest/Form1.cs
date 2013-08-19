@@ -74,6 +74,10 @@ namespace ControlsTest
 
             eventTokenTile1.Token = new ProviderToken(prov1, this);
 
+            providerTokenList1.AllowItemDrag = false;
+            providerTokenList1.Items.Add(prov1);
+            providerTokenList1.Items.Add(prov2);
+
             this.Load += new EventHandler(Form1_Load);
             this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
         }
