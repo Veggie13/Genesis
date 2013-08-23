@@ -48,6 +48,9 @@
     <Compile Include="AEventControl.Designer.cs">
       <DependentUpon>AEventControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProviderTokenButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="SimultaneousEventControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

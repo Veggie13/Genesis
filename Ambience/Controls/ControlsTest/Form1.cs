@@ -82,8 +82,15 @@ namespace ControlsTest
             eventTokenTile2.MouseLeave += new EventHandler(eventTokenTile2_MouseLeave);
             eventTokenTile2.MouseUp += new MouseEventHandler(eventTokenTile2_MouseLeave);
 
+            providerTokenButton1.TileClicked += new ProviderTokenButton.TileClickedEvent(providerTokenButton1_TileClicked);
+
             this.Load += new EventHandler(Form1_Load);
             this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
+        }
+
+        void providerTokenButton1_TileClicked(ProviderToken token)
+        {
+            MessageBox.Show(token.Name);
         }
 
         void eventTokenTile2_MouseLeave(object sender, EventArgs e)

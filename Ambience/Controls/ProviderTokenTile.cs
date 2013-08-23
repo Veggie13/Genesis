@@ -50,6 +50,30 @@ namespace Genesis.Ambience.Controls
                 label.DragOver += new DragEventHandler(label_DragOver);
                 label.DragLeave += new EventHandler(label_DragLeave);
                 label.GiveFeedback += new GiveFeedbackEventHandler(label_GiveFeedback);
+                label.Click += new EventHandler(label_Click);
+                label.MouseDown += new MouseEventHandler(label_MouseDown);
+                label.MouseUp += new MouseEventHandler(label_MouseUp);
+                label.MouseMove += new MouseEventHandler(label_MouseMove);
+            }
+
+            void label_MouseMove(object sender, MouseEventArgs e)
+            {
+                OnMouseMove(e);
+            }
+
+            void label_MouseUp(object sender, MouseEventArgs e)
+            {
+                OnMouseUp(e);
+            }
+
+            void label_MouseDown(object sender, MouseEventArgs e)
+            {
+                OnMouseDown(e);
+            }
+
+            void label_Click(object sender, EventArgs e)
+            {
+                OnClick(e);
             }
 
             void label_GiveFeedback(object sender, GiveFeedbackEventArgs e)
@@ -78,6 +102,9 @@ namespace Genesis.Ambience.Controls
             }
         }
 
+        private Point _lastMouseDown;
+        private bool _isMouseDown = false;
+
         public ProviderTokenTile()
         {
             InitializeComponent();
@@ -86,8 +113,8 @@ namespace Genesis.Ambience.Controls
 
             _panel.Paint += new PaintEventHandler(_panel_Paint);
             _panel.MouseDown += new MouseEventHandler(_panel_MouseDown);
-            _label.MouseDown += new MouseEventHandler(_panel_MouseDown);
-            
+            _panel.MouseMove += new MouseEventHandler(_panel_MouseMove);
+            _panel.MouseUp += new MouseEventHandler(_panel_MouseUp);
             _panel.DragEnter += new DragEventHandler(empty_DragEnter);
             _panel.DragDrop += new DragEventHandler(empty_DragDrop);
             _panel.DragOver += new DragEventHandler(empty_DragOver);
@@ -98,6 +125,11 @@ namespace Genesis.Ambience.Controls
             _panel.GiveFeedback += new GiveFeedbackEventHandler(dragGiveFeedback);
 
             this.SizeChanged += new EventHandler(ProviderTokenTile_SizeChanged);
+
+            foreach (Control c in Controls)
+            {
+                c.Click += new EventHandler(childClick);
+            }
 
             this.DoubleBuffered = true;
         }
@@ -194,11 +226,15 @@ namespace Genesis.Ambience.Controls
             get { return _token; }
             set
             {
-                _token = value;
-                if (_token != null)
-                    this.Name = _token.Name;
-                _label.Visible = (_token == null);
-                _panel.Invalidate();
+                if (_token != value)
+                {
+                    _token = value;
+                    if (_token != null)
+                        this.Name = _token.Name;
+                    _label.Visible = (_token == null);
+                    _panel.Invalidate();
+                    emitTokenChanged();
+                }
             }
         }
         #endregion
@@ -238,6 +274,11 @@ namespace Genesis.Ambience.Controls
         #endregion
 
         #region Event Handlers
+        private void childClick(object sender, EventArgs e)
+        {
+            base.OnClick(e);
+        }
+
         private void dragGiveFeedback(object sender, GiveFeedbackEventArgs e)
         {
             e.UseDefaultCursors = false;
@@ -304,10 +345,36 @@ namespace Genesis.Ambience.Controls
 
         private void _panel_MouseDown(object sender, MouseEventArgs e)
         {
-            Control ctrl = sender as Control;
-            if (e.Button != MouseButtons.Left || !AllowDrag || _token == null || ctrl == null)
+            OnMouseDown(e);
+            if (e.Button != MouseButtons.Left)
                 return;
-            
+
+            _isMouseDown = true;
+            _lastMouseDown = e.Location;
+        }
+
+        private void _panel_MouseUp(object sender, MouseEventArgs e)
+        {
+            OnMouseUp(e);
+            _isMouseDown = false;
+        }
+
+        private void _panel_MouseMove(object sender, MouseEventArgs e)
+        {
+            OnMouseMove(e);
+
+            Control ctrl = sender as Control;
+            if (!_isMouseDown || e.Button != MouseButtons.Left || !AllowDrag || _token == null || ctrl == null)
+                return;
+
+            int dX = Math.Abs(e.Location.X - _lastMouseDown.X);
+            int dY = Math.Abs(e.Location.Y - _lastMouseDown.Y);
+            Point dMax = GetDragThreshold();
+            if (dX < dMax.X && dY < dMax.Y)
+                return;
+
+            _isMouseDown = false;
+
             var args = new ProviderTokenTileDragEventArgs()
             {
                 TokenTile = this,
@@ -356,6 +423,18 @@ namespace Genesis.Ambience.Controls
             tmp.yHotspot = yHotSpot;
             tmp.fIcon = false;
             return new Cursor(CreateIconIndirect(ref tmp));
+        }
+        #endregion
+
+        #region Drag Helpers
+        private const int SM_CXDRAG = 68;
+        private const int SM_CYDRAG = 69;
+        [DllImport("user32.dll")]
+        private static extern int GetSystemMetrics(int index);
+
+        private static Point GetDragThreshold()
+        {
+            return new Point(GetSystemMetrics(SM_CXDRAG), GetSystemMetrics(SM_CYDRAG));
         }
         #endregion
 

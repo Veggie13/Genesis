@@ -38,6 +38,7 @@
             this.eventTokenTile1 = new Genesis.Ambience.Controls.ProviderTokenTile();
             this.scheduleView1 = new Genesis.Ambience.Controls.ScheduleView();
             this.providerTokenList1 = new Genesis.Ambience.Controls.ProviderTokenList();
+            this.providerTokenButton1 = new Genesis.Ambience.Controls.ProviderTokenButton();
             this.SuspendLayout();
             // 
             // button1
@@ -143,11 +144,19 @@
             this.providerTokenList1.UseHoverScroll = true;
             this.providerTokenList1.ViewOrientation = Genesis.Ambience.Controls.ProviderTokenList.Orientation.Horizontal;
             // 
+            // providerTokenButton1
+            // 
+            this.providerTokenButton1.Location = new System.Drawing.Point(673, 205);
+            this.providerTokenButton1.Name = "providerTokenButton1";
+            this.providerTokenButton1.Size = new System.Drawing.Size(109, 72);
+            this.providerTokenButton1.TabIndex = 10;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(841, 471);
+            this.Controls.Add(this.providerTokenButton1);
             this.Controls.Add(this.providerTokenList1);
             this.Controls.Add(this.eventTokenTile2);
             this.Controls.Add(this.eventTokenTile1);
@@ -177,6 +186,7 @@
         private Genesis.Ambience.Controls.ProviderTokenTile eventTokenTile1;
         private Genesis.Ambience.Controls.ProviderTokenTile eventTokenTile2;
         private Genesis.Ambience.Controls.ProviderTokenList providerTokenList1;
+        private Genesis.Ambience.Controls.ProviderTokenButton providerTokenButton1;
     }
 }
 
