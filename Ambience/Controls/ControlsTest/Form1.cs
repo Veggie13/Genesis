@@ -78,8 +78,22 @@ namespace ControlsTest
             providerTokenList1.Items.Add(prov1);
             providerTokenList1.Items.Add(prov2);
 
+            eventTokenTile2.MouseMove += new MouseEventHandler(eventTokenTile2_MouseMove);
+            eventTokenTile2.MouseLeave += new EventHandler(eventTokenTile2_MouseLeave);
+            eventTokenTile2.MouseUp += new MouseEventHandler(eventTokenTile2_MouseLeave);
+
             this.Load += new EventHandler(Form1_Load);
             this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
+        }
+
+        void eventTokenTile2_MouseLeave(object sender, EventArgs e)
+        {
+            eventTokenTile2.InnerText = "";
+        }
+
+        void eventTokenTile2_MouseMove(object sender, MouseEventArgs e)
+        {
+            eventTokenTile2.InnerText = "Drop";
         }
 
         void Form1_Load(object sender, EventArgs e)

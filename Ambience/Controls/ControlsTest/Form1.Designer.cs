@@ -98,7 +98,9 @@
             // 
             // eventTokenTile2
             // 
+            this.eventTokenTile2.AllowDrop = false;
             this.eventTokenTile2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.eventTokenTile2.InnerText = "";
             this.eventTokenTile2.Location = new System.Drawing.Point(456, 171);
             this.eventTokenTile2.Name = "eventTokenTile2";
             this.eventTokenTile2.Padding = new System.Windows.Forms.Padding(2);

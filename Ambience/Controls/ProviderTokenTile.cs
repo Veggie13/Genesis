@@ -15,14 +15,6 @@ namespace Genesis.Ambience.Controls
 {
     public partial class ProviderTokenTile : UserControl
     {
-        private class MyLabel : Label
-        {
-            protected override void OnDragDrop(DragEventArgs drgevent)
-            {
-                base.OnDragDrop(drgevent);
-            }
-        }
-
         private class MainPanel : TableLayoutPanel
         {
             private bool _inside = false;
@@ -90,6 +82,8 @@ namespace Genesis.Ambience.Controls
         {
             InitializeComponent();
 
+            _label.Text = DefaultInnerText;
+
             _panel.Paint += new PaintEventHandler(_panel_Paint);
             _panel.MouseDown += new MouseEventHandler(_panel_MouseDown);
             _label.MouseDown += new MouseEventHandler(_panel_MouseDown);
@@ -102,6 +96,8 @@ namespace Genesis.Ambience.Controls
 
             this.GiveFeedback += new GiveFeedbackEventHandler(dragGiveFeedback);
             _panel.GiveFeedback += new GiveFeedbackEventHandler(dragGiveFeedback);
+
+            this.SizeChanged += new EventHandler(ProviderTokenTile_SizeChanged);
 
             this.DoubleBuffered = true;
         }
@@ -226,12 +222,30 @@ namespace Genesis.Ambience.Controls
             return !_font.Equals(DefaultTokenFont);
         }
         #endregion
+
+        #region InnerText
+        private const string DefaultInnerText = "Drop Here";
+        public string InnerText
+        {
+            get { return _label.Text; }
+            set { _label.Text = value; }
+        }
+        private bool ShouldSerializeInnerText()
+        {
+            return !DefaultInnerText.Equals(InnerText);
+        }
+        #endregion
         #endregion
 
         #region Event Handlers
         private void dragGiveFeedback(object sender, GiveFeedbackEventArgs e)
         {
             e.UseDefaultCursors = false;
+        }
+
+        private void ProviderTokenTile_SizeChanged(object sender, EventArgs e)
+        {
+            _label.MaximumSize = Size;
         }
 
         private void empty_DragDrop(object sender, DragEventArgs e)

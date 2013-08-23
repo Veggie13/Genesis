@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this._panel = new MainPanel();
-            this._label = new MyLabel();
+            this._label = new System.Windows.Forms.Label();
             this._panel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -81,7 +81,7 @@
         #endregion
 
         private MainPanel _panel;
-        private MyLabel _label;
+        private System.Windows.Forms.Label _label;
 
     }
 }
