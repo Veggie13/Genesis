@@ -16,13 +16,17 @@ namespace Genesis.Ambience.Controls
 
         public ProviderTokenButton()
         {
+            this.DoubleBuffered = true;
             this.Padding = new System.Windows.Forms.Padding(5);
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
             this.MouseDown += new MouseEventHandler(mouseDown);
             this.MouseUp += new MouseEventHandler(mouseUp);
             this.MouseLeave += new EventHandler(mouseLeave);
 
             _tile.Dock = DockStyle.Fill;
             _tile.Margin = new System.Windows.Forms.Padding(5);
+            _tile.AllowDrop = true;
+            _tile.AllowDrag = false;
             Controls.Add(_tile);
 
             _tile.TokenChanged += new ProviderTokenTile.TokenEvent(_tile_TokenChanged);
