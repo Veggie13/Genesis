@@ -9,10 +9,24 @@ namespace Genesis.Ambience.Audio
 {
     public class ResourceManager
     {
+        #region Class Members
+        private struct Basket
+        {
+            public SoundResource res;
+        }
+
         private Dictionary<string, ILibrary> _libs = new Dictionary<string, ILibrary>();
         private Dictionary<string, FileInfo> _indivFiles = new Dictionary<string, FileInfo>();
         private Dictionary<string, SoundResource> _loaded = new Dictionary<string, SoundResource>();
 
+        private bool _running = false;
+        private bool _synced = false;
+        private Thread _eventThread;
+        private AutoResetEvent _eventTrigger = new AutoResetEvent(false);
+        private Queue<ResourceEvent> _events = new Queue<ResourceEvent>();
+        #endregion
+
+        #region Public Operations
         public void LoadLibrary(string path)
         {
             ILibrary lib = new FileSystemLibrary(path);
@@ -35,11 +49,6 @@ namespace Genesis.Ambience.Audio
             return result;
         }
 
-        private struct Basket
-        {
-            public SoundResource res;
-        }
-        
         public SoundResource GetResource(string name)
         {
             ILibrary lib;
@@ -51,6 +60,24 @@ namespace Genesis.Ambience.Audio
             return loadResource(lib, name);
         }
 
+        public void Start()
+        {
+            _eventThread = new Thread(new ThreadStart(eventThread));
+            _eventTrigger.Reset();
+            _eventThread.Start();
+            _running = true;
+        }
+
+        public void Stop()
+        {
+            _running = false;
+            _eventTrigger.Set();
+            _eventThread.Join();
+            _eventThread = null;
+        }
+        #endregion
+
+        #region Private Helpers
         private void getSeparatedName(out ILibrary lib, ref string resName)
         {
             if (resName.Contains("::"))
@@ -110,29 +137,6 @@ namespace Genesis.Ambience.Audio
         {
         }
 
-        private bool _running = false;
-        private bool _synced = false;
-        private Thread _eventThread;
-        private AutoResetEvent _eventTrigger = new AutoResetEvent(false);
-        
-        private Queue<ResourceEvent> _events = new Queue<ResourceEvent>();
-        
-        public void Start()
-        {
-            _eventThread = new Thread(new ThreadStart(eventThread));
-            _eventTrigger.Reset();
-            _eventThread.Start();
-            _running = true;
-        }
-
-        public void Stop()
-        {
-            _running = false;
-            _eventTrigger.Set();
-            _eventThread.Join();
-            _eventThread = null;
-        }
-
         private void eventThread()
         {
             while (_eventTrigger.WaitOne() && _running)
@@ -156,5 +160,6 @@ namespace Genesis.Ambience.Audio
             }
             _synced = false;
         }
+        #endregion
     }
 }
