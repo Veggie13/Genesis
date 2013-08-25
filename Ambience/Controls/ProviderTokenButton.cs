@@ -39,14 +39,16 @@ namespace Genesis.Ambience.Controls
         public delegate void TileClickedEvent(ProviderToken token);
         public event TileClickedEvent TileClicked = (t) => { };
 
-        public delegate void RightClickEvent(ProviderTokenButton button);
-        public event RightClickEvent RightClicked = (b) => { };
+        public delegate void Event(ProviderTokenButton button);
+        public event Event RightClicked = (b) => { };
+        public event Event TokenChanged = (b) => { };
         #endregion
 
         #region Properties
         public ProviderToken Token
         {
-            get { return (_tile == null) ? null : _tile.Token; }
+            get { return _tile.Token; }
+            set { _tile.Token = value; }
         }
         #endregion
 
@@ -90,6 +92,7 @@ namespace Genesis.Ambience.Controls
         private void _tile_TokenChanged(ProviderToken token)
         {
             Invalidate();
+            TokenChanged(this);
         }
         #endregion
 

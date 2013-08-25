@@ -19,7 +19,7 @@ namespace ControlsTest
 
         private void Form3_Load(object sender, EventArgs e)
         {
-            tokenBoard1.ButtonRightClicked += new ProviderTokenButton.RightClickEvent(tokenBoard1_ButtonRightClicked);
+            tokenBoard1.ButtonRightClicked += new ProviderTokenButton.Event(tokenBoard1_ButtonRightClicked);
         }
 
         void tokenBoard1_ButtonRightClicked(ProviderTokenButton button)

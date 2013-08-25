@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Genesis.Common.Tools;
+using Genesis.Ambience.Scheduler;
 
 namespace Genesis.Ambience.Controls
 {
@@ -17,20 +18,25 @@ namespace Genesis.Ambience.Controls
         private Size _itemSize = new Size();
         #endregion
 
+        public interface ITokenBoardProvider
+        {
+            IEventProvider this[int row, int col] { get; set; }
+            int RowCount { get; set; }
+            int ColumnCount { get; set; }
+        }
+
         public TokenBoard()
         {
             InitializeComponent();
 
-            addButton(0, 0);
+            initBoard();
 
-            ColumnCount = DefaultColumnCount;
-            RowCount = DefaultRowCount;
             ColumnWidth = DefaultColumnWidth;
             RowHeight = DefaultRowHeight;
         }
 
         #region Events
-        public event ProviderTokenButton.RightClickEvent ButtonRightClicked = (b) => { };
+        public event ProviderTokenButton.Event ButtonRightClicked = (b) => { };
         #endregion
 
         #region Properties
@@ -62,6 +68,9 @@ namespace Genesis.Ambience.Controls
                     }
                 }
                 _content.GrowStyle = TableLayoutPanelGrowStyle.FixedSize;
+
+                if (_tokenBoardProvider != null)
+                    _tokenBoardProvider.RowCount = value;
             }
         }
         #endregion
@@ -94,6 +103,9 @@ namespace Genesis.Ambience.Controls
                     }
                 }
                 _content.GrowStyle = TableLayoutPanelGrowStyle.FixedSize;
+
+                if (_tokenBoardProvider != null)
+                    _tokenBoardProvider.ColumnCount = value;
             }
         }
         #endregion
@@ -152,12 +164,43 @@ namespace Genesis.Ambience.Controls
             }
         }
         #endregion
+
+        #region TokenBoardProvider
+        private ITokenBoardProvider _tokenBoardProvider = null;
+        [Browsable(false)]
+        public ITokenBoardProvider TokenBoardProvider
+        {
+            get { return _tokenBoardProvider; }
+            set
+            {
+                if (_tokenBoardProvider != null)
+                {
+                    _tokenBoardProvider = null;
+                    RowCount = 1;
+                    ColumnCount = 1;
+                    _content.Controls.Clear();
+                }
+
+                _tokenBoardProvider = value;
+                initBoard();
+            }
+        }
+        #endregion
         #endregion
 
         #region Event Handlers
         private void btn_RightClicked(ProviderTokenButton button)
         {
             ButtonRightClicked(button);
+        }
+
+        private void btn_TokenChanged(ProviderTokenButton button)
+        {
+            if (_tokenBoardProvider != null)
+            {
+                var index = _buttons.IndexOf(button);
+                _tokenBoardProvider[index.Item1, index.Item2] = button.Token.Provider;
+            }
         }
         #endregion
 
@@ -171,7 +214,34 @@ namespace Genesis.Ambience.Controls
             _buttons[row, col] = btn;
             _content.Controls.Add(btn, col, row);
 
-            btn.RightClicked += new ProviderTokenButton.RightClickEvent(btn_RightClicked);
+            btn.RightClicked += new ProviderTokenButton.Event(btn_RightClicked);
+            btn.TokenChanged += new ProviderTokenButton.Event(btn_TokenChanged);
+        }
+
+        private void initBoard()
+        {
+            addButton(0, 0);
+
+            if (_tokenBoardProvider != null)
+            {
+                ColumnCount = _tokenBoardProvider.ColumnCount;
+                RowCount = _tokenBoardProvider.RowCount;
+
+                for (int row = 0; row < RowCount; row++)
+                    for (int col = 0; col < ColumnCount; col++)
+                    {
+                        var prov = _tokenBoardProvider[row, col];
+                        if (prov != null)
+                        {
+                            _buttons[row, col].Token = new ProviderToken(prov, null);
+                        }
+                    }
+            }
+            else
+            {
+                ColumnCount = DefaultColumnCount;
+                RowCount = DefaultRowCount;
+            }
         }
 
         private void setButtonSizes()
