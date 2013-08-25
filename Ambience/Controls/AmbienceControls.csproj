@@ -115,6 +115,12 @@
       <DependentUpon>PeriodicEventControl.cs</DependentUpon>
     </Compile>
     <Compile Include="TimeFormatter.cs" />
+    <Compile Include="TokenBoard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TokenBoard.Designer.cs">
+      <DependentUpon>TokenBoard.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
@@ -162,6 +168,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ScheduleView.resx">
       <DependentUpon>ScheduleView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TokenBoard.resx">
+      <DependentUpon>TokenBoard.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

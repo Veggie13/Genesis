@@ -109,6 +109,10 @@ namespace ControlsTest
             frm.eventProviderEditorControl1.Provider = per2;
             frm.eventProviderEditorControl1.ColorProvider = this;
             frm.Show();
+
+            Form3 frm3 = new Form3();
+            frm3.tokenBoard1.ColumnCount = 5;
+            frm3.Show();
         }
 
         void scheduleView1_TopRowChanged(ScheduleView sender, int oldValue, int newValue)

@@ -30,7 +30,6 @@ namespace Genesis.Ambience.Controls
             Controls.Add(_tile);
 
             _tile.TokenChanged += new ProviderTokenTile.TokenEvent(_tile_TokenChanged);
-            _tile.Click += new EventHandler(_tile_Click);
             _tile.MouseDown += new MouseEventHandler(mouseDown);
             _tile.MouseUp += new MouseEventHandler(mouseUp);
             _tile.MouseLeave += new EventHandler(mouseLeave);
@@ -39,10 +38,20 @@ namespace Genesis.Ambience.Controls
         #region Events
         public delegate void TileClickedEvent(ProviderToken token);
         public event TileClickedEvent TileClicked = (t) => { };
+
+        public delegate void RightClickEvent(ProviderTokenButton button);
+        public event RightClickEvent RightClicked = (b) => { };
+        #endregion
+
+        #region Properties
+        public ProviderToken Token
+        {
+            get { return (_tile == null) ? null : _tile.Token; }
+        }
         #endregion
 
         #region Event Handlers
-        void mouseLeave(object sender, EventArgs e)
+        private void mouseLeave(object sender, EventArgs e)
         {
             if (!RectangleToScreen(ClientRectangle).Contains(MousePosition) && _pushed)
             {
@@ -51,27 +60,34 @@ namespace Genesis.Ambience.Controls
             }
         }
 
-        void mouseUp(object sender, MouseEventArgs e)
+        private void mouseUp(object sender, MouseEventArgs e)
         {
-            _pushed = false;
-            Invalidate();
-        }
-
-        void mouseDown(object sender, MouseEventArgs e)
-        {
-            _pushed = true;
-            Invalidate();
-        }
-
-        void _tile_Click(object sender, EventArgs e)
-        {
-            if (_tile.Token != null)
+            if (_pushed)
             {
-                TileClicked(_tile.Token);
+                _pushed = false;
+                Invalidate();
+
+                if (_tile.Token != null)
+                {
+                    TileClicked(_tile.Token);
+                }
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                RightClicked(this);
             }
         }
 
-        void _tile_TokenChanged(ProviderToken token)
+        private void mouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                _pushed = true;
+                Invalidate();
+            }
+        }
+
+        private void _tile_TokenChanged(ProviderToken token)
         {
             Invalidate();
         }
@@ -83,7 +99,7 @@ namespace Genesis.Ambience.Controls
             base.OnPaint(e);
             if (_tile.Token == null)
             {
-                ControlPaint.DrawBorder(e.Graphics, ClientRectangle, Color.Black, ButtonBorderStyle.Solid);
+                ControlPaint.DrawBorder(e.Graphics, ClientRectangle, Control.DefaultBackColor, ButtonBorderStyle.Inset);
             }
             else
             {
