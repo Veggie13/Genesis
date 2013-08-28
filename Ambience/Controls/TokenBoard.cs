@@ -37,6 +37,7 @@ namespace Genesis.Ambience.Controls
 
         #region Events
         public event ProviderTokenButton.Event ButtonRightClicked = (b) => { };
+        public event ProviderTokenButton.TileClickedEvent TileClicked = (t) => { };
         #endregion
 
         #region Properties
@@ -71,6 +72,8 @@ namespace Genesis.Ambience.Controls
 
                 if (_tokenBoardProvider != null)
                     _tokenBoardProvider.RowCount = value;
+
+                PerformLayout();
             }
         }
         #endregion
@@ -106,6 +109,8 @@ namespace Genesis.Ambience.Controls
 
                 if (_tokenBoardProvider != null)
                     _tokenBoardProvider.ColumnCount = value;
+
+                PerformLayout();
             }
         }
         #endregion
@@ -173,16 +178,15 @@ namespace Genesis.Ambience.Controls
             get { return _tokenBoardProvider; }
             set
             {
-                if (_tokenBoardProvider != null)
-                {
-                    _tokenBoardProvider = null;
-                    RowCount = 1;
-                    ColumnCount = 1;
-                    _content.Controls.Clear();
-                }
+                SuspendLayout();
+                _tokenBoardProvider = null;
+                RowCount = 1;
+                ColumnCount = 1;
+                _content.Controls.Clear();
 
                 _tokenBoardProvider = value;
                 initBoard();
+                ResumeLayout(true);
             }
         }
         #endregion
@@ -202,6 +206,11 @@ namespace Genesis.Ambience.Controls
                 _tokenBoardProvider[index.Item1, index.Item2] = button.Token.Provider;
             }
         }
+
+        private void btn_TileClicked(ProviderToken token)
+        {
+            TileClicked(token);
+        }
         #endregion
 
         #region Private Helpers
@@ -216,12 +225,14 @@ namespace Genesis.Ambience.Controls
 
             btn.RightClicked += new ProviderTokenButton.Event(btn_RightClicked);
             btn.TokenChanged += new ProviderTokenButton.Event(btn_TokenChanged);
+            btn.TileClicked += new ProviderTokenButton.TileClickedEvent(btn_TileClicked);
         }
 
         private void initBoard()
         {
             addButton(0, 0);
 
+            SuspendLayout();
             if (_tokenBoardProvider != null)
             {
                 ColumnCount = _tokenBoardProvider.ColumnCount;
@@ -242,16 +253,19 @@ namespace Genesis.Ambience.Controls
                 ColumnCount = DefaultColumnCount;
                 RowCount = DefaultRowCount;
             }
+            ResumeLayout(true);
         }
 
         private void setButtonSizes()
         {
+            SuspendLayout();
             for (int row = 0; row < RowCount; row++)
                 for (int col = 0; col < ColumnCount; col++)
                 {
                     _buttons[row, col].MinimumSize = _itemSize;
                     _buttons[row, col].MaximumSize = _itemSize;
                 }
+            ResumeLayout(true);
         }
         #endregion
     }

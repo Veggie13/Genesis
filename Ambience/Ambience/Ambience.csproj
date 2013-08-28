@@ -11,7 +11,8 @@
     <RootNamespace>Genesis.Ambience</RootNamespace>
     <AssemblyName>Ambience</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <OutputPath>$(ProjectDir)..\..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
@@ -48,14 +49,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="ProjectInstance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -66,6 +71,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -81,9 +87,17 @@
       <Project>{92ED947A-D14C-48A7-9AAD-52721FD4E25F}</Project>
       <Name>Controls</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
+      <Project>{311112D5-44B0-4078-8EDA-237B3C17BD78}</Project>
+      <Name>Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Audio\Audio.csproj">
       <Project>{90D212D9-F63D-41F0-AACF-39BC8D3D786D}</Project>
       <Name>Audio</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Controls\AmbienceControls.csproj">
+      <Project>{8952F2F9-6C10-42E1-B146-A5DE4127617E}</Project>
+      <Name>AmbienceControls</Name>
     </ProjectReference>
     <ProjectReference Include="..\Scheduler\Scheduler.csproj">
       <Project>{051A577E-B5B7-4C4C-92D9-B01CCB26BCED}</Project>
