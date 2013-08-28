@@ -83,16 +83,16 @@ namespace Genesis.Ambience.Controls
 
                 if (_sched != null)
                 {
-                    _sched.ScheduleExtended += new EventSchedule.ScheduleExtend(_sched_ScheduleExtended);
-                    _sched.Tick += new EventSchedule.TickEvent(_sched_Tick);
+                    _sched.ScheduleExtended += new EventSchedule.TimeEvent(_sched_ScheduleExtended);
+                    _sched.Tick += new EventSchedule.TimeEvent(_sched_Tick);
                     _sched.Started += new EventSchedule.Trigger(_sched_Started);
                     _sched.Finished += new EventSchedule.Trigger(_sched_Finished);
-                    _sched.ScheduleChanged += new EventSchedule.Trigger(_sched_ScheduleChanged);
+                    _sched.ScheduleChanged += new EventSchedule.TimeEvent(_sched_ScheduleChanged);
                     _rowCount = 0;
                     _colCount = 0;
                     _leftCol = 0;
                     _topRow = 0;
-                    updateHistory();
+                    updateHistory(0);
                     invalidateView();
                 }
             }
@@ -558,14 +558,14 @@ namespace Genesis.Ambience.Controls
             }
         }
 
-        private void _sched_ScheduleExtended(EventSchedule sched)
+        private void _sched_ScheduleExtended(EventSchedule sched, ulong timeCode)
         {
-            updateHistory();
+            updateHistory(timeCode);
         }
 
-        private void _sched_ScheduleChanged(EventSchedule sched)
+        private void _sched_ScheduleChanged(EventSchedule sched, ulong timeCode)
         {
-            updateHistory();
+            updateHistory(timeCode);
             invalidateView();
         }
         #endregion
@@ -1024,9 +1024,9 @@ namespace Genesis.Ambience.Controls
         #endregion
 
         #region Operations
-        private void updateHistory()
+        private void updateHistory(ulong timeCode)
         {
-            _tokenHistory.UpdateFuture(_sched);
+            _tokenHistory.UpdateFuture(_sched, timeCode);
             updateScrollBars();
         }
 

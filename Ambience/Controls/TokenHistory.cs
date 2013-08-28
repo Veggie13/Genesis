@@ -81,12 +81,11 @@ namespace Genesis.Ambience.Controls
             _history.Clear();
         }
         
-        public void UpdateFuture(EventSchedule sched)
+        public void UpdateFuture(EventSchedule sched, ulong fromTime)
         {
-            ulong curTime;
-            var future = sched.GetActualFuture(out curTime);
+            var future = sched.GetActualFuture(fromTime);
 
-            acrossTime(curTime, (ulong)future.Length, (ref EventToken[,] block) =>
+            acrossTime(fromTime, (ulong)future.Length, (ref EventToken[,] block) =>
             {
                 return (block != null);
             }, (ref EventToken[,] block, ulong t, int j) =>
@@ -100,7 +99,7 @@ namespace Genesis.Ambience.Controls
                 }
             });
 
-            acrossTime(curTime, (ulong)future.Length, (ref EventToken[,] block) =>
+            acrossTime(fromTime, (ulong)future.Length, (ref EventToken[,] block) =>
             {
                 if (block == null)
                     block = new EventToken[_rowCount, BlockWidth];
@@ -110,7 +109,7 @@ namespace Genesis.Ambience.Controls
                 foreach (var evt in future[(int)t])
                 {
                     int r = findEmptyRow(ref block, j);
-                    insertEvent(r, curTime + t, evt);
+                    insertEvent(r, fromTime + t, evt);
                 }
             });
         }

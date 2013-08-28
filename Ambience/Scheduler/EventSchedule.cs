@@ -111,21 +111,23 @@ namespace Genesis.Ambience.Scheduler
         public delegate void Trigger(EventSchedule sched);
         public event Trigger Started;
         public event Trigger Finished;
-        public event Trigger ScheduleChanged = (s) => { };
 
-        public delegate void TickEvent(EventSchedule sched, ulong newTimeCode);
-        public event TickEvent Tick;
-
-        public delegate void ScheduleExtend(EventSchedule sched);
-        public event ScheduleExtend ScheduleExtended;
+        public delegate void TimeEvent(EventSchedule sched, ulong newTimeCode);
+        public event TimeEvent Tick;
+        public event TimeEvent ScheduleChanged = (s, t) => { };
+        public event TimeEvent ScheduleExtended = (s, t) => { };
         #endregion
 
         #region Public Methods
         public void AddProvider(IEventProvider prov)
         {
+            ulong cur;
             lock (_locker)
+            {
+                cur = _currTimeCode;
                 AddProvider(prov.CreateInstance(), _currTimeCode);
-            ScheduleChanged(this);
+            }
+            ScheduleChanged(this, cur);
         }
 
         public void ExecuteSchedule()
@@ -208,15 +210,14 @@ namespace Genesis.Ambience.Scheduler
             InitializeSchedule();
         }
 
-        public List<IScheduleEvent>[] GetActualFuture(out ulong currTime)
+        public List<IScheduleEvent>[] GetActualFuture(ulong fromTime)
         {
             List<IScheduleEvent>[] copy;
             int idx;
             lock (_locker)
             {
                 copy = Array.ConvertAll(_schedule, (li) => (new List<IScheduleEvent>(li)));
-                currTime = _currTimeCode;
-                idx = CurrentIndex;
+                idx = Index(fromTime);
             }
 
             if (idx < copy.Length / 2)
@@ -335,8 +336,7 @@ namespace Genesis.Ambience.Scheduler
                 _providers.Remove(timeCode);
             }
 
-            if (ScheduleExtended != null)
-                ScheduleExtended(this);
+            ScheduleExtended(this, _nextBaseTime);
         }
 
         private void UpdateSchedule()

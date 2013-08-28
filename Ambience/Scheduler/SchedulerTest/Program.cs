@@ -62,7 +62,7 @@ namespace SchedulerTest
             bool result = _hub.Hub.ConnectObserver(id, obs);
 
             //sched.Model.Add(per);
-            sched.Tick += new EventSchedule.TickEvent(Ticker);
+            sched.Tick += new EventSchedule.TimeEvent(Ticker);
             sched.Start(false);
 
             //AutoResetEvent auto = new AutoResetEvent(false);
