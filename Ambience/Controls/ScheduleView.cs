@@ -833,6 +833,14 @@ namespace Genesis.Ambience.Controls
             }
         }
 
+        private class TokenTextItem
+        {
+            public int Row;
+            public int Col;
+            public int Width;
+            public bool Continued;
+        }
+        
         private void drawTokens(Graphics gc)
         {
             gc.Clip = new Region(new Rectangle(0, TrueScaleHeight, ViewRectangle.Width, ViewRectangle.Height - TrueScaleHeight));
@@ -841,6 +849,8 @@ namespace Genesis.Ambience.Controls
             bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
             int colOffset = colHangOver ? -1 : 0;
             int rowOffset = rowHangOver ? -1 : 0;
+
+            Dictionary<EventToken, TokenTextItem> textItems = new Dictionary<EventToken, TokenTextItem>();
 
             EventToken[] prevBlock = GetInstantTokens(LeftColumn - 1);
             EventToken[] block = GetInstantTokens(LeftColumn);
@@ -860,13 +870,20 @@ namespace Genesis.Ambience.Controls
                         drawLeftToken(gc, r, c, token, (prevToken == null || prevToken != token));
                         drawRightToken(gc, r, c, token, (nextToken == null || nextToken != token));
                         if (prevToken == null || prevToken != token)
-                            drawTokenText(gc, r, c, token, false);
+                            textItems[token] = new TokenTextItem() { Row = r, Col = c, Width = 1, Continued = false };
                         else if (c == 0)
-                            drawTokenText(gc, r, c, token, true);
+                            textItems[token] = new TokenTextItem() { Row = r, Col = c, Width = 1, Continued = true };
+                        else
+                            textItems[token].Width++;
                     }
                 }
                 prevBlock = block;
                 block = nextBlock;
+            }
+
+            foreach (var item in textItems)
+            {
+                drawTokenText(gc, item.Key, item.Value);
             }
         }
 
@@ -976,8 +993,13 @@ namespace Genesis.Ambience.Controls
             }
         }
 
-        private void drawTokenText(Graphics gc, int dispRow, int dispCol, EventToken token, bool continued)
+        private void drawTokenText(Graphics gc, EventToken token, TokenTextItem item)
         {
+            int dispRow = item.Row;
+            int dispCol = item.Col;
+            int dispWidth = item.Width;
+            bool continued = item.Continued;
+
             bool colHangOver = (LeftColumn > 0 && LeftColumn + DisplayedColumnCount > ColumnCount);
             bool rowHangOver = (TopRow > 0 && TopRow + DisplayedRowCount > RowCount);
             int xLeft = colHangOver ? (ViewRectangle.Width - DisplayedColumnCount * _colWidth) : 0;
@@ -985,11 +1007,13 @@ namespace Genesis.Ambience.Controls
 
             int x1 = _colWidth * dispCol + xLeft;
             int y1 = TrueScaleHeight + _rowHeight * dispRow + yTop;
+            if (x1 < 0)
+                x1 = 0;
 
             string text = (continued ? "<< " : "") + token.Name;
             gc.DrawString(text, (continued ? _italic : _bold),
                 token.IsHighlighted ? _fontHighlight : _fontColor,
-                new RectangleF(x1 + 2, y1 + 2, _colWidth - 4, _rowHeight - 4));
+                new RectangleF(x1 + 2, y1 + 2, dispWidth * _colWidth - 4, _rowHeight - 4));
         }
 
         private void resizeDrawingBuffer()

@@ -226,6 +226,7 @@
             this._schedView.Dock = System.Windows.Forms.DockStyle.Fill;
             this._schedView.Location = new System.Drawing.Point(84, 3);
             this._schedView.Name = "_schedView";
+            this._schedView.RowHeight = 25;
             this.tableLayoutPanel2.SetRowSpan(this._schedView, 4);
             this._schedView.Schedule = null;
             this._schedView.ShowScale = true;
