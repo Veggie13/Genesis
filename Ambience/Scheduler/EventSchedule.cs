@@ -111,6 +111,7 @@ namespace Genesis.Ambience.Scheduler
         public delegate void Trigger(EventSchedule sched);
         public event Trigger Started;
         public event Trigger Finished;
+        public event Trigger ScheduleChanged = (s) => { };
 
         public delegate void TickEvent(EventSchedule sched, ulong newTimeCode);
         public event TickEvent Tick;
@@ -124,6 +125,7 @@ namespace Genesis.Ambience.Scheduler
         {
             lock (_locker)
                 AddProvider(prov.CreateInstance(), _currTimeCode);
+            ScheduleChanged(this);
         }
 
         public void ExecuteSchedule()
@@ -206,7 +208,7 @@ namespace Genesis.Ambience.Scheduler
             InitializeSchedule();
         }
 
-        public IEnumerable<IScheduleEvent>[] GetActualFuture(out ulong currTime)
+        public List<IScheduleEvent>[] GetActualFuture(out ulong currTime)
         {
             List<IScheduleEvent>[] copy;
             int idx;
@@ -219,13 +221,13 @@ namespace Genesis.Ambience.Scheduler
 
             if (idx < copy.Length / 2)
             {
-                var result = new IEnumerable<IScheduleEvent>[copy.Length - idx];
+                var result = new List<IScheduleEvent>[copy.Length - idx];
                 Array.Copy(copy, idx, result, 0, result.Length);
                 return result;
             }
             else
             {
-                var result = new IEnumerable<IScheduleEvent>[copy.Length - (idx - copy.Length / 2)];
+                var result = new List<IScheduleEvent>[copy.Length - (idx - copy.Length / 2)];
                 Array.Copy(copy, idx, result, 0, copy.Length - idx);
                 Array.Copy(copy, 0, result, copy.Length - idx, copy.Length / 2);
                 return result;
