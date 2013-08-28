@@ -14,7 +14,7 @@ namespace Genesis.Ambience.Controls
     public partial class ScheduleView : UserControl
     {
         #region Private Members
-        private Dictionary<int, EventToken[,]> _history = new Dictionary<int, EventToken[,]>();
+        private TokenHistory _tokenHistory = new TokenHistory();
         private int _curIndex = -1;
         private Point _lastMousePos = new Point();
         private bool _updatingScroll = false;
@@ -41,6 +41,7 @@ namespace Genesis.Ambience.Controls
 
             // Set defaults
             this.UseDrawingBuffer = DefaultUseDrawingBuffer;
+            this._tokenHistory.BlockWidth = 256;
 
             this.SetStyle(ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
             this.DoubleBuffered = true;
@@ -72,10 +73,13 @@ namespace Genesis.Ambience.Controls
                 {
                     _sched.ScheduleExtended -= _sched_ScheduleExtended;
                     _sched.Tick -= _sched_Tick;
+                    _sched.Started -= _sched_Started;
+                    _sched.Finished -= _sched_Finished;
+                    _sched.ScheduleChanged -= _sched_ScheduleChanged;
                 }
 
                 _sched = value;
-                _history.Clear();
+                _tokenHistory.Clear();
 
                 if (_sched != null)
                 {
@@ -83,11 +87,13 @@ namespace Genesis.Ambience.Controls
                     _sched.Tick += new EventSchedule.TickEvent(_sched_Tick);
                     _sched.Started += new EventSchedule.Trigger(_sched_Started);
                     _sched.Finished += new EventSchedule.Trigger(_sched_Finished);
+                    _sched.ScheduleChanged += new EventSchedule.Trigger(_sched_ScheduleChanged);
                     _rowCount = 0;
                     _colCount = 0;
                     _leftCol = 0;
                     _topRow = 0;
                     updateHistory();
+                    invalidateView();
                 }
             }
         }
@@ -112,7 +118,7 @@ namespace Genesis.Ambience.Controls
         [Browsable(false)]
         public int ColumnCount
         {
-            get { return _colCount; }
+            get { return (int)_tokenHistory.ColumnCount; }
         }
         #endregion
 
@@ -535,7 +541,7 @@ namespace Genesis.Ambience.Controls
                 for (int row = 0; row < tokens.Length; row++)
                 {
                     EventToken token = tokens[row];
-                    if (token != null && token.Event != null && curTokens[row] != token)
+                    if (token != null && token.Event != null && (curTokens.Length <= row || curTokens[row] != token))
                         token.Finish();
                 }
             }
@@ -555,6 +561,12 @@ namespace Genesis.Ambience.Controls
         private void _sched_ScheduleExtended(EventSchedule sched)
         {
             updateHistory();
+        }
+
+        private void _sched_ScheduleChanged(EventSchedule sched)
+        {
+            updateHistory();
+            invalidateView();
         }
         #endregion
 
@@ -989,18 +1001,10 @@ namespace Genesis.Ambience.Controls
         #region Accessors
         private EventToken[] GetInstantTokens(int index)
         {
-            var lessKeys = _history.Keys.Where((k) => (k <= index));
-            if (lessKeys.Count() < 1)
+            if (index < 0)
                 return new EventToken[0];
-            int group = lessKeys.Max();
-            EventToken[,] all = _history[group];
-            if (index - group >= all.GetLength(1))
-                return new EventToken[0];
-            int len = all.GetLength(0);
-            var result = new EventToken[len];
-            for (int i = 0; i < len; i++)
-                result[i] = all[i, index - group];
-            return result;
+
+            return _tokenHistory[(ulong)index];
         }
 
         private bool getVisibleCell(Point loc, out int col, out int row)
@@ -1022,67 +1026,8 @@ namespace Genesis.Ambience.Controls
         #region Operations
         private void updateHistory()
         {
-            ulong curTime;
-            var block = _sched.GetActualFuture(out curTime);
-            int skip = _colCount - (int)curTime;
-
-            try
-            {
-                var result = new EventToken[_rowCount, block.Length - skip];
-
-                var lastTokens = GetInstantTokens(_colCount - 1);
-                for (int r = 0; r < lastTokens.Length; r++)
-                {
-                    if (lastTokens[r] != null && lastTokens[r].Last >= _colCount)
-                    {
-                        for (int c = 0; c < result.GetLength(1) && _colCount + c <= lastTokens[r].Last; c++)
-                            result[r, c] = lastTokens[r];
-                    }
-                }
-
-                for (int c = skip; c < block.Length; c++)
-                {
-                    foreach (IScheduleEvent evt in block[c])
-                    {
-                        EventToken token = new EventToken(_colCount + c, evt, _colorer);
-                        bool invalid = true;
-                        int r;
-                        for (r = 0; invalid && r < result.GetLength(0); r++)
-                        {
-                            invalid = false;
-                            for (int cc = c; cc < block.Length && _colCount + cc <= token.Last; cc++)
-                            {
-                                if (result[r, cc - skip] != null)
-                                {
-                                    invalid = true;
-                                    break;
-                                }
-                            }
-                            if (!invalid)
-                                break;
-                        }
-                        if (invalid)
-                        {
-                            r = (++_rowCount) - 1;
-                            var newResult = new EventToken[_rowCount, result.GetLength(1)];
-                            Array.Copy(result, newResult, result.Length);
-                            result = newResult;
-                        }
-
-                        for (int cc = c; cc < block.Length && _colCount + cc <= token.Last; cc++)
-                            result[r, cc - skip] = token;
-                    }
-                }
-
-                _history[_colCount] = result;
-                _colCount += result.GetLength(1);
-
-                updateScrollBars();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
+            _tokenHistory.UpdateFuture(_sched);
+            updateScrollBars();
         }
 
         private void invalidateView()

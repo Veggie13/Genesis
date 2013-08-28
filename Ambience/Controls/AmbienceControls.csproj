@@ -121,6 +121,7 @@
     <Compile Include="TokenBoard.Designer.cs">
       <DependentUpon>TokenBoard.cs</DependentUpon>
     </Compile>
+    <Compile Include="TokenHistory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
