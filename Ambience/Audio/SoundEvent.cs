@@ -89,6 +89,7 @@ namespace Genesis.Ambience.Audio
         public SoundEvent(Provider src, SoundResource res, uint timePerSecond)
         {
             Console.WriteLine("{0} created", _id);
+            Started = false;
             _source = src;
             _resource = res;
             _length = (ulong)Math.Ceiling(res.Length * (double)timePerSecond);
@@ -115,6 +116,12 @@ namespace Genesis.Ambience.Audio
             get { return _active; }
         }
 
+        public bool Started
+        {
+            get;
+            private set;
+        }
+
         public string Name
         {
             get { return _source.Name; }
@@ -130,6 +137,7 @@ namespace Genesis.Ambience.Audio
         {
             //Console.WriteLine("Event started");
             _active = true;
+            Started = true;
             _resource.PlaybackStopped += PlaybackFinished;
             _resource.Play();
         }
@@ -144,6 +152,7 @@ namespace Genesis.Ambience.Audio
             //Console.WriteLine("Event Stopped");
             _resource.PlaybackStopped -= PlaybackFinished;
             _resource.Stop();
+            _active = false;
             Console.WriteLine("{0} disposed", _id);
         }
 

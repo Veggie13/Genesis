@@ -8,6 +8,7 @@ namespace Genesis.Ambience.Scheduler
     {
         ulong Length { get; }
         bool Active { get; }
+        bool Started { get; }
         string Name { get; }
         IEventProvider Source { get; }
 

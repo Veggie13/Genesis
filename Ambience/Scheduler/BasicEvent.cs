@@ -61,17 +61,19 @@ namespace Genesis.Ambience.Scheduler
         {
             _source = src;
             _name = name;
+            Started = false;
         }
         public BasicEvent(IEventProvider src, string name, ulong len)
         {
             _source = src;
             _name = name;
             _length = len;
+            Started = false;
         }
 
         #region IScheduleEvent Members
 
-        private ulong _length = 1;
+        private ulong _length = 2;
         public ulong Length
         {
             get { return _length; }
@@ -81,6 +83,12 @@ namespace Genesis.Ambience.Scheduler
         public bool Active
         {
             get { return _active; }
+        }
+
+        public bool Started
+        {
+            get;
+            private set;
         }
 
         private string _name;
@@ -98,6 +106,7 @@ namespace Genesis.Ambience.Scheduler
         public void Start()
         {
             _active = true;
+            Started = true;
             Console.WriteLine("BasicEvent {0} Start()", _id);
         }
 
