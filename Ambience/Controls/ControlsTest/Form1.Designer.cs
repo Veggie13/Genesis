@@ -39,6 +39,7 @@
             this.scheduleView1 = new Genesis.Ambience.Controls.ScheduleView();
             this.providerTokenList1 = new Genesis.Ambience.Controls.ProviderTokenList();
             this.providerTokenButton1 = new Genesis.Ambience.Controls.ProviderTokenButton();
+            this.libraryView1 = new Genesis.Ambience.Controls.LibraryView();
             this.SuspendLayout();
             // 
             // button1
@@ -137,7 +138,7 @@
             // 
             this.providerTokenList1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.providerTokenList1.ColorProvider = null;
-            this.providerTokenList1.Location = new System.Drawing.Point(85, 312);
+            this.providerTokenList1.Location = new System.Drawing.Point(25, 362);
             this.providerTokenList1.Name = "providerTokenList1";
             this.providerTokenList1.Size = new System.Drawing.Size(558, 80);
             this.providerTokenList1.TabIndex = 9;
@@ -146,16 +147,26 @@
             // 
             // providerTokenButton1
             // 
-            this.providerTokenButton1.Location = new System.Drawing.Point(673, 205);
+            this.providerTokenButton1.Location = new System.Drawing.Point(183, 254);
             this.providerTokenButton1.Name = "providerTokenButton1";
+            this.providerTokenButton1.Padding = new System.Windows.Forms.Padding(5);
             this.providerTokenButton1.Size = new System.Drawing.Size(109, 72);
             this.providerTokenButton1.TabIndex = 10;
+            this.providerTokenButton1.Token = null;
+            // 
+            // libraryView1
+            // 
+            this.libraryView1.Location = new System.Drawing.Point(700, 37);
+            this.libraryView1.Name = "libraryView1";
+            this.libraryView1.Size = new System.Drawing.Size(402, 367);
+            this.libraryView1.TabIndex = 11;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(841, 471);
+            this.ClientSize = new System.Drawing.Size(1137, 471);
+            this.Controls.Add(this.libraryView1);
             this.Controls.Add(this.providerTokenButton1);
             this.Controls.Add(this.providerTokenList1);
             this.Controls.Add(this.eventTokenTile2);
@@ -187,6 +198,7 @@
         private Genesis.Ambience.Controls.ProviderTokenTile eventTokenTile2;
         private Genesis.Ambience.Controls.ProviderTokenList providerTokenList1;
         private Genesis.Ambience.Controls.ProviderTokenButton providerTokenButton1;
+        private Genesis.Ambience.Controls.LibraryView libraryView1;
     }
 }
 

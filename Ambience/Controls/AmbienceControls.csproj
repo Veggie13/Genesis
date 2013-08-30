@@ -48,6 +48,12 @@
     <Compile Include="AEventControl.Designer.cs">
       <DependentUpon>AEventControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="LibraryView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LibraryView.Designer.cs">
+      <DependentUpon>LibraryView.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProviderTokenButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -128,9 +134,17 @@
       <Project>{311112D5-44B0-4078-8EDA-237B3C17BD78}</Project>
       <Name>Tools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Audio\Audio.csproj">
+      <Project>{90D212D9-F63D-41F0-AACF-39BC8D3D786D}</Project>
+      <Name>Audio</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Scheduler\Scheduler.csproj">
       <Project>{051A577E-B5B7-4C4C-92D9-B01CCB26BCED}</Project>
       <Name>Scheduler</Name>
+    </ProjectReference>
+    <ProjectReference Include="Aga.Controls\Aga.Controls.csproj">
+      <Project>{E73BB233-D88B-44A7-A98F-D71EE158381D}</Project>
+      <Name>Aga.Controls</Name>
     </ProjectReference>
     <ProjectReference Include="Helper\AmbienceControlsHelper.csproj">
       <Project>{CC6EA342-68E2-4A5B-B47B-B3D3790C0E6C}</Project>
@@ -140,6 +154,9 @@
   <ItemGroup>
     <EmbeddedResource Include="AEventControl.resx">
       <DependentUpon>AEventControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LibraryView.resx">
+      <DependentUpon>LibraryView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SimultaneousEventControl.resx">
       <DependentUpon>SimultaneousEventControl.cs</DependentUpon>

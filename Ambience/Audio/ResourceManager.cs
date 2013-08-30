@@ -27,10 +27,11 @@ namespace Genesis.Ambience.Audio
         #endregion
 
         #region Public Operations
-        public void LoadLibrary(string path)
+        public ILibrary LoadLibrary(string path)
         {
             ILibrary lib = new FileSystemLibrary(path);
             _libs[lib.Name] = lib;
+            return lib;
         }
 
         public void UnloadLibrary(string path)
