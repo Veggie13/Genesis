@@ -26,35 +26,32 @@ namespace Genesis.Ambience.Controls
 
         private class LibraryNode : BaseNode
         {
-            public LibraryNode(ILibrary lib)
+            public LibraryNode(string name)
             {
-                Name = lib.Name;
+                Name = name;
                 Format = "";
                 Length = "";
-                Path = lib.Path;
-                Library = lib;
+                Path = "";
             }
-
-            public ILibrary Library { get; private set; }
         }
 
         private class ItemNode : BaseNode
         {
-            public ItemNode(ILibrary lib, string name)
+            public ItemNode(string name, SoundResource res)
             {
-                Name = System.IO.Path.GetFileNameWithoutExtension(name);
-                Format = lib.FileFormat(name).ToString();
-                Length = "";
-                Path = name;
+                Name = name;
+                Format = "";
+                Length = TimeSpan.FromSeconds(res.Length).Format(0, "M:ss");
+                Path = "";
             }
         }
 
         private class LibraryTreeModel : ITreeModel
         {
+            private Dictionary<string, List<string>> _items = new Dictionary<string, List<string>>();
+
             public LibraryTreeModel()
             {
-                _libs.ItemsAdded += new SignalList<ILibrary>.ItemsEvent(_libs_ItemsAdded);
-                _libs.ItemsRemoved += new SignalList<ILibrary>.ItemsEvent(_libs_ItemsRemoved);
             }
 
             #region Properties
@@ -65,24 +62,20 @@ namespace Genesis.Ambience.Controls
                 get { return _libs; }
             }
             #endregion
+
+            #region Resources
+            private ResourceManager _resMgr;
+            public ResourceManager Resources
+            {
+                get { return _resMgr; }
+                set
+                {
+                    _resMgr = value;
+                    setupItems();
+                    this.StructureChanged(this, new TreePathEventArgs());
+                }
+            }
             #endregion
-
-            #region Event Handlers
-            private void _libs_ItemsRemoved(IEnumerable<Tuple<int, ILibrary>> items)
-            {
-                NodesRemoved(this, new TreeModelEventArgs(
-                    new TreePath(),
-                    items.Select(t => t.Item1).ToArray(),
-                    items.Select(t => new LibraryNode(t.Item2) as object).ToArray()));
-            }
-
-            private void _libs_ItemsAdded(IEnumerable<Tuple<int, ILibrary>> items)
-            {
-                NodesInserted(this, new TreeModelEventArgs(
-                    new TreePath(),
-                    items.Select(t => t.Item1).ToArray(),
-                    items.Select(t => new LibraryNode(t.Item2) as object).ToArray()));
-            }
             #endregion
 
             #region ITreeModel
@@ -90,20 +83,20 @@ namespace Genesis.Ambience.Controls
             {
                 if (treePath.IsEmpty())
                 {
-                    foreach (var lib in _libs)
+                    foreach (string libName in _items.Keys.OrderBy(n => n))
                     {
-                        LibraryNode item = new LibraryNode(lib);
+                        LibraryNode item = new LibraryNode(libName);
                         yield return item;
                     }
                 }
                 else
                 {
                     LibraryNode parent = treePath.LastNode as LibraryNode;
-                    if (parent != null)
+                    if (parent != null && _items.ContainsKey(parent.Name))
                     {
-                        foreach (string name in parent.Library.Sounds.OrderBy(n => n))
+                        foreach (string name in _items[parent.Name].OrderBy(n => n))
                         {
-                            yield return new ItemNode(parent.Library, name);
+                            yield return new ItemNode(name, _resMgr.GetResource(parent.Name + "::" + name));
                         }
                     }
                     else
@@ -120,6 +113,21 @@ namespace Genesis.Ambience.Controls
             public event EventHandler<TreeModelEventArgs> NodesInserted = (o, e) => { };
             public event EventHandler<TreeModelEventArgs> NodesRemoved = (o, e) => { };
             public event EventHandler<TreePathEventArgs> StructureChanged = (o, e) => { };
+            #endregion
+
+            #region Private Helpers
+            private void setupItems()
+            {
+                _items.Clear();
+
+                foreach (var item in _resMgr.GetAllSounds())
+                {
+                    string[] tokens = item.Split(new string[] { "::" }, StringSplitOptions.None);
+                    if (!_items.ContainsKey(tokens[0]))
+                        _items[tokens[0]] = new List<string>();
+                    _items[tokens[0]].Add(tokens[1]);
+                }
+            }
             #endregion
         }
         #endregion
@@ -139,6 +147,12 @@ namespace Genesis.Ambience.Controls
         public ICollection<ILibrary> Libraries
         {
             get { return _model.Libraries; }
+        }
+
+        public ResourceManager Resources
+        {
+            get { return _model.Resources; }
+            set { _model.Resources = value; }
         }
         #endregion
     }

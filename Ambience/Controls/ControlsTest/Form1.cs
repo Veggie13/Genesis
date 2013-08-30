@@ -27,9 +27,10 @@ namespace ControlsTest
             InitializeComponent();
 
             _manager = new ResourceManager();
-            ILibrary lib = _manager.LoadLibrary(@"E:\Media");
+            ILibrary lib = _manager.LoadLibrary(@"C:\Corey Derochie\ATCNY");
+            ILibrary lib2 = _manager.LoadLibrary(@"C:\Corey Derochie\Paramore");
             _manager.Start();
-            libraryView1.Libraries.Add(lib);
+            libraryView1.Resources = _manager;
 
             _sched = new EventSchedule(32);
             _sched.TicksPerSec = 2;
