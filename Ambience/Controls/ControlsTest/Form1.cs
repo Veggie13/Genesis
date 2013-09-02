@@ -27,8 +27,7 @@ namespace ControlsTest
             InitializeComponent();
 
             _manager = new ResourceManager();
-            ILibrary lib = _manager.LoadLibrary(@"C:\Corey Derochie\ATCNY");
-            ILibrary lib2 = _manager.LoadLibrary(@"C:\Corey Derochie\Paramore");
+            ILibrary lib = _manager.LoadLibrary(@"E:\Media");
             _manager.Start();
             libraryView1.Resources = _manager;
 
@@ -86,8 +85,15 @@ namespace ControlsTest
 
             providerTokenButton1.TileClicked += new ProviderTokenButton.TileClickedEvent(providerTokenButton1_TileClicked);
 
+            libraryView1.SelectionChanged += new LibraryView.ResourceEventHandler(libraryView1_SelectionChanged);
+
             this.Load += new EventHandler(Form1_Load);
             this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
+        }
+
+        void libraryView1_SelectionChanged(SoundResource res)
+        {
+            MessageBox.Show(res.Length.ToString());
         }
 
         void providerTokenButton1_TileClicked(ProviderToken token)

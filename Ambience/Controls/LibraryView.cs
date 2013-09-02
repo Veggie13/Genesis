@@ -43,6 +43,13 @@ namespace Genesis.Ambience.Controls
                 Format = "";
                 Length = TimeSpan.FromSeconds(res.Length).Format(0, "M:ss");
                 Path = "";
+                Resource = res;
+            }
+
+            public SoundResource Resource
+            {
+                get;
+                private set;
             }
         }
 
@@ -55,14 +62,6 @@ namespace Genesis.Ambience.Controls
             }
 
             #region Properties
-            #region Libraries
-            private SignalList<ILibrary> _libs = new SignalList<ILibrary>();
-            public ICollection<ILibrary> Libraries
-            {
-                get { return _libs; }
-            }
-            #endregion
-
             #region Resources
             private ResourceManager _resMgr;
             public ResourceManager Resources
@@ -141,18 +140,36 @@ namespace Genesis.Ambience.Controls
             InitializeComponent();
 
             _tree.Model = _model;
+            _tree.SelectionChanged += new EventHandler(_tree_SelectionChanged);
         }
 
         #region Properties
-        public ICollection<ILibrary> Libraries
-        {
-            get { return _model.Libraries; }
-        }
-
         public ResourceManager Resources
         {
             get { return _model.Resources; }
             set { _model.Resources = value; }
+        }
+
+        public SoundResource SelectedResource
+        {
+            get
+            {
+                if (_tree.SelectedNode != null && _tree.SelectedNode.IsLeaf)
+                    return ((ItemNode)_tree.SelectedNode.Tag).Resource;
+                return null;
+            }
+        }
+        #endregion
+
+        #region Events
+        public delegate void ResourceEventHandler(SoundResource res);
+        public event ResourceEventHandler SelectionChanged = (r) => { };
+        #endregion
+
+        #region Event Handlers
+        private void _tree_SelectionChanged(object sender, EventArgs e)
+        {
+            SelectionChanged(SelectedResource);
         }
         #endregion
     }
