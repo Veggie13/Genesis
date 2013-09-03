@@ -47,6 +47,7 @@ namespace Genesis.Ambience.Controls
             set;
         }
 
+        [Browsable(false)]
         public abstract IEventProvider Provider { get; }
 
         public abstract void ApplyChanges();

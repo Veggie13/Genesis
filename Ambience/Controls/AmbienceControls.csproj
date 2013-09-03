@@ -48,6 +48,18 @@
     <Compile Include="AEventControl.Designer.cs">
       <DependentUpon>AEventControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="ResourceSelectionDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ResourceSelectionDlg.Designer.cs">
+      <DependentUpon>ResourceSelectionDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SoundEventControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SoundEventControl.Designer.cs">
+      <DependentUpon>SoundEventControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="LibraryView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -154,6 +166,12 @@
   <ItemGroup>
     <EmbeddedResource Include="AEventControl.resx">
       <DependentUpon>AEventControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResourceSelectionDlg.resx">
+      <DependentUpon>ResourceSelectionDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SoundEventControl.resx">
+      <DependentUpon>SoundEventControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LibraryView.resx">
       <DependentUpon>LibraryView.cs</DependentUpon>

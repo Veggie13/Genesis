@@ -21,6 +21,7 @@ namespace ControlsTest
         private RandomEventSelector _randEventSel = new RandomEventSelector("Randy");
         DelayEventProvider del1 = new DelayEventProvider("Delay1");
         PeriodicEventProvider per2 = new PeriodicEventProvider("Period2");
+        SoundEvent.Provider snd3;
 
         public Form1()
         {
@@ -36,6 +37,7 @@ namespace ControlsTest
 
             BasicEvent.Provider prov1 = new BasicEvent.Provider("Chord");
             BasicEvent.Provider prov2 = new BasicEvent.Provider("Ding");
+            snd3 = new SoundEvent.Provider("Sound1", _manager, "Media::sttng.wav");
             //SoundEvent.Provider prov1 = new SoundEvent.Provider("Chord", _manager, "chord.wav");
             //SoundEvent.Provider prov2 = new SoundEvent.Provider("Ding", _manager, "krkfunny.WAV");
             PeriodicEventProvider per1 = new PeriodicEventProvider("Period");
@@ -91,7 +93,7 @@ namespace ControlsTest
             this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
         }
 
-        void libraryView1_SelectionChanged(SoundResource res)
+        void libraryView1_SelectionChanged(SoundEvent.IResource res)
         {
             MessageBox.Show(res.Length.ToString());
         }
@@ -114,7 +116,7 @@ namespace ControlsTest
         void Form1_Load(object sender, EventArgs e)
         {
             Form2 frm = new Form2();
-            frm.eventProviderEditorControl1.Provider = per2;
+            frm.eventProviderEditorControl1.Provider = snd3;
             frm.eventProviderEditorControl1.ColorProvider = this;
             frm.Show();
 

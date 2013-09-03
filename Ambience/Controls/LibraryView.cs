@@ -10,6 +10,7 @@ using Genesis.Ambience.Audio;
 using Genesis.Common.Tools;
 using Aga.Controls.Tree;
 using System.Collections;
+using Genesis.Ambience.Scheduler;
 
 namespace Genesis.Ambience.Controls
 {
@@ -37,7 +38,7 @@ namespace Genesis.Ambience.Controls
 
         private class ItemNode : BaseNode
         {
-            public ItemNode(string name, SoundResource res)
+            public ItemNode(string name, SoundEvent.IResource res)
             {
                 Name = name;
                 Format = "";
@@ -46,7 +47,7 @@ namespace Genesis.Ambience.Controls
                 Resource = res;
             }
 
-            public SoundResource Resource
+            public SoundEvent.IResource Resource
             {
                 get;
                 private set;
@@ -63,8 +64,8 @@ namespace Genesis.Ambience.Controls
 
             #region Properties
             #region Resources
-            private ResourceManager _resMgr;
-            public ResourceManager Resources
+            private SoundEvent.IResourceProvider _resMgr;
+            public SoundEvent.IResourceProvider Resources
             {
                 get { return _resMgr; }
                 set
@@ -118,6 +119,8 @@ namespace Genesis.Ambience.Controls
             private void setupItems()
             {
                 _items.Clear();
+                if (_resMgr == null)
+                    return;
 
                 foreach (var item in _resMgr.GetAllSounds())
                 {
@@ -143,14 +146,27 @@ namespace Genesis.Ambience.Controls
             _tree.SelectionChanged += new EventHandler(_tree_SelectionChanged);
         }
 
+        #region Public Operations
+        public void SetSelectedResource(string resName)
+        {
+            var found = _tree.AllNodes.Where(n => n.IsLeaf && fullName(n).Equals(resName));
+            if (found.Any())
+                _tree.SelectedNode = found.First();
+            else
+                _tree.SelectedNode = null;
+        }
+        #endregion
+
         #region Properties
-        public ResourceManager Resources
+        [Browsable(false)]
+        public SoundEvent.IResourceProvider Resources
         {
             get { return _model.Resources; }
             set { _model.Resources = value; }
         }
 
-        public SoundResource SelectedResource
+        [Browsable(false)]
+        public SoundEvent.IResource SelectedResource
         {
             get
             {
@@ -162,7 +178,7 @@ namespace Genesis.Ambience.Controls
         #endregion
 
         #region Events
-        public delegate void ResourceEventHandler(SoundResource res);
+        public delegate void ResourceEventHandler(SoundEvent.IResource res);
         public event ResourceEventHandler SelectionChanged = (r) => { };
         #endregion
 
@@ -170,6 +186,22 @@ namespace Genesis.Ambience.Controls
         private void _tree_SelectionChanged(object sender, EventArgs e)
         {
             SelectionChanged(SelectedResource);
+        }
+        #endregion
+
+        #region Private Helpers
+        private string fullName(TreeNodeAdv node)
+        {
+            if (node.IsLeaf)
+            {
+                ItemNode item = node.Tag as ItemNode;
+                return fullName(node.Parent) + "::" + item.Name;
+            }
+            else
+            {
+                LibraryNode libNode = node.Tag as LibraryNode;
+                return libNode.Name;
+            }
         }
         #endregion
     }
