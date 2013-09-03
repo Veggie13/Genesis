@@ -4,10 +4,11 @@ using System.Text;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Genesis.Ambience.Scheduler;
 
 namespace Genesis.Ambience.Audio
 {
-    public class ResourceManager
+    public class ResourceManager : SoundEvent.IResourceProvider
     {
         #region Class Members
         private struct Basket
@@ -61,6 +62,11 @@ namespace Genesis.Ambience.Audio
             return loadResource(lib, name);
         }
 
+        SoundEvent.IResource SoundEvent.IResourceProvider.GetResource(string name)
+        {
+            return GetResource(name);
+        }
+
         public void Start()
         {
             _eventThread = new Thread(new ThreadStart(eventThread));
@@ -104,15 +110,16 @@ namespace Genesis.Ambience.Audio
             Basket b = new Basket();
             ResourceManager mgr = this;
             AutoResetEvent signal = new AutoResetEvent(false);
+            string fullName = lib.Name + "::" + resName;
             syncAction(() =>
             {
-                b.res = new SoundResource(mgr, lib.OpenStream(resName), lib.FileFormat(resName));
+                b.res = new SoundResource(mgr, fullName, lib.OpenStream(resName), lib.FileFormat(resName));
                 b.res.init();
                 signal.Set();
             });
             signal.WaitOne();
 
-            _loaded[lib.Name + "::" + resName] = b.res;
+            _loaded[fullName] = b.res;
 
             return b.res;
         }

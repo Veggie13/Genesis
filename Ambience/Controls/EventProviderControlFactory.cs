@@ -41,16 +41,23 @@ namespace Genesis.Ambience.Controls
 
             public void Visit(SequentialEventSelector provider)
             {
-                throw new NotImplementedException();
+                Control = new SequentialEventControl(provider, _colorProvider);
             }
 
             public void Visit(SimultaneousEventProvider provider)
             {
-                throw new NotImplementedException();
+                Control = new SimultaneousEventControl(provider, _colorProvider);
+            }
+
+            public void Visit(SoundEvent.Provider provider)
+            {
+                Control = new SoundEventControl(provider, _colorProvider);
             }
 
             public void Visit(IVisitable<IEventProviderVisitor, IEventProvider> item)
             {
+                // If this happens, there's a new type of visitable that this visitor
+                // hasn't been set up to visit yet...
                 throw new NotImplementedException();
             }
         }

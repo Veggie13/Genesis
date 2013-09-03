@@ -5,19 +5,21 @@ using System.Text;
 using NAudio.Wave;
 using System.Threading;
 using System.IO;
+using Genesis.Ambience.Scheduler;
 
 namespace Genesis.Ambience.Audio
 {
-    public class SoundResource : IDisposable
+    public class SoundResource : IDisposable, SoundEvent.IResource
     {
         private ResourceManager _manager;
         private WaveStream _reader;
         private WaveChannel32 _stream;
         private IWavePlayer _wavDevice = new WaveOut(WaveCallbackInfo.FunctionCallback());
 
-        public SoundResource(ResourceManager mgr, Stream stream, Format fmt)
+        public SoundResource(ResourceManager mgr, string fullName, Stream stream, Format fmt)
         {
             _manager = mgr;
+            FullName = fullName;
 
             switch (fmt)
             {
@@ -56,6 +58,12 @@ namespace Genesis.Ambience.Audio
             {
                 return _stream.TotalTime.TotalSeconds;
             }
+        }
+
+        public string FullName
+        {
+            get;
+            private set;
         }
 
         internal void init()

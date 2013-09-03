@@ -21,6 +21,7 @@ namespace Genesis.Ambience.Scheduler
         void Visit(RandomEventSelector provider);
         void Visit(SequentialEventSelector provider);
         void Visit(SimultaneousEventProvider provider);
+        void Visit(SoundEvent.Provider provider);
     }
 
     public abstract class AEventProvider : IEventProvider
