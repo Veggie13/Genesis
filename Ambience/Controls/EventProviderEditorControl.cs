@@ -17,6 +17,10 @@ namespace Genesis.Ambience.Controls
             InitializeComponent();
         }
 
+        #region Events
+        #endregion
+
+        #region Properties
         private IEventProvider _provider;
         public IEventProvider Provider
         {
@@ -37,14 +41,7 @@ namespace Genesis.Ambience.Controls
 
                 if (_provider != null)
                 {
-                    AEventControl ctrl = EventProviderControlFactory.Create(_provider, ColorProvider);
-                    ctrl.Margin = new System.Windows.Forms.Padding(0);
-                    //ctrl.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
-                    //ctrl.Size = _contents.DisplayRectangle.Size;
-                    ctrl.Dock = DockStyle.Fill;
-                    ctrl.Location = new Point(0, 0);
-
-                    _contents.Controls.Add(ctrl);
+                    updateProvider();
                 }
             }
         }
@@ -54,5 +51,28 @@ namespace Genesis.Ambience.Controls
             get;
             set;
         }
+        #endregion
+
+        #region Event Handlers
+        private void _txtName_TextChanged(object sender, EventArgs e)
+        {
+        }
+        #endregion
+
+        #region Private Helpers
+        private void updateProvider()
+        {
+            AEventControl ctrl = EventProviderControlFactory.Create(_provider, ColorProvider);
+            ctrl.Margin = new System.Windows.Forms.Padding(0);
+            //ctrl.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+            //ctrl.Size = _contents.DisplayRectangle.Size;
+            ctrl.Dock = DockStyle.Fill;
+            ctrl.Location = new Point(0, 0);
+
+            _contents.Controls.Add(ctrl);
+
+            _txtName.Text = _provider.Name;
+        }
+        #endregion
     }
 }
