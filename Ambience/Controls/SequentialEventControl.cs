@@ -60,8 +60,7 @@ namespace Genesis.Ambience.Controls
         }
     }
 
-    [TypeDescriptionProvider(typeof(Helper.ConcreteClassProvider<UserControl>))]
-    [Helper.ConcreteClass(typeof(AEventControl.Concrete))]
+    [TypeDescriptionProvider(typeof(Helper.ConcreteClassProvider<AEventControl, AEventControl.Concrete>))]
     public abstract class ASequentialEventControl : GenericEventControl<SequentialEventSelector>
     {
         public ASequentialEventControl() { }

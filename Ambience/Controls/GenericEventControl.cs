@@ -15,7 +15,7 @@ namespace Genesis.Ambience.Controls
             : base(colorer)
         {
             EventProvider = prov;
-            initFromProvider();
+            this.Load += new System.EventHandler(GenericEventControl_Load);
         }
 
         public override IEventProvider Provider
@@ -27,6 +27,11 @@ namespace Genesis.Ambience.Controls
         {
             get;
             private set;
+        }
+
+        private void GenericEventControl_Load(object sender, System.EventArgs e)
+        {
+            initFromProvider();
         }
 
     }

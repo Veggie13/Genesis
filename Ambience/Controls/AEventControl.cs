@@ -10,11 +10,9 @@ using Genesis.Ambience.Scheduler;
 
 namespace Genesis.Ambience.Controls
 {
-    [TypeDescriptionProvider(typeof(Helper.ConcreteClassProvider<UserControl>))]
-    [Helper.ConcreteClass(typeof(AEventControl.Concrete))]
     public abstract partial class AEventControl : UserControl
     {
-        internal class Concrete : AEventControl
+        protected class Concrete : AEventControl
         {
             public Concrete() : base(null) { }
 

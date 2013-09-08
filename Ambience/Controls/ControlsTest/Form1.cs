@@ -116,8 +116,8 @@ namespace ControlsTest
         void Form1_Load(object sender, EventArgs e)
         {
             Form2 frm = new Form2();
-            frm.eventProviderEditorControl1.Provider = snd3;
-            frm.eventProviderEditorControl1.ColorProvider = this;
+            frm.ColorProvider = this;
+            frm.Provider = snd3;
             frm.Show();
 
             Form3 frm3 = new Form3();

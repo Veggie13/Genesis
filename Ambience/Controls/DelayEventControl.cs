@@ -14,11 +14,13 @@ namespace Genesis.Ambience.Controls
     {
         public DelayEventControl()
         {
+            InitializeComponent();
         }
 
         public DelayEventControl(DelayEventProvider prov, IEventColorProvider colorer)
             : base(prov, colorer)
         {
+            InitializeComponent();
             _element.TokenChanged += new ProviderTokenTile.TokenEvent(_element_TokenChanged);
         }
 
@@ -36,8 +38,6 @@ namespace Genesis.Ambience.Controls
 
         protected override void onInit()
         {
-            InitializeComponent();
-
             _spnDelay.Value = (decimal)EventProvider.Delay;
             _element.Token = new ProviderToken(EventProvider.Subordinate, ColorProvider);
         }
@@ -49,8 +49,7 @@ namespace Genesis.Ambience.Controls
         }
     }
 
-    [TypeDescriptionProvider(typeof(Helper.ConcreteClassProvider<UserControl>))]
-    [Helper.ConcreteClass(typeof(AEventControl.Concrete))]
+    [TypeDescriptionProvider(typeof(Helper.ConcreteClassProvider<AEventControl, AEventControl.Concrete>))]
     public abstract class ADelayEventControl : GenericEventControl<DelayEventProvider>
     {
         public ADelayEventControl() { }

@@ -88,12 +88,6 @@
       <DependentUpon>DelayEventControl.cs</DependentUpon>
     </Compile>
     <Compile Include="EventProviderControlFactory.cs" />
-    <Compile Include="EventProviderEditorControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="EventProviderEditorControl.Designer.cs">
-      <DependentUpon>EventProviderEditorControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="EventToken.cs" />
     <Compile Include="GenericEventControl.cs">
       <SubType>UserControl</SubType>
@@ -186,9 +180,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DelayEventControl.resx">
       <DependentUpon>DelayEventControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EventProviderEditorControl.resx">
-      <DependentUpon>EventProviderEditorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PeriodicEventControl.resx">
       <DependentUpon>PeriodicEventControl.cs</DependentUpon>
