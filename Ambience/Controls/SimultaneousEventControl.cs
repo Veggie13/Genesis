@@ -13,19 +13,25 @@ namespace Genesis.Ambience.Controls
 {
     public partial class SimultaneousEventControl : ASimultaneousEventControl
     {
+        #region Constructors
         public SimultaneousEventControl()
         {
+            InitializeComponent();
         }
 
         public SimultaneousEventControl(SimultaneousEventProvider prov, IEventColorProvider colorer)
             : base(prov, colorer)
         {
+            InitializeComponent();
+
             _itemList.UseHoverScroll = true;
 
             this.Load += new EventHandler(SimultaneousEventControl_Load);
             this.SizeChanged += new EventHandler(SimultaneousEventControl_SizeChanged);
         }
+        #endregion
 
+        #region Event Handlers
         private void SimultaneousEventControl_Load(object sender, EventArgs e)
         {
             adjustOrientation();
@@ -35,8 +41,10 @@ namespace Genesis.Ambience.Controls
         {
             adjustOrientation();
         }
+        #endregion
 
-        public override void ApplyChanges()
+        #region AEventControl
+        protected override void saveToProvider()
         {
             EventProvider.Group.Clear();
             EventProvider.Group.AddRange(_itemList.Items);
@@ -44,12 +52,12 @@ namespace Genesis.Ambience.Controls
 
         protected override void onInit()
         {
-            InitializeComponent();
-
             _itemList.Items.Clear();
             _itemList.Items.AddRange(EventProvider.Group);
         }
+        #endregion
 
+        #region Private Helpers
         private void adjustOrientation()
         {
             SuspendLayout();
@@ -58,6 +66,7 @@ namespace Genesis.Ambience.Controls
                 ProviderTokenList.Orientation.Vertical;
             ResumeLayout(true);
         }
+        #endregion
     }
 
     [TypeDescriptionProvider(typeof(Helper.ConcreteClassProvider<AEventControl, AEventControl.Concrete>))]

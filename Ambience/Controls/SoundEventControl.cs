@@ -12,25 +12,31 @@ namespace Genesis.Ambience.Controls
 {
     public partial class SoundEventControl : ASoundEventControl
     {
-        public class BrowseHandlerEventArgs
-        {
-            public bool Cancel { get; set; }
-            public string ResourceName { get; set; }
-        }
-
+        #region Constructors
         public SoundEventControl()
             : base()
         {
+            InitializeComponent();
         }
 
         public SoundEventControl(SoundEvent.Provider prov, IEventColorProvider colorer)
             : base(prov, colorer)
         {
+            InitializeComponent();
         }
+        #endregion
 
+        #region Events
+        public class BrowseHandlerEventArgs
+        {
+            public bool Cancel { get; set; }
+            public string ResourceName { get; set; }
+        }
         public delegate void BrowseHandler(BrowseHandlerEventArgs e);
         public event BrowseHandler Browse = (e) => { };
+        #endregion
 
+        #region Properties
         private string _resName;
         private string ResourceName
         {
@@ -42,23 +48,14 @@ namespace Genesis.Ambience.Controls
                 _txtResName.Text = tokens[1];
                 _library.Text = tokens[0];
 
-                if (!Initializing)
-                    emitModified();
+                setDirty();
+
+                MessageBox.Show(_txtResName.Text);
             }
         }
+        #endregion
 
-        public override void ApplyChanges()
-        {
-            EventProvider.ResourceName = ResourceName;
-        }
-
-        protected override void onInit()
-        {
-            InitializeComponent();
-
-            ResourceName = EventProvider.ResourceName;
-        }
-
+        #region Event Handlers
         private void _btnBrowse_Click(object sender, EventArgs e)
         {
             var dlg = new ResourceSelectionDlg(EventProvider.ResourceProvider);
@@ -68,6 +65,19 @@ namespace Genesis.Ambience.Controls
                 ResourceName = dlg.SelectedItem;
             }
         }
+        #endregion
+
+        #region AEventControl
+        protected override void saveToProvider()
+        {
+            EventProvider.ResourceName = ResourceName;
+        }
+
+        protected override void onInit()
+        {
+            ResourceName = EventProvider.ResourceName;
+        }
+        #endregion
     }
 
     [TypeDescriptionProvider(typeof(Helper.ConcreteClassProvider<AEventControl, AEventControl.Concrete>))]

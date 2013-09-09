@@ -12,6 +12,7 @@ namespace Genesis.Ambience.Controls
 {
     public partial class DelayEventControl : ADelayEventControl
     {
+        #region Constructors
         public DelayEventControl()
         {
             InitializeComponent();
@@ -21,16 +22,25 @@ namespace Genesis.Ambience.Controls
             : base(prov, colorer)
         {
             InitializeComponent();
+
             _element.TokenChanged += new ProviderTokenTile.TokenEvent(_element_TokenChanged);
         }
+        #endregion
 
+        #region Event Handlers
         private void _element_TokenChanged(ProviderToken token)
         {
-            if (!Initializing)
-                emitModified();
+            setDirty();
         }
 
-        public override void ApplyChanges()
+        private void _spnDelay_ValueChanged(object sender, EventArgs e)
+        {
+            setDirty();
+        }
+        #endregion
+
+        #region AEventControl
+        protected override void saveToProvider()
         {
             EventProvider.Delay = (uint)_spnDelay.Value;
             EventProvider.Subordinate = _element.Token.Provider;
@@ -41,12 +51,7 @@ namespace Genesis.Ambience.Controls
             _spnDelay.Value = (decimal)EventProvider.Delay;
             _element.Token = new ProviderToken(EventProvider.Subordinate, ColorProvider);
         }
-
-        private void _spnDelay_ValueChanged(object sender, EventArgs e)
-        {
-            if (!Initializing)
-                emitModified();
-        }
+        #endregion
     }
 
     [TypeDescriptionProvider(typeof(Helper.ConcreteClassProvider<AEventControl, AEventControl.Concrete>))]

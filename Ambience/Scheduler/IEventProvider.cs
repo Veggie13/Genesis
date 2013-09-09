@@ -7,7 +7,7 @@ namespace Genesis.Ambience.Scheduler
 {
     public interface IEventProvider : IVisitable<IEventProviderVisitor, IEventProvider>
     {
-        string Name { get; }
+        string Name { get; set; }
 
         bool DependsOn(IEventProvider dependent);
         IEventProviderInstance CreateInstance();
@@ -28,15 +28,11 @@ namespace Genesis.Ambience.Scheduler
     {
         public AEventProvider(string name)
         {
-            _name = name;
+            Name = name;
         }
 
         #region IEventProvider Members
-        private string _name;
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name { get; set; }
 
         public abstract bool DependsOn(IEventProvider dependent);
         public abstract IEventProviderInstance CreateInstance();

@@ -36,9 +36,15 @@ namespace ControlsTest
                 {
                     eventControl = EventProviderControlFactory.Create(value, ColorProvider);
                     eventControl.Dock = DockStyle.Fill;
+                    eventControl.ModifiedChanged += new Action(eventControl_ModifiedChanged);
                     Controls.Add(eventControl);
                 }
             }
+        }
+
+        void eventControl_ModifiedChanged()
+        {
+            Text = eventControl.Modified ? "Form2 *" : "Form2";
         }
     }
 }

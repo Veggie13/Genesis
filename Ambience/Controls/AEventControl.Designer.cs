@@ -67,13 +67,14 @@
             this._txtName.Name = "_txtName";
             this._txtName.Size = new System.Drawing.Size(142, 20);
             this._txtName.TabIndex = 5;
+            this._txtName.TextChanged += new System.EventHandler(this._txtName_TextChanged);
             // 
-            // label1
+            // _nameLabel
             // 
             this._nameLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this._nameLabel.AutoSize = true;
             this._nameLabel.Location = new System.Drawing.Point(3, 8);
-            this._nameLabel.Name = "label1";
+            this._nameLabel.Name = "_nameLabel";
             this._nameLabel.Size = new System.Drawing.Size(38, 13);
             this._nameLabel.TabIndex = 4;
             this._nameLabel.Text = "Name:";
@@ -82,24 +83,28 @@
             // _btnApply
             // 
             this._btnApply.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this._btnApply.Enabled = false;
             this._btnApply.Location = new System.Drawing.Point(17, 3);
             this._btnApply.Name = "_btnApply";
             this._btnApply.Size = new System.Drawing.Size(75, 23);
             this._btnApply.TabIndex = 8;
             this._btnApply.Text = "Apply";
             this._btnApply.UseVisualStyleBackColor = true;
+            this._btnApply.Click += new System.EventHandler(this._btnApply_Click);
             // 
             // _btnUndo
             // 
             this._btnUndo.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this._btnUndo.Enabled = false;
             this._btnUndo.Location = new System.Drawing.Point(128, 3);
             this._btnUndo.Name = "_btnUndo";
             this._btnUndo.Size = new System.Drawing.Size(75, 23);
             this._btnUndo.TabIndex = 9;
             this._btnUndo.Text = "Undo";
             this._btnUndo.UseVisualStyleBackColor = true;
+            this._btnUndo.Click += new System.EventHandler(this._btnUndo_Click);
             // 
-            // tableLayoutPanel1
+            // _tableLayoutPanel1
             // 
             this._tableLayoutPanel1.ColumnCount = 1;
             this._tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -108,7 +113,7 @@
             this._tableLayoutPanel1.Controls.Add(this._contents, 0, 1);
             this._tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this._tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this._tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this._tableLayoutPanel1.Name = "_tableLayoutPanel1";
             this._tableLayoutPanel1.RowCount = 3;
             this._tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -116,10 +121,10 @@
             this._tableLayoutPanel1.Size = new System.Drawing.Size(221, 230);
             this._tableLayoutPanel1.TabIndex = 10;
             // 
-            // tableLayoutPanel2
+            // _tableLayoutPanel2
             // 
-            this._tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this._tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this._tableLayoutPanel2.AutoSize = true;
             this._tableLayoutPanel2.ColumnCount = 3;
@@ -131,16 +136,16 @@
             this._tableLayoutPanel2.Controls.Add(this._btnColor, 2, 0);
             this._tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
             this._tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(0);
-            this._tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this._tableLayoutPanel2.Name = "_tableLayoutPanel2";
             this._tableLayoutPanel2.RowCount = 1;
             this._tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._tableLayoutPanel2.Size = new System.Drawing.Size(221, 29);
             this._tableLayoutPanel2.TabIndex = 0;
             // 
-            // tableLayoutPanel3
+            // _tableLayoutPanel3
             // 
-            this._tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this._tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this._tableLayoutPanel3.AutoSize = true;
             this._tableLayoutPanel3.ColumnCount = 2;
@@ -150,7 +155,7 @@
             this._tableLayoutPanel3.Controls.Add(this._btnUndo, 1, 0);
             this._tableLayoutPanel3.Location = new System.Drawing.Point(0, 201);
             this._tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
-            this._tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this._tableLayoutPanel3.Name = "_tableLayoutPanel3";
             this._tableLayoutPanel3.RowCount = 1;
             this._tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this._tableLayoutPanel3.Size = new System.Drawing.Size(221, 29);

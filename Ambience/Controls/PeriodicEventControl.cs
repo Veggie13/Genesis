@@ -12,24 +12,41 @@ namespace Genesis.Ambience.Controls
 {
     public partial class PeriodicEventControl : APeriodicEventControl
     {
+        #region Constructors
         public PeriodicEventControl()
             : base()
         {
+            InitializeComponent();
         }
 
         public PeriodicEventControl(PeriodicEventProvider prov, IEventColorProvider colorer)
             : base(prov, colorer)
         {
+            InitializeComponent();
+
             _element.TokenChanged += new ProviderTokenTile.TokenEvent(_element_TokenChanged);
         }
+        #endregion
 
+        #region Event Handlers
         private void _element_TokenChanged(ProviderToken token)
         {
-            if (!Initializing)
-                emitModified();
+            setDirty();
         }
 
-        public override void ApplyChanges()
+        private void _spnPeriod_ValueChanged(object sender, EventArgs e)
+        {
+            setDirty();
+        }
+
+        private void _spnVariance_ValueChanged(object sender, EventArgs e)
+        {
+            setDirty();
+        }
+        #endregion
+
+        #region AEventControl
+        protected override void saveToProvider()
         {
             EventProvider.Period = (uint)_spnPeriod.Value;
             EventProvider.Variance = (uint)_spnVariance.Value;
@@ -38,24 +55,11 @@ namespace Genesis.Ambience.Controls
 
         protected override void onInit()
         {
-            InitializeComponent();
-
             _spnPeriod.Value = (decimal)EventProvider.Period;
             _spnVariance.Value = (decimal)EventProvider.Variance;
             _element.Token = new ProviderToken(EventProvider.Subordinate, ColorProvider);
         }
-
-        private void _spnPeriod_ValueChanged(object sender, EventArgs e)
-        {
-            if (!Initializing)
-                emitModified();
-        }
-
-        private void _spnVariance_ValueChanged(object sender, EventArgs e)
-        {
-            if (!Initializing)
-                emitModified();
-        }
+        #endregion
     }
 
     [TypeDescriptionProvider(typeof(Helper.ConcreteClassProvider<AEventControl, AEventControl.Concrete>))]
