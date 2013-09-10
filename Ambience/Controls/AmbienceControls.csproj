@@ -48,6 +48,12 @@
     <Compile Include="AEventControl.Designer.cs">
       <DependentUpon>AEventControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="EventProviderEditorDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EventProviderEditorDlg.Designer.cs">
+      <DependentUpon>EventProviderEditorDlg.cs</DependentUpon>
+    </Compile>
     <Compile Include="ResourceSelectionDlg.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -160,6 +166,9 @@
   <ItemGroup>
     <EmbeddedResource Include="AEventControl.resx">
       <DependentUpon>AEventControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EventProviderEditorDlg.resx">
+      <DependentUpon>EventProviderEditorDlg.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ResourceSelectionDlg.resx">
       <DependentUpon>ResourceSelectionDlg.cs</DependentUpon>

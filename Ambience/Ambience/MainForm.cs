@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
 using Genesis.Common.Controls;
+using Genesis.Common.Tools;
 using Genesis.Ambience.Controls;
 
 namespace Genesis.Ambience
@@ -28,23 +29,18 @@ namespace Genesis.Ambience
             this.FormClosed += new FormClosedEventHandler(MainForm_FormClosed);
         }
 
-        void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        #region Event Handlers
+        #region MainForm
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (_project != null)
                 _project.Close();
         }
+        #endregion
 
-        private void _soundBoard_TileClicked(ProviderToken token)
-        {
-            _project.Schedule.AddProvider(token.Provider);
-        }
-
-        private void _libImportFromFileItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void _fileNameItem_Click(object sender, EventArgs e)
+        #region Menu
+        #region File
+        private void _fileNewItem_Click(object sender, EventArgs e)
         {
             _project = new ProjectInstance();
 
@@ -53,8 +49,17 @@ namespace Genesis.Ambience
             _spnColCount.Value = _project.ColumnCount;
 
             _schedView.Schedule = _project.Schedule;
-        }
 
+            _project.ItemsChanged += new Action(_project_ItemsChanged);
+        }
+        #endregion
+
+        #region Library
+        private void _libImportFromFileItem_Click(object sender, EventArgs e)
+        {
+
+        }
+        
         private void _libImportFolderItem_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog dlg = new FolderBrowserDialog();
@@ -62,10 +67,34 @@ namespace Genesis.Ambience
             if (result == DialogResult.OK)
             {
                 _project.Resources.LoadLibrary(dlg.SelectedPath);
-                _project.GetSounds().ForEach(p => _providerList.Items.Add(p));
+                //_project.GetSounds().ForEach(p => _providerList.Items.Add(p));
             }
         }
 
+        private void _libBrowseItem_Click(object sender, EventArgs e)
+        {
+            var dlg = new LibraryBrowserDlg(_project);
+            dlg.ShowDialog(this);
+        }
+        #endregion
+        #endregion
+
+        #region Project
+        private void _project_ItemsChanged()
+        {
+            _providerList.Items.Clear();
+            _providerList.Items.AddRange(_project.Events);
+        }
+        #endregion
+
+        #region Sound Board
+        private void _soundBoard_TileClicked(ProviderToken token)
+        {
+            _project.Schedule.AddProvider(token.Provider);
+        }
+        #endregion
+
+        #region Schedule
         private void _btnPlay_Click(object sender, EventArgs e)
         {
             _schedView.Schedule = _project.Schedule;
@@ -76,5 +105,10 @@ namespace Genesis.Ambience
         {
             _project.Schedule.Stop();
         }
+        #endregion
+        #endregion
+
+        #region Private Helpers
+        #endregion
     }
 }

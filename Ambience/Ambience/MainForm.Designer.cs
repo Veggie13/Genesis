@@ -44,10 +44,12 @@
             this._btnStop = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this._fileMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this._fileNameItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._fileNewItem = new System.Windows.Forms.ToolStripMenuItem();
             this._libMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._libImportFromFileItem = new System.Windows.Forms.ToolStripMenuItem();
             this._libImportFolderItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this._libBrowseItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -267,23 +269,25 @@
             // _fileMenu
             // 
             this._fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._fileNameItem});
+            this._fileNewItem});
             this._fileMenu.Name = "_fileMenu";
             this._fileMenu.Size = new System.Drawing.Size(37, 20);
             this._fileMenu.Text = "&File";
             // 
-            // _fileNameItem
+            // _fileNewItem
             // 
-            this._fileNameItem.Name = "_fileNameItem";
-            this._fileNameItem.Size = new System.Drawing.Size(107, 22);
-            this._fileNameItem.Text = "New...";
-            this._fileNameItem.Click += new System.EventHandler(this._fileNameItem_Click);
+            this._fileNewItem.Name = "_fileNewItem";
+            this._fileNewItem.Size = new System.Drawing.Size(152, 22);
+            this._fileNewItem.Text = "New...";
+            this._fileNewItem.Click += new System.EventHandler(this._fileNewItem_Click);
             // 
             // _libMenu
             // 
             this._libMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._libImportFromFileItem,
-            this._libImportFolderItem});
+            this._libImportFolderItem,
+            this.toolStripSeparator1,
+            this._libBrowseItem});
             this._libMenu.Name = "_libMenu";
             this._libMenu.Size = new System.Drawing.Size(55, 20);
             this._libMenu.Text = "&Library";
@@ -301,6 +305,18 @@
             this._libImportFolderItem.Size = new System.Drawing.Size(169, 22);
             this._libImportFolderItem.Text = "Import Folder...";
             this._libImportFolderItem.Click += new System.EventHandler(this._libImportFolderItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(166, 6);
+            // 
+            // _libBrowseItem
+            // 
+            this._libBrowseItem.Name = "_libBrowseItem";
+            this._libBrowseItem.Size = new System.Drawing.Size(169, 22);
+            this._libBrowseItem.Text = "Browse...";
+            this._libBrowseItem.Click += new System.EventHandler(this._libBrowseItem_Click);
             // 
             // MainForm
             // 
@@ -343,7 +359,7 @@
         private System.Windows.Forms.ToolStripMenuItem _fileMenu;
         private System.Windows.Forms.ToolStripMenuItem _libMenu;
         private System.Windows.Forms.ToolStripMenuItem _libImportFromFileItem;
-        private System.Windows.Forms.ToolStripMenuItem _fileNameItem;
+        private System.Windows.Forms.ToolStripMenuItem _fileNewItem;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.NumericUpDown _spnRowCount;
         private System.Windows.Forms.NumericUpDown _spnColCount;
@@ -356,6 +372,8 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button _btnPlay;
         private System.Windows.Forms.Button _btnStop;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem _libBrowseItem;
     }
 }
 

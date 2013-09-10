@@ -18,12 +18,20 @@ namespace Genesis.Ambience
         private ResourceManager _resourceMgr = new ResourceManager();
         private EventSchedule _sched = new EventSchedule(256);
         private IEventProvider[,] _providers = new IEventProvider[DefaultRowCount, DefaultColumnCount];
+        private SignalList<IEventProvider> _items = new SignalList<IEventProvider>();
         #endregion
 
         public ProjectInstance()
         {
             init();
+
+            _items.ItemsAdded += new SignalList<IEventProvider>.ItemsEvent(_items_ItemsAdded);
+            _items.ItemsRemoved += new SignalList<IEventProvider>.ItemsEvent(_items_ItemsRemoved);
         }
+
+        #region Events
+        public event Action ItemsChanged = delegate { };
+        #endregion
 
         #region Public Operations
         public List<SoundEvent.Provider> GetSounds()
@@ -49,6 +57,23 @@ namespace Genesis.Ambience
         public ResourceManager Resources
         {
             get { return _resourceMgr; }
+        }
+
+        public ICollection<IEventProvider> Events
+        {
+            get { return _items; }
+        }
+        #endregion
+
+        #region Event Handlers
+        private void _items_ItemsAdded(IEnumerable<Tuple<int, IEventProvider>> items)
+        {
+            ItemsChanged();
+        }
+
+        private void _items_ItemsRemoved(IEnumerable<Tuple<int, IEventProvider>> items)
+        {
+            ItemsChanged();
         }
         #endregion
 

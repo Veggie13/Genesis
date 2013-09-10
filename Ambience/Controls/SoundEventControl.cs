@@ -49,8 +49,6 @@ namespace Genesis.Ambience.Controls
                 _library.Text = tokens[0];
 
                 setDirty();
-
-                MessageBox.Show(_txtResName.Text);
             }
         }
         #endregion
