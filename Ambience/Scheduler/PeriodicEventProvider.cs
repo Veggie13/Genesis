@@ -53,7 +53,7 @@ namespace Genesis.Ambience.Scheduler
             set { _subordinate = value; }
         }
 
-        private uint _period = 0;
+        private uint _period = 1;
         public uint Period
         {
             get { return _period; }
