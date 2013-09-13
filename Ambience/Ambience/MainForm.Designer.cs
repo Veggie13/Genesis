@@ -50,6 +50,12 @@
             this._libImportFolderItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this._libBrowseItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eventsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._evtNewDelayItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._evtNewPeriodicItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._evtNewSimultaneousItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._evtNewSequentialItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._evtNewRandomItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -259,7 +265,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._fileMenu,
-            this._libMenu});
+            this._libMenu,
+            this.eventsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(938, 24);
@@ -277,7 +284,7 @@
             // _fileNewItem
             // 
             this._fileNewItem.Name = "_fileNewItem";
-            this._fileNewItem.Size = new System.Drawing.Size(152, 22);
+            this._fileNewItem.Size = new System.Drawing.Size(107, 22);
             this._fileNewItem.Text = "New...";
             this._fileNewItem.Click += new System.EventHandler(this._fileNewItem_Click);
             // 
@@ -317,6 +324,53 @@
             this._libBrowseItem.Size = new System.Drawing.Size(169, 22);
             this._libBrowseItem.Text = "Browse...";
             this._libBrowseItem.Click += new System.EventHandler(this._libBrowseItem_Click);
+            // 
+            // eventsToolStripMenuItem
+            // 
+            this.eventsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._evtNewDelayItem,
+            this._evtNewPeriodicItem,
+            this._evtNewSimultaneousItem,
+            this._evtNewSequentialItem,
+            this._evtNewRandomItem});
+            this.eventsToolStripMenuItem.Name = "eventsToolStripMenuItem";
+            this.eventsToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            this.eventsToolStripMenuItem.Text = "&Events";
+            // 
+            // _evtNewDelayItem
+            // 
+            this._evtNewDelayItem.Name = "_evtNewDelayItem";
+            this._evtNewDelayItem.Size = new System.Drawing.Size(250, 22);
+            this._evtNewDelayItem.Text = "New Delayed Event...";
+            this._evtNewDelayItem.Click += new System.EventHandler(this._evtNewDelayItem_Click);
+            // 
+            // _evtNewPeriodicItem
+            // 
+            this._evtNewPeriodicItem.Name = "_evtNewPeriodicItem";
+            this._evtNewPeriodicItem.Size = new System.Drawing.Size(250, 22);
+            this._evtNewPeriodicItem.Text = "New Periodic Event...";
+            this._evtNewPeriodicItem.Click += new System.EventHandler(this._evtNewPeriodicItem_Click);
+            // 
+            // _evtNewSimultaneousItem
+            // 
+            this._evtNewSimultaneousItem.Name = "_evtNewSimultaneousItem";
+            this._evtNewSimultaneousItem.Size = new System.Drawing.Size(250, 22);
+            this._evtNewSimultaneousItem.Text = "New Simultaneous Event Group...";
+            this._evtNewSimultaneousItem.Click += new System.EventHandler(this._evtNewSimultaneousItem_Click);
+            // 
+            // _evtNewSequentialItem
+            // 
+            this._evtNewSequentialItem.Name = "_evtNewSequentialItem";
+            this._evtNewSequentialItem.Size = new System.Drawing.Size(250, 22);
+            this._evtNewSequentialItem.Text = "New Sequential Selector...";
+            this._evtNewSequentialItem.Click += new System.EventHandler(this._evtNewSequentialItem_Click);
+            // 
+            // _evtNewRandomItem
+            // 
+            this._evtNewRandomItem.Name = "_evtNewRandomItem";
+            this._evtNewRandomItem.Size = new System.Drawing.Size(250, 22);
+            this._evtNewRandomItem.Text = "New Random Selector...";
+            this._evtNewRandomItem.Click += new System.EventHandler(this._evtNewRandomItem_Click);
             // 
             // MainForm
             // 
@@ -374,6 +428,12 @@
         private System.Windows.Forms.Button _btnStop;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem _libBrowseItem;
+        private System.Windows.Forms.ToolStripMenuItem eventsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem _evtNewDelayItem;
+        private System.Windows.Forms.ToolStripMenuItem _evtNewPeriodicItem;
+        private System.Windows.Forms.ToolStripMenuItem _evtNewSimultaneousItem;
+        private System.Windows.Forms.ToolStripMenuItem _evtNewSequentialItem;
+        private System.Windows.Forms.ToolStripMenuItem _evtNewRandomItem;
     }
 }
 

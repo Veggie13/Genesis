@@ -7,12 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Genesis.Ambience.Scheduler;
+using Genesis.Common.Tools;
 
 namespace Genesis.Ambience.Controls
 {
     public partial class EventProviderEditorDlg : Form
     {
         #region Class Members
+        private readonly int ItemListWidth;
+
         private AEventControl _editor;
         #endregion
 
@@ -20,8 +23,26 @@ namespace Genesis.Ambience.Controls
         {
             InitializeComponent();
 
+            ItemListWidth = _itemList.Width;
+
             this.FormClosing += new FormClosingEventHandler(EventProviderEditorDlg_FormClosing);
         }
+
+        #region Static Operations
+        public static DialogResult Show(IWin32Window owner, IEventProvider prov, IEnumerable<IEventProvider> items, bool cancellable)
+        {
+            var dlg = new EventProviderEditorDlg();
+            dlg.Load += (o, e) =>
+            {
+                dlg.Cancellable = cancellable;
+                dlg.ShowItems = (items != null);
+                if (items != null)
+                    dlg.ItemList.AddRange(items);
+                dlg.Provider = prov;
+            };
+            return dlg.ShowDialog(owner);
+        }
+        #endregion
 
         #region Properties
         public IEventColorProvider ColorProvider
@@ -52,6 +73,11 @@ namespace Genesis.Ambience.Controls
             }
         }
 
+        public ICollection<IEventProvider> ItemList
+        {
+            get { return _itemList.Items; }
+        }
+
         public bool Cancellable
         {
             get { return _btnCancel.Visible; }
@@ -60,6 +86,27 @@ namespace Genesis.Ambience.Controls
                 _btnCancel.Visible = value;
                 _btnCancel.Enabled = value;
                 _btnClose.Text = value ? "OK" : "Close";
+            }
+        }
+
+        public bool ShowItems
+        {
+            get { return _itemList.Visible; }
+            set
+            {
+                if (value != _itemList.Visible)
+                {
+                    if (value)
+                    {
+                        Width += ItemListWidth;
+                        _itemList.Visible = true;
+                    }
+                    else
+                    {
+                        _itemList.Visible = false;
+                        Width -= ItemListWidth;
+                    }
+                }
             }
         }
         #endregion

@@ -34,10 +34,7 @@ namespace Genesis.Ambience
         {
             var res = _libView.SelectedResource;
             var evt = new SoundEvent.Provider(res.FullName, _inst.Resources, res.FullName);
-            var dlg = new EventProviderEditorDlg();
-            dlg.Cancellable = true;
-            dlg.Provider = evt;
-            DialogResult result = dlg.ShowDialog(this);
+            DialogResult result = EventProviderEditorDlg.Show(this, evt, null, true);
             if (result != DialogResult.Cancel)
             {
                 _inst.Events.Add(evt);

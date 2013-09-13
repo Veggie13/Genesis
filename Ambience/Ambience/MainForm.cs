@@ -10,6 +10,7 @@ using System.Reflection;
 using Genesis.Common.Controls;
 using Genesis.Common.Tools;
 using Genesis.Ambience.Controls;
+using Genesis.Ambience.Scheduler;
 
 namespace Genesis.Ambience
 {
@@ -77,6 +78,38 @@ namespace Genesis.Ambience
             dlg.ShowDialog(this);
         }
         #endregion
+
+        #region Events
+        private void _evtNewDelayItem_Click(object sender, EventArgs e)
+        {
+            var evt = new DelayEventProvider("New Delay Event");
+            doNewEvent(evt);
+        }
+
+        private void _evtNewPeriodicItem_Click(object sender, EventArgs e)
+        {
+            var evt = new PeriodicEventProvider("New Periodic Event");
+            doNewEvent(evt);
+        }
+
+        private void _evtNewSequentialItem_Click(object sender, EventArgs e)
+        {
+            var evt = new SequentialEventSelector("New Sequential Selector");
+            doNewEvent(evt);
+        }
+
+        private void _evtNewSimultaneousItem_Click(object sender, EventArgs e)
+        {
+            var evt = new SimultaneousEventProvider("New Simultaneous Event");
+            doNewEvent(evt);
+        }
+
+        private void _evtNewRandomItem_Click(object sender, EventArgs e)
+        {
+            var evt = new RandomEventSelector("New Random Selector");
+            doNewEvent(evt);
+        }
+        #endregion
         #endregion
 
         #region Project
@@ -109,6 +142,14 @@ namespace Genesis.Ambience
         #endregion
 
         #region Private Helpers
+        private void doNewEvent(IEventProvider evt)
+        {
+            DialogResult result = EventProviderEditorDlg.Show(this, evt, _project.Events, true);
+            if (result != DialogResult.Cancel)
+            {
+                _project.Events.Add(evt);
+            }
+        }
         #endregion
     }
 }
