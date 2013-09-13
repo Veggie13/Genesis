@@ -1013,7 +1013,8 @@ namespace Genesis.Ambience.Controls
             string text = (continued ? "<< " : "") + token.Name;
             gc.DrawString(text, (continued ? _italic : _bold),
                 token.IsHighlighted ? _fontHighlight : _fontColor,
-                new RectangleF(x1 + 2, y1 + 2, dispWidth * _colWidth - 4, _rowHeight - 4));
+                new RectangleF(x1 + 2, y1 + 2, dispWidth * _colWidth - 4, _rowHeight - 4),
+                new StringFormat() { FormatFlags = StringFormatFlags.NoWrap });
         }
 
         private void resizeDrawingBuffer()
