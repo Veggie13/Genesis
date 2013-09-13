@@ -43,13 +43,15 @@ namespace Genesis.Ambience.Controls
         protected override void saveToProvider()
         {
             EventProvider.Delay = (uint)_spnDelay.Value;
-            EventProvider.Subordinate = _element.Token.Provider;
+            if (_element.Token != null)
+                EventProvider.Subordinate = _element.Token.Provider;
         }
 
         protected override void onInit()
         {
             _spnDelay.Value = (decimal)EventProvider.Delay;
-            _element.Token = new ProviderToken(EventProvider.Subordinate, ColorProvider);
+            if (EventProvider.Subordinate != null)
+                _element.Token = new ProviderToken(EventProvider.Subordinate, ColorProvider);
         }
         #endregion
     }

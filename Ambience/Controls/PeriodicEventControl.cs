@@ -50,14 +50,16 @@ namespace Genesis.Ambience.Controls
         {
             EventProvider.Period = (uint)_spnPeriod.Value;
             EventProvider.Variance = (uint)_spnVariance.Value;
-            EventProvider.Subordinate = _element.Token.Provider;
+            if (_element.Token != null)
+                EventProvider.Subordinate = _element.Token.Provider;
         }
 
         protected override void onInit()
         {
             _spnPeriod.Value = (decimal)EventProvider.Period;
             _spnVariance.Value = (decimal)EventProvider.Variance;
-            _element.Token = new ProviderToken(EventProvider.Subordinate, ColorProvider);
+            if (EventProvider.Subordinate != null)
+                _element.Token = new ProviderToken(EventProvider.Subordinate, ColorProvider);
         }
         #endregion
     }

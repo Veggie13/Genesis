@@ -42,6 +42,7 @@
             // 
             // _itemList
             // 
+            this._itemList.AllowDrop = true;
             this._itemList.AutoSize = true;
             this._itemList.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this._itemList.ColorProvider = null;
