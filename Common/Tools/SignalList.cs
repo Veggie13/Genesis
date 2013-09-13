@@ -86,7 +86,7 @@ namespace Genesis.Common.Tools
 
         public void Clear()
         {
-            var all = multiItems(0, _list);
+            var all = multiItems(0, _list).ToList();
             AboutToRemoveItems(all);
             _list.Clear();
             ItemsRemoved(all);
