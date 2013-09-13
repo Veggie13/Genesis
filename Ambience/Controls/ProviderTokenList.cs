@@ -33,7 +33,6 @@ namespace Genesis.Ambience.Controls
         {
             InitializeComponent();
 
-            //_items.ListChanged += new ListChangedEventHandler(_items_ListChanged);
             _items.ItemsAdded += new SignalList<IEventProvider>.ItemsEvent(_items_ItemsAdded);
             _items.ItemsRemoved += new SignalList<IEventProvider>.ItemsEvent(_items_ItemsRemoved);
 
@@ -48,6 +47,10 @@ namespace Genesis.Ambience.Controls
 
             this.Load += new EventHandler(ProviderTokenList_Load);
         }
+        #endregion
+
+        #region Events
+        public event Action ItemsChanged = () => { };
         #endregion
 
         #region Properties
@@ -321,6 +324,8 @@ namespace Genesis.Ambience.Controls
                 tile.MouseLeave += new EventHandler(_view_MouseLeave);
                 tile.AboutToDrag += new ProviderTokenTileDragEventHandler(tile_AboutToDrag);
             }
+
+            ItemsChanged();
         }
 
         private void _items_ItemsRemoved(IEnumerable<Tuple<int, IEventProvider>> items)
@@ -337,6 +342,8 @@ namespace Genesis.Ambience.Controls
             }
             if (_flow.Controls.Count < 1)
                 _flow.Controls.Add(_empty);
+
+            ItemsChanged();
         }
 
         private void tile_AboutToDrag(ProviderTokenTile sender, ProviderTokenTileDragEventArgs e)

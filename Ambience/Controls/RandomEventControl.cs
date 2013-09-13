@@ -24,7 +24,7 @@ namespace Genesis.Ambience.Controls
         {
             InitializeComponent();
 
-            _itemList.UseHoverScroll = true;
+            _itemList.ItemsChanged += new Action(_itemList_ItemsChanged);
 
             this.Load += new EventHandler(RandomEventControl_Load);
             this.SizeChanged += new EventHandler(RandomEventControl_SizeChanged);
@@ -40,6 +40,11 @@ namespace Genesis.Ambience.Controls
         private void RandomEventControl_SizeChanged(object sender, EventArgs e)
         {
             adjustOrientation();
+        }
+
+        private void _itemList_ItemsChanged()
+        {
+            setDirty();
         }
         #endregion
 

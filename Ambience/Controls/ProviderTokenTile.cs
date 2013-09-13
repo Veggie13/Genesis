@@ -15,6 +15,7 @@ namespace Genesis.Ambience.Controls
 {
     public partial class ProviderTokenTile : UserControl
     {
+        #region Helper Classes
         private class MainPanel : TableLayoutPanel
         {
             private bool _inside = false;
@@ -101,9 +102,12 @@ namespace Genesis.Ambience.Controls
                 OnDragEnter(e);
             }
         }
+        #endregion
 
+        #region Class Members
         private Point _lastMouseDown;
         private bool _isMouseDown = false;
+        #endregion
 
         public ProviderTokenTile()
         {

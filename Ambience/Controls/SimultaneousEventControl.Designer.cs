@@ -51,6 +51,7 @@
             this._itemList.Name = "_itemList";
             this._itemList.Size = new System.Drawing.Size(125, 64);
             this._itemList.TabIndex = 0;
+            this._itemList.UseHoverScroll = true;
             // 
             // tableLayoutPanel1
             // 
