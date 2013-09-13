@@ -85,7 +85,7 @@ namespace Genesis.Ambience.Controls
         {
             var future = sched.GetActualFuture(fromTime);
 
-            acrossTime(fromTime, (ulong)future.Length, (ref EventToken[,] block) =>
+            acrossTime(fromTime, ColumnCount, (ref EventToken[,] block) =>
             {
                 return (block != null);
             }, (ref EventToken[,] block, ulong t, int j) =>
