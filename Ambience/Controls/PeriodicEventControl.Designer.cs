@@ -69,6 +69,11 @@
             // 
             this._spnPeriod.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this._spnPeriod.Location = new System.Drawing.Point(61, 3);
+            this._spnPeriod.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
             this._spnPeriod.Minimum = new decimal(new int[] {
             1,
             0,
