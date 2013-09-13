@@ -16,7 +16,7 @@ namespace Genesis.Ambience.Controls
         {
             _prov = prov;
             _colorer = colorer;
-            _name = _prov.Name;
+            _name = (_prov == null) ? "" : _prov.Name;
         }
 
         public void Finish()

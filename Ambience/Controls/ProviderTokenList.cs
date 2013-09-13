@@ -325,9 +325,10 @@ namespace Genesis.Ambience.Controls
 
         private void _items_ItemsRemoved(IEnumerable<Tuple<int, IEventProvider>> items)
         {
-            foreach (var doomed in items)
+            foreach (var doomed in items.OrderByDescending(t => t.Item1))
             {
                 var tile = (ProviderTokenTile)_flow.Controls[doomed.Item1];
+                tile.DragEnter -= _view_DragEnter;
                 tile.MouseMove -= _view_MouseMove;
                 tile.MouseEnter -= _view_MouseEnter;
                 tile.MouseLeave -= _view_MouseLeave;
