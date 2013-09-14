@@ -35,6 +35,11 @@ namespace Genesis.Ambience.Audio
             return lib;
         }
 
+        void SoundEvent.IResourceProvider.LoadLibrary(string path)
+        {
+            LoadLibrary(path);
+        }
+
         public void UnloadLibrary(string path)
         {
             throw new NotImplementedException("UnloadLibrary");
