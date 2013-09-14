@@ -53,27 +53,25 @@ namespace Genesis.Ambience.Scheduler
 
     public abstract class AEventProviderInstance<T> : IEventProviderInstance where T : IEventProvider
     {
-        /*public AEventProviderInstance(T parent)
-        {
-            if (parent == null)
-                throw new ArgumentNullException("parent");
-            _parent = parent;
-        }*/
-
         public AEventProviderInstance(T parent, IEventProvider src)
         {
             if (parent == null)
                 throw new ArgumentNullException("parent");
-            _parent = parent;
+            ParentModel = parent;
             _src = src;
         }
 
         public abstract bool Next(IEventScheduler sched, ulong currTimeCode, ulong span);
-        
-        protected T _parent;
+
+        protected T ParentModel
+        {
+            get;
+            private set;
+        }
+
         public IEventProvider Model
         {
-            get { return _parent; }
+            get { return ParentModel; }
         }
 
         private IEventProvider _src = null;

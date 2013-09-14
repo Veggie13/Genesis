@@ -24,20 +24,29 @@ namespace Genesis.Ambience.Scheduler
                 ChooseNextPoint();
             }
 
+            public IEventProviderInstance SubordinateInstance
+            {
+                get;
+                private set;
+            }
+
             private void ChooseNextPoint()
             {
                 _nextPoint = _currBase
-                    + (ulong)_parent.Period
-                    + (ulong)Rand.Next(1 + 2 * (int)_parent.Variance)
-                    - (ulong)_parent.Variance;
-                _currBase += (ulong)_parent.Period;
+                    + (ulong)ParentModel.Period
+                    + (ulong)Rand.Next(1 + 2 * (int)ParentModel.Variance)
+                    - (ulong)ParentModel.Variance;
+                _currBase += (ulong)ParentModel.Period;
             }
 
             public override bool Next(IEventScheduler sched, ulong currTimeCode, ulong span)
             {
-                if (_parent.Subordinate == null)
+                if (ParentModel.Subordinate == null)
                     return false;
-                sched.AddProvider(_parent.Subordinate.CreateInstance(this.Source), _nextPoint);
+                if (SubordinateInstance == null)
+                    SubordinateInstance = ParentModel.Subordinate.CreateInstance(this.Source);
+
+                sched.AddProvider(SubordinateInstance, _nextPoint);
                 ChooseNextPoint();
                 sched.AddProvider(this, _nextPoint);
                 return true;

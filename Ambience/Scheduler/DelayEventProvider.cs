@@ -18,10 +18,20 @@ namespace Genesis.Ambience.Scheduler
             {
             }
 
+            public IEventProviderInstance SubordinateInstance
+            {
+                get;
+                private set;
+            }
+
             public override bool Next(IEventScheduler sched, ulong currTimeCode, ulong span)
             {
-                if (_parent.Subordinate != null)
-                    sched.AddProvider(_parent.Subordinate.CreateInstance(), currTimeCode + (ulong)_parent.Delay);
+                if (ParentModel.Subordinate != null)
+                {
+                    if (SubordinateInstance == null)
+                        SubordinateInstance = ParentModel.Subordinate.CreateInstance();
+                    sched.AddProvider(SubordinateInstance, currTimeCode + (ulong)ParentModel.Delay);
+                }
                 return false;
             }
         }

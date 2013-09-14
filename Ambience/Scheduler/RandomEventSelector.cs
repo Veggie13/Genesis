@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Genesis.Ambience.Scheduler
@@ -18,13 +19,21 @@ namespace Genesis.Ambience.Scheduler
             {
             }
 
+            public IEnumerable<IEventProviderInstance> SubordinateSelection
+            {
+                get;
+                private set;
+            }
+
             public override bool Next(IEventScheduler sched, ulong currTimeCode, ulong span)
             {
-                if (_parent.Selection.Count == 0)
+                if (ParentModel.Selection.Count == 0)
                     return false;
+                if (SubordinateSelection == null)
+                    SubordinateSelection = ParentModel.Selection.Select(p => p.CreateInstance(this.Source));
 
-                int sel = Rand.Next(_parent.Selection.Count);
-                sched.AddProvider(_parent.Selection[sel].CreateInstance(this.Source), currTimeCode);
+                int sel = Rand.Next(ParentModel.Selection.Count);
+                sched.AddProvider(SubordinateSelection.ElementAt(sel), currTimeCode);
                 return true;
             }
         }

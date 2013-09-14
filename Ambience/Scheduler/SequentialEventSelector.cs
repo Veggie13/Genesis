@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Genesis.Ambience.Scheduler
@@ -20,13 +21,21 @@ namespace Genesis.Ambience.Scheduler
             {
             }
 
+            public IEnumerable<IEventProviderInstance> SubordinateSequence
+            {
+                get;
+                private set;
+            }
+            
             public override bool Next(IEventScheduler sched, ulong currTimeCode, ulong span)
             {
-                if (_parent.Sequence.Count == 0)
+                if (ParentModel.Sequence.Count == 0)
                     return false;
+                if (SubordinateSequence == null)
+                    SubordinateSequence = ParentModel.Sequence.Select(p => p.CreateInstance(this.Source));
 
-                sched.AddProvider(_parent.Sequence[_current++].CreateInstance(this.Source), currTimeCode);
-                _current %= _parent.Sequence.Count;
+                sched.AddProvider(SubordinateSequence.ElementAt(_current++), currTimeCode);
+                _current %= ParentModel.Sequence.Count;
                 return true;
             }
         }

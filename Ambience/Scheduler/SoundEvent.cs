@@ -11,6 +11,11 @@ namespace Genesis.Ambience.Scheduler
         {
             IResource GetResource(string resName);
             List<string> GetAllSounds();
+
+            void LoadLibrary(string path);
+
+            void Start();
+            void Stop();
         }
 
         public interface IResource
@@ -40,7 +45,7 @@ namespace Genesis.Ambience.Scheduler
 
                 public override bool Next(IEventScheduler sched, ulong currTimeCode, ulong span)
                 {
-                    sched.ScheduleEvent(_parent.CreateEvent(sched.TicksPerSec), currTimeCode);
+                    sched.ScheduleEvent(ParentModel.CreateEvent(sched.TicksPerSec), currTimeCode);
                     return false;
                 }
             }
