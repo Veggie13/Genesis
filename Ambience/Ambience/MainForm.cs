@@ -25,7 +25,7 @@ namespace Genesis.Ambience
         {
             InitializeComponent();
 
-            _soundBoard.TileClicked += new Ambience.Controls.ProviderTokenButton.TileClickedEvent(_soundBoard_TileClicked);
+            _soundBoard.TileClicked += new ProviderTokenButton.TileClickedEvent(_soundBoard_TileClicked);
 
             this.FormClosed += new FormClosedEventHandler(MainForm_FormClosed);
         }
