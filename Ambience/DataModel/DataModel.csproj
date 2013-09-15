@@ -51,6 +51,7 @@
     <Compile Include="RandomEventElement.cs" />
     <Compile Include="SequentialEventElement.cs" />
     <Compile Include="SimultaneousEventElement.cs" />
+    <Compile Include="SoundBoardElement.cs" />
     <Compile Include="SoundEventElement.cs" />
     <Compile Include="SubordinateElement.cs" />
   </ItemGroup>

@@ -26,6 +26,7 @@ namespace DataModelTest
 
             proj.Libraries = new ALibraryElement[] { folder1, folder2 }.ToList();
             proj.Events = new AEventElement[] { delay, period, rand, snd }.ToList();
+            proj.SoundBoard = new SoundBoardElement[] { delay.ToSoundBoard(5, 7), period.ToSoundBoard(1, 2), snd.ToSoundBoard(4, 9) }.ToList();
 
             MemoryStream stream = new MemoryStream();
             using (XmlTextWriter writer = new XmlTextWriter(stream, Encoding.ASCII) { Formatting = Formatting.Indented })

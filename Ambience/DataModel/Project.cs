@@ -29,6 +29,13 @@ namespace Genesis.Ambience.DataModel
             set;
         }
 
+        [XmlArray("soundboard"), XmlArrayItem("button")]
+        public List<SoundBoardElement> SoundBoard
+        {
+            get;
+            set;
+        }
+
         public static XmlSerializer GetSerializer()
         {
             return new XmlSerializer(typeof(Project));
