@@ -1,16 +1,15 @@
-﻿using System;
+﻿using System.Xml.Serialization;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Genesis.Ambience.Scheduler;
 
 namespace Genesis.Ambience.DataModel
 {
-    public class SimultaneousEventElement : AEventElement<SimultaneousEventProvider>
+    public class SimultaneousEventElement : AEventElement
     {
-        public SimultaneousEventElement(SimultaneousEventProvider provider)
-            : base(provider)
+        [XmlArray("group"), XmlArrayItem("item")]
+        public List<SubordinateElement> Group
         {
+            get;
+            set;
         }
 
         public override void Accept(IEventElementVisitor visitor)

@@ -1,16 +1,15 @@
-﻿using System;
+﻿using System.Xml.Serialization;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Genesis.Ambience.Scheduler;
 
 namespace Genesis.Ambience.DataModel
 {
-    public class SequentialEventElement : AEventElement<SequentialEventSelector>
+    public class SequentialEventElement : AEventElement
     {
-        public SequentialEventElement(SequentialEventSelector provider)
-            : base(provider)
+        [XmlArray("sequence"), XmlArrayItem("item")]
+        public List<SubordinateElement> Sequence
         {
+            get;
+            set;
         }
 
         public override void Accept(IEventElementVisitor visitor)

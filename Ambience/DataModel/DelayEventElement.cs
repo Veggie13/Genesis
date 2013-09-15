@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Genesis.Ambience.Scheduler;
+﻿using System.Xml.Serialization;
+using System;
 
 namespace Genesis.Ambience.DataModel
 {
-    public class DelayEventElement : AEventElement<DelayEventProvider>
+    public class DelayEventElement : AEventElement
     {
-        public DelayEventElement(DelayEventProvider provider)
-            : base(provider)
+        [XmlElement("subordinate")]
+        public SubordinateElement Subordinate
         {
+            get;
+            set;
         }
 
         public override void Accept(IEventElementVisitor visitor)

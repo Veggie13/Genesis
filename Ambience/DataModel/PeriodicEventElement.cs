@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Genesis.Ambience.Scheduler;
+﻿using System.Xml.Serialization;
 
 namespace Genesis.Ambience.DataModel
 {
-    public class PeriodicEventElement : AEventElement<PeriodicEventProvider>
+    public class PeriodicEventElement : AEventElement
     {
-        public PeriodicEventElement(PeriodicEventProvider provider)
-            : base(provider)
+        [XmlElement("subordinate")]
+        public SubordinateElement Subordinate
         {
+            get;
+            set;
         }
 
         public override void Accept(IEventElementVisitor visitor)

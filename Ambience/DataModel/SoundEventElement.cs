@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Genesis.Ambience.Scheduler;
+﻿using System.Xml.Serialization;
 
 namespace Genesis.Ambience.DataModel
 {
-    public class SoundEventElement : AEventElement<SoundEvent.Provider>
+    public class SoundEventElement : AEventElement
     {
-        public SoundEventElement(SoundEvent.Provider provider)
-            : base(provider)
+        [XmlAttribute("resource")]
+        public string Resource
         {
+            get;
+            set;
         }
 
         public override void Accept(IEventElementVisitor visitor)

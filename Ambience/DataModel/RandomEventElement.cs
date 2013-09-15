@@ -1,16 +1,15 @@
-﻿using System;
+﻿using System.Xml.Serialization;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Genesis.Ambience.Scheduler;
 
 namespace Genesis.Ambience.DataModel
 {
-    public class RandomEventElement : AEventElement<RandomEventSelector>
+    public class RandomEventElement : AEventElement
     {
-        public RandomEventElement(RandomEventSelector provider)
-            : base(provider)
+        [XmlArray("selection"), XmlArrayItem("item")]
+        public List<SubordinateElement> Selection
         {
+            get;
+            set;
         }
 
         public override void Accept(IEventElementVisitor visitor)

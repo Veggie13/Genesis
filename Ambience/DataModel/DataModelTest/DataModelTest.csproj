@@ -2,18 +2,20 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C26EDD4E-4AE9-421A-9DA8-104A40903005}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{264D1DE5-CDD2-478D-AD22-EE483DEC397D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Genesis.Ambience.DataModel</RootNamespace>
-    <AssemblyName>Genesis.Ambience.DataModel</AssemblyName>
+    <RootNamespace>DataModelTest</RootNamespace>
+    <AssemblyName>DataModelTest</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,7 +24,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -41,27 +44,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AEventElement.cs" />
-    <Compile Include="ALibraryElement.cs" />
-    <Compile Include="DelayEventElement.cs" />
-    <Compile Include="FolderLibraryElement.cs" />
-    <Compile Include="PeriodicEventElement.cs" />
-    <Compile Include="Project.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RandomEventElement.cs" />
-    <Compile Include="SequentialEventElement.cs" />
-    <Compile Include="SimultaneousEventElement.cs" />
-    <Compile Include="SoundEventElement.cs" />
-    <Compile Include="SubordinateElement.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
+    <ProjectReference Include="..\..\..\Common\Tools\Tools.csproj">
       <Project>{311112D5-44B0-4078-8EDA-237B3C17BD78}</Project>
       <Name>Tools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Scheduler\Scheduler.csproj">
-      <Project>{051A577E-B5B7-4C4C-92D9-B01CCB26BCED}</Project>
-      <Name>Scheduler</Name>
+    <ProjectReference Include="..\DataModel.csproj">
+      <Project>{C26EDD4E-4AE9-421A-9DA8-104A40903005}</Project>
+      <Name>DataModel</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
