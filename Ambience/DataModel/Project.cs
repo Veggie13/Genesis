@@ -20,7 +20,7 @@ namespace Genesis.Ambience.DataModel
          XmlArrayItem("delay", Type = typeof(DelayEventElement)),
          XmlArrayItem("periodic", Type = typeof(PeriodicEventElement)),
          XmlArrayItem("random", Type = typeof(RandomEventElement)),
-         XmlArrayItem("sequence", Type = typeof(SequentialEventElement)),
+         XmlArrayItem("sequential", Type = typeof(SequentialEventElement)),
          XmlArrayItem("simultaneous", Type = typeof(SimultaneousEventElement)),
          XmlArrayItem("sound", Type = typeof(SoundEventElement))]
         public List<AEventElement> Events
