@@ -22,7 +22,7 @@ namespace Genesis.Ambience
         #endregion
 
         public MainForm()
-            : base("Ambience")
+            : base("Ambience Sound Studio")
         {
             InitializeComponent();
 
@@ -44,15 +44,7 @@ namespace Genesis.Ambience
         #region File
         private void _fileNewItem_Click(object sender, EventArgs e)
         {
-            _project = new ProjectInstance();
-
-            _soundBoard.TokenBoardProvider = _project;
-            _spnRowCount.Value = _project.RowCount;
-            _spnColCount.Value = _project.ColumnCount;
-
-            _schedView.Schedule = _project.Schedule;
-
-            _project.ItemsChanged += new Action(_project_ItemsChanged);
+            newProject();
         }
 
         private void _fileSaveItem_Click(object sender, EventArgs e)
@@ -63,6 +55,17 @@ namespace Genesis.Ambience
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
                 serialize(dlg.FileName);
+            }
+        }
+
+        private void _fileOpenItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.DefaultExt = ".assp";
+            dlg.Filter = "Ambience Sound Studio Projects (*.assp)|*.assp";
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                deserialize(dlg.FileName);
             }
         }
         #endregion
@@ -163,12 +166,36 @@ namespace Genesis.Ambience
             }
         }
 
+        private void newProject()
+        {
+            _project = new ProjectInstance();
+
+            _soundBoard.TokenBoardProvider = _project;
+            _spnRowCount.Value = _project.RowCount;
+            _spnColCount.Value = _project.ColumnCount;
+
+            _schedView.Schedule = _project.Schedule;
+
+            _project.ItemsChanged += new Action(_project_ItemsChanged);
+        }
+
         private void serialize(string path)
         {
             var fstream = new FileStream(path, FileMode.Create);
             var serializer = new ProjectSerializer(_project);
 
             serializer.Serialize(fstream);
+            fstream.Close();
+        }
+
+        private void deserialize(string path)
+        {
+            newProject();
+
+            var fstream = new FileStream(path, FileMode.Open);
+            var serializer = new ProjectSerializer(_project);
+
+            serializer.Deserialize(fstream);
             fstream.Close();
         }
         #endregion

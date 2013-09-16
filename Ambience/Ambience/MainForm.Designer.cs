@@ -45,6 +45,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this._fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._fileNewItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._fileSaveItem = new System.Windows.Forms.ToolStripMenuItem();
             this._libMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._libImportFromFileItem = new System.Windows.Forms.ToolStripMenuItem();
             this._libImportFolderItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,7 +57,7 @@
             this._evtNewSimultaneousItem = new System.Windows.Forms.ToolStripMenuItem();
             this._evtNewSequentialItem = new System.Windows.Forms.ToolStripMenuItem();
             this._evtNewRandomItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._fileSaveItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._fileOpenItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -278,7 +279,8 @@
             // 
             this._fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._fileNewItem,
-            this._fileSaveItem});
+            this._fileSaveItem,
+            this._fileOpenItem});
             this._fileMenu.Name = "_fileMenu";
             this._fileMenu.Size = new System.Drawing.Size(37, 20);
             this._fileMenu.Text = "&File";
@@ -289,6 +291,13 @@
             this._fileNewItem.Size = new System.Drawing.Size(152, 22);
             this._fileNewItem.Text = "New...";
             this._fileNewItem.Click += new System.EventHandler(this._fileNewItem_Click);
+            // 
+            // _fileSaveItem
+            // 
+            this._fileSaveItem.Name = "_fileSaveItem";
+            this._fileSaveItem.Size = new System.Drawing.Size(152, 22);
+            this._fileSaveItem.Text = "&Save";
+            this._fileSaveItem.Click += new System.EventHandler(this._fileSaveItem_Click);
             // 
             // _libMenu
             // 
@@ -374,12 +383,12 @@
             this._evtNewRandomItem.Text = "New Random Selector...";
             this._evtNewRandomItem.Click += new System.EventHandler(this._evtNewRandomItem_Click);
             // 
-            // _fileSaveItem
+            // _fileOpenItem
             // 
-            this._fileSaveItem.Name = "_fileSaveItem";
-            this._fileSaveItem.Size = new System.Drawing.Size(152, 22);
-            this._fileSaveItem.Text = "&Save";
-            this._fileSaveItem.Click += new System.EventHandler(this._fileSaveItem_Click);
+            this._fileOpenItem.Name = "_fileOpenItem";
+            this._fileOpenItem.Size = new System.Drawing.Size(152, 22);
+            this._fileOpenItem.Text = "&Open...";
+            this._fileOpenItem.Click += new System.EventHandler(this._fileOpenItem_Click);
             // 
             // MainForm
             // 
@@ -444,6 +453,7 @@
         private System.Windows.Forms.ToolStripMenuItem _evtNewSequentialItem;
         private System.Windows.Forms.ToolStripMenuItem _evtNewRandomItem;
         private System.Windows.Forms.ToolStripMenuItem _fileSaveItem;
+        private System.Windows.Forms.ToolStripMenuItem _fileOpenItem;
     }
 }
 
