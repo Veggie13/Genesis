@@ -325,6 +325,8 @@ namespace Genesis.Ambience.Controls
                 tile.AboutToDrag += new ProviderTokenTileDragEventHandler(tile_AboutToDrag);
             }
 
+            adjustControls();
+
             ItemsChanged();
         }
 
@@ -342,6 +344,8 @@ namespace Genesis.Ambience.Controls
             }
             if (_flow.Controls.Count < 1)
                 _flow.Controls.Add(_empty);
+
+            adjustControls();
 
             ItemsChanged();
         }
