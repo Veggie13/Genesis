@@ -32,9 +32,9 @@ namespace Genesis.Ambience
                 return Element;
             }
 
-            public IEnumerable<KeyValuePair<IEventProvider, AEventElement>> Models
+            public Dictionary<IEventProvider, AEventElement> GetModels()
             {
-                get { return _models; }
+                return new Dictionary<IEventProvider, AEventElement>(_models);
             }
 
             private AEventElement Element { get; set; }
@@ -116,6 +116,88 @@ namespace Genesis.Ambience
                 throw new NotImplementedException();
             }
         }
+
+        private class EventProviderFactory : IEventElementVisitor
+        {
+            private ProjectInstance _inst;
+            private Dictionary<Guid, IEventProvider> _providers = new Dictionary<Guid, IEventProvider>();
+
+            public EventProviderFactory(ProjectInstance inst)
+            {
+                _inst = inst;
+            }
+
+            public IEventProvider GetProvider(AEventElement element)
+            {
+                if (_providers.ContainsKey(element.ID))
+                    return _providers[element.ID];
+
+                this.TryVisit(element);
+
+                _providers[element.ID] = Provider;
+                return Provider;
+            }
+
+            public Dictionary<Guid, IEventProvider> GetProviders()
+            {
+                return new Dictionary<Guid, IEventProvider>(_providers);
+            }
+
+            private IEventProvider Provider { get; set; }
+
+            public void Visit(DelayEventElement element)
+            {
+                Provider = new DelayEventProvider(element.Name)
+                {
+                    Delay = element.Delay,
+                    Subordinate = GetProvider(element.Subordinate.Subordinate)
+                };
+            }
+
+            public void Visit(PeriodicEventElement element)
+            {
+                Provider = new PeriodicEventProvider(element.Name)
+                {
+                    Period = element.Period,
+                    Variance = element.Variance,
+                    Subordinate = GetProvider(element.Subordinate.Subordinate)
+                };
+            }
+
+            public void Visit(RandomEventElement element)
+            {
+                var provider = new RandomEventSelector(element.Name);
+                provider.Selection.AddRange(element.Selection
+                    .Select(e => GetProvider(e.Subordinate)));
+                Provider = provider;
+            }
+
+            public void Visit(SequentialEventElement element)
+            {
+                var provider = new SequentialEventSelector(element.Name);
+                provider.Sequence.AddRange(element.Sequence
+                    .Select(e => GetProvider(e.Subordinate)));
+                Provider = provider;
+            }
+
+            public void Visit(SimultaneousEventElement element)
+            {
+                var provider = new SimultaneousEventProvider(element.Name);
+                provider.Group.AddRange(element.Group
+                    .Select(e => GetProvider(e.Subordinate)));
+                Provider = provider;
+            }
+
+            public void Visit(SoundEventElement element)
+            {
+                Provider = new SoundEvent.Provider(element.Name, _inst.Resources, element.Resource);
+            }
+
+            public void Visit(IVisitable<IEventElementVisitor, AEventElement> item)
+            {
+                throw new NotImplementedException();
+            }
+        }
         #endregion
 
         #region Class Members
@@ -143,9 +225,20 @@ namespace Genesis.Ambience
                 serializer.Serialize(writer, proj);
             }
         }
+
+        public void Deserialize(Stream stream)
+        {
+            XmlSerializer serializer = Project.GetSerializer();
+            Project proj = (Project)serializer.Deserialize(stream);
+
+            loadLibraries(proj);
+            var providers = loadEvents(proj);
+            loadSoundBoard(proj, providers);
+        }
         #endregion
 
         #region Private Helpers
+        #region Serialization
         private List<ALibraryElement> modelLibraries()
         {
             return _inst.Resources.Libraries
@@ -161,7 +254,7 @@ namespace Genesis.Ambience
                 elementFactory.GetElement(prov);
             }
 
-            return elementFactory.Models.ToDictionary(p => p.Key, p => p.Value);
+            return elementFactory.GetModels();
         }
 
         private List<SoundBoardElement> modelSoundBoard(Dictionary<IEventProvider, AEventElement> models)
@@ -181,6 +274,36 @@ namespace Genesis.Ambience
 
             return result;
         }
+        #endregion
+
+        #region Deserialization
+        private void loadLibraries(Project proj)
+        {
+            foreach (var lib in proj.Libraries)
+            {
+                _inst.Resources.LoadLibrary(lib.Path);
+            }
+        }
+
+        private Dictionary<Guid, IEventProvider> loadEvents(Project proj)
+        {
+            EventProviderFactory factory = new EventProviderFactory(_inst);
+            foreach (var evt in proj.Events)
+            {
+                _inst.Events.Add(factory.GetProvider(evt));
+            }
+
+            return factory.GetProviders();
+        }
+
+        private void loadSoundBoard(Project proj, Dictionary<Guid, IEventProvider> providers)
+        {
+            foreach (var button in proj.SoundBoard)
+            {
+                _inst[button.Row, button.Col] = providers[button.ID];
+            }
+        }
+        #endregion
         #endregion
     }
 }
