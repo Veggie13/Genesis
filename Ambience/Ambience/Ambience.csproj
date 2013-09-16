@@ -63,6 +63,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstance.cs" />
+    <Compile Include="ProjectSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="LibraryBrowserDlg.resx">
       <DependentUpon>LibraryBrowserDlg.cs</DependentUpon>
@@ -107,6 +108,10 @@
     <ProjectReference Include="..\Controls\AmbienceControls.csproj">
       <Project>{8952F2F9-6C10-42E1-B146-A5DE4127617E}</Project>
       <Name>AmbienceControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataModel\DataModel.csproj">
+      <Project>{C26EDD4E-4AE9-421A-9DA8-104A40903005}</Project>
+      <Name>DataModel</Name>
     </ProjectReference>
     <ProjectReference Include="..\Scheduler\Scheduler.csproj">
       <Project>{051A577E-B5B7-4C4C-92D9-B01CCB26BCED}</Project>
