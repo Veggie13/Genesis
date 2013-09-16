@@ -79,6 +79,8 @@ namespace Genesis.Ambience
         #endregion
 
         #region ITokenBoardProvider
+        public event Action<int, int> CellChanged = (r, c) => { };
+
         public IEventProvider this[int row, int col]
         {
             get
@@ -87,7 +89,11 @@ namespace Genesis.Ambience
             }
             set
             {
-                _providers[row, col] = value;
+                if (_providers[row, col] != value)
+                {
+                    _providers[row, col] = value;
+                    CellChanged(row, col);
+                }
             }
         }
 

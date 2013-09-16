@@ -20,6 +20,8 @@ namespace Genesis.Ambience.Controls
 
         public interface ITokenBoardProvider
         {
+            event Action<int, int> CellChanged;
+
             IEventProvider this[int row, int col] { get; set; }
             int RowCount { get; set; }
             int ColumnCount { get; set; }
@@ -179,12 +181,20 @@ namespace Genesis.Ambience.Controls
             set
             {
                 SuspendLayout();
-                _tokenBoardProvider = null;
+                if (_tokenBoardProvider != null)
+                {
+                    _tokenBoardProvider.CellChanged -= _tokenBoardProvider_CellChanged;
+                    _tokenBoardProvider = null;
+                }
                 RowCount = 1;
                 ColumnCount = 1;
                 _content.Controls.Clear();
 
                 _tokenBoardProvider = value;
+                if (_tokenBoardProvider != null)
+                {
+                    _tokenBoardProvider.CellChanged += new Action<int, int>(_tokenBoardProvider_CellChanged);
+                }
                 initBoard();
                 ResumeLayout(true);
             }
@@ -210,6 +220,11 @@ namespace Genesis.Ambience.Controls
         private void btn_TileClicked(ProviderToken token)
         {
             TileClicked(token);
+        }
+
+        private void _tokenBoardProvider_CellChanged(int row, int col)
+        {
+            _buttons[row, col].Token = new ProviderToken(_tokenBoardProvider[row, col], null);
         }
         #endregion
 
