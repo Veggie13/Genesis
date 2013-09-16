@@ -12,6 +12,13 @@ namespace Genesis.Ambience.DataModel
             set;
         }
 
+        [XmlAttribute("delay")]
+        public uint Delay
+        {
+            get;
+            set;
+        }
+
         public override void Accept(IEventElementVisitor visitor)
         {
             visitor.Visit(this);
