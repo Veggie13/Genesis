@@ -11,6 +11,7 @@ using Genesis.Common.Controls;
 using Genesis.Common.Tools;
 using Genesis.Ambience.Controls;
 using Genesis.Ambience.Scheduler;
+using System.IO;
 
 namespace Genesis.Ambience
 {
@@ -52,6 +53,17 @@ namespace Genesis.Ambience
             _schedView.Schedule = _project.Schedule;
 
             _project.ItemsChanged += new Action(_project_ItemsChanged);
+        }
+
+        private void _fileSaveItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.DefaultExt = ".assp";
+            dlg.Filter = "Ambience Sound Studio Projects (*.assp)|*.assp";
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                serialize(dlg.FileName);
+            }
         }
         #endregion
 
@@ -149,6 +161,15 @@ namespace Genesis.Ambience
             {
                 _project.Events.Add(evt);
             }
+        }
+
+        private void serialize(string path)
+        {
+            var fstream = new FileStream(path, FileMode.Create);
+            var serializer = new ProjectSerializer(_project);
+
+            serializer.Serialize(fstream);
+            fstream.Close();
         }
         #endregion
     }
