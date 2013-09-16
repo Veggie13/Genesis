@@ -46,6 +46,7 @@
             this._fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._fileNewItem = new System.Windows.Forms.ToolStripMenuItem();
             this._fileSaveItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._fileOpenItem = new System.Windows.Forms.ToolStripMenuItem();
             this._libMenu = new System.Windows.Forms.ToolStripMenuItem();
             this._libImportFromFileItem = new System.Windows.Forms.ToolStripMenuItem();
             this._libImportFolderItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,7 +58,8 @@
             this._evtNewSimultaneousItem = new System.Windows.Forms.ToolStripMenuItem();
             this._evtNewSequentialItem = new System.Windows.Forms.ToolStripMenuItem();
             this._evtNewRandomItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._fileOpenItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this._libCreateDefaultEventsItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -288,16 +290,23 @@
             // _fileNewItem
             // 
             this._fileNewItem.Name = "_fileNewItem";
-            this._fileNewItem.Size = new System.Drawing.Size(152, 22);
+            this._fileNewItem.Size = new System.Drawing.Size(112, 22);
             this._fileNewItem.Text = "New...";
             this._fileNewItem.Click += new System.EventHandler(this._fileNewItem_Click);
             // 
             // _fileSaveItem
             // 
             this._fileSaveItem.Name = "_fileSaveItem";
-            this._fileSaveItem.Size = new System.Drawing.Size(152, 22);
+            this._fileSaveItem.Size = new System.Drawing.Size(112, 22);
             this._fileSaveItem.Text = "&Save";
             this._fileSaveItem.Click += new System.EventHandler(this._fileSaveItem_Click);
+            // 
+            // _fileOpenItem
+            // 
+            this._fileOpenItem.Name = "_fileOpenItem";
+            this._fileOpenItem.Size = new System.Drawing.Size(112, 22);
+            this._fileOpenItem.Text = "&Open...";
+            this._fileOpenItem.Click += new System.EventHandler(this._fileOpenItem_Click);
             // 
             // _libMenu
             // 
@@ -305,7 +314,9 @@
             this._libImportFromFileItem,
             this._libImportFolderItem,
             this.toolStripSeparator1,
-            this._libBrowseItem});
+            this._libBrowseItem,
+            this.toolStripSeparator2,
+            this._libCreateDefaultEventsItem});
             this._libMenu.Name = "_libMenu";
             this._libMenu.Size = new System.Drawing.Size(55, 20);
             this._libMenu.Text = "&Library";
@@ -313,26 +324,26 @@
             // _libImportFromFileItem
             // 
             this._libImportFromFileItem.Name = "_libImportFromFileItem";
-            this._libImportFromFileItem.Size = new System.Drawing.Size(169, 22);
+            this._libImportFromFileItem.Size = new System.Drawing.Size(186, 22);
             this._libImportFromFileItem.Text = "Import from File...";
             this._libImportFromFileItem.Click += new System.EventHandler(this._libImportFromFileItem_Click);
             // 
             // _libImportFolderItem
             // 
             this._libImportFolderItem.Name = "_libImportFolderItem";
-            this._libImportFolderItem.Size = new System.Drawing.Size(169, 22);
+            this._libImportFolderItem.Size = new System.Drawing.Size(186, 22);
             this._libImportFolderItem.Text = "Import Folder...";
             this._libImportFolderItem.Click += new System.EventHandler(this._libImportFolderItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(166, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(183, 6);
             // 
             // _libBrowseItem
             // 
             this._libBrowseItem.Name = "_libBrowseItem";
-            this._libBrowseItem.Size = new System.Drawing.Size(169, 22);
+            this._libBrowseItem.Size = new System.Drawing.Size(186, 22);
             this._libBrowseItem.Text = "Browse...";
             this._libBrowseItem.Click += new System.EventHandler(this._libBrowseItem_Click);
             // 
@@ -383,12 +394,17 @@
             this._evtNewRandomItem.Text = "New Random Selector...";
             this._evtNewRandomItem.Click += new System.EventHandler(this._evtNewRandomItem_Click);
             // 
-            // _fileOpenItem
+            // toolStripSeparator2
             // 
-            this._fileOpenItem.Name = "_fileOpenItem";
-            this._fileOpenItem.Size = new System.Drawing.Size(152, 22);
-            this._fileOpenItem.Text = "&Open...";
-            this._fileOpenItem.Click += new System.EventHandler(this._fileOpenItem_Click);
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(183, 6);
+            // 
+            // _libCreateDefaultEventsItem
+            // 
+            this._libCreateDefaultEventsItem.Name = "_libCreateDefaultEventsItem";
+            this._libCreateDefaultEventsItem.Size = new System.Drawing.Size(186, 22);
+            this._libCreateDefaultEventsItem.Text = "Create Default Events";
+            this._libCreateDefaultEventsItem.Click += new System.EventHandler(this._libCreateDefaultEventsItem_Click);
             // 
             // MainForm
             // 
@@ -454,6 +470,8 @@
         private System.Windows.Forms.ToolStripMenuItem _evtNewRandomItem;
         private System.Windows.Forms.ToolStripMenuItem _fileSaveItem;
         private System.Windows.Forms.ToolStripMenuItem _fileOpenItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem _libCreateDefaultEventsItem;
     }
 }
 

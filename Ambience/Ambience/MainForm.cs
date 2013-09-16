@@ -92,6 +92,12 @@ namespace Genesis.Ambience
             var dlg = new LibraryBrowserDlg(_project);
             dlg.ShowDialog(this);
         }
+
+        private void _libCreateDefaultEventsItem_Click(object sender, EventArgs e)
+        {
+            var items = _project.Resources.GetAllSounds().Select(resName => new SoundEvent.Provider(resName, _project.Resources, resName));
+            _project.Events.AddRange(items);
+        }
         #endregion
 
         #region Events
