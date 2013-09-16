@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Genesis.Ambience.Scheduler;
 
 namespace Genesis.Ambience.Audio
 {
@@ -12,10 +13,9 @@ namespace Genesis.Ambience.Audio
         Zip
     }
 
-    public interface ILibrary
+    public interface ILibrary : SoundEvent.IResourceLibrary
     {
         string Name { get; }
-        string Path { get; }
         IEnumerable<string> Sounds { get; }
         Stream OpenStream(string name);
         Format FileFormat(string name);

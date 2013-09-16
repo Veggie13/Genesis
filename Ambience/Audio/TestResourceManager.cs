@@ -41,6 +41,16 @@ namespace Genesis.Ambience.Audio
         private Dictionary<string, TestResource> _loaded = new Dictionary<string, TestResource>();
         #endregion
 
+        #region Properties
+        public IEnumerable<SoundEvent.IResourceLibrary> Libraries
+        {
+            get
+            {
+                return _libs.Values;
+            }
+        }
+        #endregion
+
         #region Public Operations
         public void LoadLibrary(string path)
         {

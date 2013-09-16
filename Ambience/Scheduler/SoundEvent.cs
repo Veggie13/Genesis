@@ -7,8 +7,15 @@ namespace Genesis.Ambience.Scheduler
     public class SoundEvent : IScheduleEvent
     {
         #region Helper Classes
+        public interface IResourceLibrary
+        {
+            string Path { get; }
+        }
+
         public interface IResourceProvider
         {
+            IEnumerable<IResourceLibrary> Libraries { get; }
+
             IResource GetResource(string resName);
             List<string> GetAllSounds();
 

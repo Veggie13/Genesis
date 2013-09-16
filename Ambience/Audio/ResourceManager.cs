@@ -27,6 +27,16 @@ namespace Genesis.Ambience.Audio
         private Queue<ResourceEvent> _events = new Queue<ResourceEvent>();
         #endregion
 
+        #region Properties
+        public IEnumerable<SoundEvent.IResourceLibrary> Libraries
+        {
+            get
+            {
+                return _libs.Values;
+            }
+        }
+        #endregion
+
         #region Public Operations
         public ILibrary LoadLibrary(string path)
         {
