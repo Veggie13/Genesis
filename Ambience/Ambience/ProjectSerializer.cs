@@ -288,10 +288,8 @@ namespace Genesis.Ambience
         private Dictionary<Guid, IEventProvider> loadEvents(Project proj)
         {
             EventProviderFactory factory = new EventProviderFactory(_inst);
-            foreach (var evt in proj.Events)
-            {
-                _inst.Events.Add(factory.GetProvider(evt));
-            }
+            var providers = proj.Events.Select(evt => factory.GetProvider(evt));
+            _inst.Events.AddRange(providers);
 
             return factory.GetProviders();
         }

@@ -18,8 +18,21 @@ namespace Genesis.Common.Tools
 
         public static void AddRange<T>(this ICollection<T> me, IEnumerable<T> items)
         {
-            foreach (T item in items)
-                me.Add(item);
+            if (me is List<T>)
+            {
+                List<T> list = me as List<T>;
+                list.AddRange(items);
+            }
+            else if (me is IListWithAddRange<T>)
+            {
+                var list = me as IListWithAddRange<T>;
+                list.AddRange(items);
+            }
+            else
+            {
+                foreach (T item in items)
+                    me.Add(item);
+            }
         }
         
         public static T[,] Resize<T>(this T[,] original, int x, int y)

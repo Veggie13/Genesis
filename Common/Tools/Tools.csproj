@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
+    <Compile Include="IListWithAddRange.cs" />
     <Compile Include="IVisitor.cs" />
     <Compile Include="SignalList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

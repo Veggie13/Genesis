@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Genesis.Common.Tools
 {
-    public class SignalList<T> : IList<T>
+    public class SignalList<T> : IListWithAddRange<T>
     {
         #region Private Members
         private List<T> _list;
@@ -31,7 +31,7 @@ namespace Genesis.Common.Tools
         public event ItemsEvent ItemsRemoved = delegate { };
         #endregion
 
-        #region Public Methods
+        #region IListWithAddRange
         public void AddRange(IEnumerable<T> items)
         {
             var itemsRange = multiItems(Count, items);
@@ -39,7 +39,6 @@ namespace Genesis.Common.Tools
             _list.AddRange(items);
             ItemsAdded(itemsRange);
         }
-        #endregion
 
         #region IList
         public int IndexOf(T item)
@@ -133,6 +132,7 @@ namespace Genesis.Common.Tools
         {
             return _list.GetEnumerator();
         }
+        #endregion
         #endregion
 
         #region Private Helpers
