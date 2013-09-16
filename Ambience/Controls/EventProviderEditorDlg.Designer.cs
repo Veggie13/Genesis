@@ -98,7 +98,6 @@
             this.tableLayoutPanel1.SetRowSpan(this._itemList, 2);
             this._itemList.Size = new System.Drawing.Size(166, 287);
             this._itemList.TabIndex = 3;
-            this._itemList.UseHoverScroll = true;
             // 
             // EventProviderEditorDlg
             // 
