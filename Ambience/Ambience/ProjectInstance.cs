@@ -16,7 +16,7 @@ namespace Genesis.Ambience
         private const int DefaultRowCount = 10;
         private const int DefaultColumnCount = 10;
 
-        private SoundEvent.IResourceProvider _resourceMgr = new TestResourceManager();//new ResourceManager();
+        private SoundEvent.IResourceProvider _resourceMgr = new ResourceManager();
         private EventSchedule _sched = new EventSchedule(256);
         private IEventProvider[,] _providers = new IEventProvider[DefaultRowCount, DefaultColumnCount];
         private SignalList<IEventProvider> _items = new SignalList<IEventProvider>();
